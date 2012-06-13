@@ -1,0 +1,25 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Name:</b>
+  <%= @calendar.name %>
+</p>
+
+<p>
+  <b>Interval:</b>
+  <%= @calendar.interval %>
+</p>
+
+<p>
+  <b>Do call:</b>
+  <%= @calendar.do_call %>
+</p>
+
+<p>
+  <b>Campaign:</b>
+  <%= @calendar.campaign.name %>
+</p>
+
+
+<%= link_to 'Edit', edit_calendar_path(@calendar) %> |
+<%= link_to 'Back', calendars_path %>

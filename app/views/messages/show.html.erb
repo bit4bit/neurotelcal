@@ -1,0 +1,37 @@
+<%= link_to I18n.t('back'), messages_path, :class => "button negative" %>
+<%= link_to I18n.t('edit'), edit_message_path(@message), :class => "button" %> 
+
+
+<h1><%= I18n.t('message.show.title')%></h1>
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b><%= I18n.t('message.l.name')%>:</b>
+  <%= @message.name %>
+</p>
+
+<p>
+  <b><%= I18n.t('message.l.description')%>:</b>
+  <%= @message.description %>
+</p>
+<p>
+  <b><%= I18n.t('message.l.call')%>:</b>
+  <%= @message.call %>
+</p>
+
+<p>
+  <b><%= I18n.t('message.l.repeat_interval')%>:</b>
+  <%= @message.repeat_interval%>
+</p>
+
+<p>
+  <b><%= I18n.t('message.l.repeat_until')%>:</b>
+  <%= @message.repeat_until%>
+</p>
+
+<p>
+  <b><%= I18n.t('defaults.group')%>:</b>
+  <%= @message.group.name %>
+</p>
+
+

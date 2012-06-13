@@ -1,0 +1,12 @@
+<%= link_to I18n.t('back'), users_path, :class => "button negative" %>
+<%= link_to I18n.t('edit'), edit_user_path(@user), :class => "button" %> 
+
+
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b><%= I18n.t('user.l.name')%>:</b>
+  <%= @user.name %>
+</p>
+
+

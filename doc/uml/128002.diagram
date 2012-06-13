@@ -1,0 +1,11 @@
+format 74
+
+componentcanvas 128002 component_ref 128002 // Client
+  draw_component_as_icon default show_component_req_prov default show_component_rea default show_stereotype_properties default
+  xyzwh 378 57 2000 215 77
+end
+componentcanvas 128130 component_ref 128130 // NeuroTelCal
+  draw_component_as_icon default show_component_req_prov default show_component_rea default show_stereotype_properties default
+  xyzwh 71 58 2005 215 77
+end
+end

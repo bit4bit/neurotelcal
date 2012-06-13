@@ -1,0 +1,167 @@
+es:
+  appname: 'NeuroTelCal'
+  appdescription: 'Automarcador'
+  activerecord:
+    models:
+      campaign: 'Campaña'
+      resource: 'Recurso'
+      message: 'Mensaje'
+      client: 'Cliente'
+      group: 'Grupo'
+    attributes:
+      group:
+        name: 'Nombre'
+      campaign:
+        name: 'Nombre'
+        description: 'Descripción'
+      resource:
+        name: 'Nombre'
+        type: 'Tipo'
+        file: 'Archivo'
+      message:
+        name: 'Nombre'
+        description: 'Descripción'
+        call: 'Programar Para el'
+        repeat_interval: 'Intervalo de repetición'
+        repeat_until: 'Repetir hasta'
+      client:
+        fullname: 'Nombre Completo'
+        phonenumbre: 'Número télefonico/sip'
+        group: 'Grupo'
+      
+  back: 'Atrás'	
+  edit: 'Editar'
+  show: 'Mostrar'
+  destroy: 'Eliminar'
+  are_you_sure: 'Esta usted seguro/a?'
+  menu:
+    campaigns: 'Campañas'
+    plivos: 'Plivo Servidores'
+    reports: 'Reportes'
+    admin: 'Administración'
+    about: 'Acerca de'
+    quit: 'Salir'
+  defaults:
+    name: 'Nombre'
+    group: 'Grupo'
+    campaign: 'Campaña'
+    campaigns: 'Campañas'
+    groups: 'Grupos'
+    resources: 'Recursos'
+    clients: 'Clientes'
+    messages: 'Mensajes'
+    description: 'descripcion'
+    call: 'Llamar'
+    client: 'Client'
+    message: 'Mensaje'
+  clients:
+    fullname: 'Nombre completo'
+  campaign:
+    l:
+     name: 'Nombre'
+     description: 'Descripción'
+    index:
+      title: 'Listando Campañas'
+    edit:
+      title: 'Editando Campaña'
+    new:
+      title: 'Nueva Campaña'
+    show:
+      title: 'Mostrando Campaña'
+  group:
+    index:
+      title: 'Listando Grupos'
+    edit:
+      title: 'Editando Grupo'
+    new:
+      title: 'Nuevo Grupo'
+    show:
+      title: 'Mostrando Grupo'
+  resource:
+    l:
+      name: 'Nombre'
+      type: 'Tipo'
+      file: 'Archivo'
+    index:
+      title: 'Listando Recursos'
+    edit:
+      title: 'Editando Recurso'
+    new:
+      title: 'Nuevo Recurso'
+    show:
+      title: 'Mostrando Recurso'
+  message:
+    l:
+      name: 'Nombre'
+      description: 'Descripción'
+      call: 'Programada Para'
+      repeat_interval: 'Repetir Intervalo'
+      repeat_until: 'Repetir Hasta'
+    index:
+      title: 'Listando Mensajes'
+    edit:
+      title: 'Editando Mensaje'
+    new:
+      title: 'Nuevo Mensaje'
+    show:
+      title: 'Mostrando Mensaje'
+  client:
+    l:
+      fullname: 'Nombre completo'
+      name: 'Nombre'
+      phonenumber: 'Número Tél.'
+      group: 'Grupo'
+      
+    index:
+      title: 'Listando Clientes'
+    new:
+      title: 'Nuevo/a Cliente'
+    edit:
+      title: 'Editando Cliente'
+    show:
+      title: 'Mostrando Cliente'
+  plivo:
+    l:
+      caller_name: 'Nombre del llamador'
+      app_url: 'App URL'
+      api_url: 'Api URL'
+      gateways: 'Gateways'
+      status: 'Estado'
+    index:
+      title: 'Listando Plivo'
+    new:
+      title: 'Nuevo Plivo'
+    edit:
+      title: 'Editando Plivo'
+    show:
+      title: 'Mostrando Plivo'
+  report:
+    export_csv: 'Exportar CSV'
+    l:
+      entered: 'Llamada ini.'
+      listened: 'Llamada fin.'
+      status: 'Estado'
+    index:
+      title: 'Reportes'
+  user:
+    l:
+      name: 'Nombre'
+      username: 'Usuario/a'
+      password: 'Contraseña'
+      btlogin: 'Ingresar'
+    index:
+      title: 'Listando Usuarios/as'
+    edit:
+      title: 'Editando Usuario/a'
+    new:
+      title: 'Nuevo/a Usuario/a'
+    show:
+      title: 'Mostrando Usuario/a'
+    login:
+      title: 'INGRESO'
+  page:
+    about:
+      title: 'Acerca de'
+      developer: 'Desarrollado por Bit4Bit'
+      email: 'bit4bit@riseup.net'
+      license: 'Este es software libre, bajo licencia GPLv3 o superior'

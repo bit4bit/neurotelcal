@@ -1,0 +1,13 @@
+class PlivoCall < ActiveRecord::Base
+  attr_accessible :data, :uuid
+
+  before_create :set_uuid_if_empty
+  before_save :set_uuid_if_empty
+
+  def set_uuid_if_empty
+    if self.uuid.blank?
+      self.uuid = UUIDTools::UUID.random_create().to_s
+    end
+  end
+
+end

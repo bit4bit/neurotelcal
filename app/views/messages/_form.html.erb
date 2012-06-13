@@ -1,0 +1,41 @@
+<%= simple_form_for(@message) do |f| %>
+  <% if @message.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@message.errors.count, "error") %> prohibited this message from being saved:</h2>
+
+      <ul>
+      <% @message.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+  <%= render "messages/ayuda" %>
+  <div class="field">
+    <b>Grupo</b><br />
+    <%= @message.group.name %>
+  </div>
+  <div class="field">
+    <%= f.input :name %>
+  </div>
+  <div class="field">
+    <%= f.label :description %><br />
+    <%= f.text_area :description %>
+  </div>
+
+  <div class="field">
+    <%= f.label :call%><br />
+    <%= f.datetime_select :call %>
+  </div>
+  <div class="field">
+    <%= f.label :repeat_interval%><br />
+    <%= f.text_field :repeat_interval%>
+  </div>
+  <div class="field">
+    <%= f.label :repeat_until%><br />
+    <%= f.datetime_select :repeat_until%>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

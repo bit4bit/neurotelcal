@@ -1,0 +1,25 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Name:</b>
+  <%= @resource.name %>
+</p>
+
+<p>
+  <b>Type:</b>
+  <%= @resource.type %>
+</p>
+
+<p>
+  <b>File:</b>
+  <a href="<%= @resource.file[6..-1]%>"><%= @resource.name_file %> </a>
+</p>
+
+<p>
+  <b>Campaign:</b>
+  <%= @resource.campaign_id %>
+</p>
+
+
+<%= link_to 'Edit', edit_resource_path(@resource) %> |
+<%= link_to 'Back', resources_path %>

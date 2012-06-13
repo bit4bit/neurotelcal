@@ -1,0 +1,28 @@
+
+<h1><%= I18n.t('report.index.title')%></h1>
+<%= link_to I18n.t('report.export_csv'), reports_export_csv_index_path%>
+<table>
+  <tr>
+    <th><%= I18n.t('defaults.campaign')%></th>
+    <th><%= I18n.t('defaults.client')%></th>
+    <th><%= I18n.t('defaults.message')%></th>
+    <th><%= I18n.t('message.l.call')%></th>
+    <th><%= I18n.t('report.l.entered')%></th>
+    <th><%= I18n.t('report.l.listened')%></th>
+    <th><%= I18n.t('report.l.status')%></th>
+  </tr>
+  <% @calls.each do |call| %>
+  <tr>
+    <td><%= call.message.campaign.name %></td>
+    <td><%= call.client.fullname%></td>
+    <td><%= call.message.name %></td>
+    <td><%= call.message.call %></td>
+    <td><%= call.entered%></td>
+    <td><%= call.listened%></td>
+    <td><%= call.hangup_status%></td>
+  </tr>
+  <% end %>
+  
+</table>
+
+<%= will_paginate @calls%>

@@ -1,0 +1,25 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Api url:</b>
+  <%= @plivo.api_url %>
+</p>
+
+<p>
+  <b>Sid:</b>
+  <%= @plivo.sid %>
+</p>
+
+<p>
+  <b>Auth token:</b>
+  <%= @plivo.auth_token %>
+</p>
+
+<p>
+  <b>Campaign:</b>
+  <%= @plivo.campaign_id %>
+</p>
+
+
+<%= link_to 'Edit', edit_plivo_path(@plivo) %> |
+<%= link_to 'Back', plivos_path %>

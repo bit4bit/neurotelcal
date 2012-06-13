@@ -1,0 +1,29 @@
+<h1>Listing plivos</h1>
+
+<table>
+  <tr>
+    <th>Api url</th>
+    <th>Sid</th>
+    <th>Auth token</th>
+    <th>Campaign</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @plivos.each do |plivo| %>
+  <tr>
+    <td><%= plivo.api_url %></td>
+    <td><%= plivo.sid %></td>
+    <td><%= plivo.auth_token %></td>
+    <td><%= plivo.campaign_id %></td>
+    <td><%= link_to 'Show', plivo %></td>
+    <td><%= link_to 'Edit', edit_plivo_path(plivo) %></td>
+    <td><%= link_to 'Destroy', plivo, :confirm => 'Are you sure?', :method => :delete %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New Plivo', new_plivo_path %>

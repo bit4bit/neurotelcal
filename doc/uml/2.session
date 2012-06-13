@@ -1,0 +1,20 @@
+window_sizes 1358 690 317 1031 487 105
+diagrams
+  active  componentdiagram_ref 128002 // Client
+    760 318 100 4 0 0
+  classdiagram_ref 128130 // Model
+    1079 490 70 4 96 0
+  sequencediagram_ref 134658 // ClientOneCall
+    822 389 100 4 48 0
+  classdiagram_ref 134786 // Rails
+    822 389 100 4 0 0
+end
+show_stereotypes
+selected attribute_ref 164610 // campaign_id
+open
+  sequencediagram_ref 134658 // ClientOneCall
+  class_ref 149506 // Client
+  class_ref 156034 // User
+  class_ref 156162 // UserCampaign
+end
+end

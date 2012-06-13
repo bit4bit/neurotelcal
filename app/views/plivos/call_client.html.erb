@@ -1,0 +1,34 @@
+<% if flash[:notice] %>
+<p style="color: green;"><%= flash[:notice]%></p>
+<% end %>
+
+<b>Client:</b><br />
+<%= @client.fullname %>
+<br />
+<b>PhoneNumber:</b><br />
+<%= @client.phonenumber %>
+<br />
+
+<%= form_tag({:action =>'docall_client'}) do |f| %>
+  <% if @message.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@message.errors.count, "error") %> prohibited this plivo from being saved:</h2>
+
+      <ul>
+      <% @message.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+  <%= render "messages/ayuda" %>
+  <%= hidden_field :message, :name, :value => "docall" %>
+  <div class="field">
+    <%= label_tag :message, :description %><br />
+    <%= text_area :message, :description %>
+  </div>
+  
+  <div class="actions">
+    <%= submit_tag%>
+  </div>
+<% end %>

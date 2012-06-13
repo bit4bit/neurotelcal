@@ -1,0 +1,27 @@
+Use this README file to introduce your application and point to useful places in the API for learning more.
+Run "rake doc:app" to generate API documentation for your models, controllers, helpers, and libraries.
+
+
+=REQUIRIMIENTOS
+==Plivo
+==Rails
+ * Ruby 1.9
+
+==Bluebox
+==Freeswitch
+ * mod_shout
+ * mod_esl
+===INSTALL
+ # cd /usr/local/src
+ # wget --no-check-certificate https://github.com/plivo/plivo/raw/master/freeswitch/install.sh
+ # bash install.sh
+
+
+==USO
+ * iniciar demonio para manejo de mensajes programados:
+   $ rails runner app/scripts/docalls.rb
+ * iniciar servidor web:
+  * Para servidor (Thin) recomendado:
+   $ thin start
+  * Para serivod Webrick muy lento:
+   $ rails server

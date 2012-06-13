@@ -1,0 +1,3 @@
+class Plivo < ActiveRecord::Base
+  attr_accessible :api_url, :auth_token, :campaign_id, :sid
+end

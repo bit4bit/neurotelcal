@@ -1,0 +1,1711 @@
+format 74
+"uml"
+  revision 5
+  modified_by 2 "bit4bit"
+
+
+  
+  // class settings
+  default_attribute_visibility private default_relation_visibility private default_operation_visibility public
+  //class diagram settings
+  draw_all_relations yes hide_attributes no hide_operations no hide_getset_operations no show_members_full_definition no show_members_visibility no show_members_stereotype no show_members_context no show_members_multiplicity no show_members_initialization no show_attribute_modifiers no member_max_width 127 show_parameter_dir yes show_parameter_name yes package_name_in_tab no class_drawing_mode natural drawing_language uml show_context_mode no auto_label_position yes show_relation_modifiers no show_relation_visibility no show_infonote no shadow yes show_stereotype_properties no
+  //use case diagram settings
+  package_name_in_tab no show_context no auto_label_position yes draw_all_relations yes class_drawing_mode actor shadow yes show_stereotype_properties no
+  //sequence diagram settings
+  show_full_operations_definition no write_horizontally yes class_drawing_mode natural drawing_language uml draw_all_relations yes shadow yes show_stereotype_properties no show_class_context_mode no show_msg_context_mode no
+  //collaboration diagram settings
+  show_full_operations_definition no show_hierarchical_rank no write_horizontally yes drawing_language uml package_name_in_tab no show_context no show_msg_context no draw_all_relations yes shadow yes show_stereotype_properties no
+  //object diagram settings
+   write_horizontally yes package_name_in_tab no show_context no auto_label_position yes draw_all_relations yes shadow yes show_stereotype_properties no
+  //component diagram settings
+  package_name_in_tab no show_context no auto_label_position yes draw_all_relations yes shadow yes
+  draw_component_as_icon no show_component_req_prov no show_component_rea no show_stereotype_properties no
+  //deployment diagram settings
+  package_name_in_tab no show_context no write_horizontally yes auto_label_position yes draw_all_relations yes shadow yes
+  draw_component_as_icon no show_component_req_prov no show_component_rea no show_stereotype_properties no
+  //state diagram settings
+  package_name_in_tab no show_context no auto_label_position yes write_trans_label_horizontally yes show_trans_definition no draw_all_relations yes shadow yes
+  show_activities yes region_horizontally yes drawing_language uml show_stereotype_properties no
+  //activity diagram settings
+  package_name_in_tab no show_context no show_opaque_action_definition no auto_label_position yes write_flow_label_horizontally no draw_all_relations yes shadow yes
+  show_infonote yes drawing_language uml show_stereotype_properties no
+  
+  class_color yellow duration_color transparent continuation_color gray note_color blue fragment_color transparent subject_color transparent usecase_color yellow package_color transparent component_color green artifact_color green deploymentnode_color gray state_color yellow stateaction_color transparent activity_color transparent activityregion_color transparent activitypartition_color transparent activityaction_color transparent parameterpin_color white 
+  font_size 13
+  diagram_format A4
+
+  mark_for_import
+  
+  componentview 128002 "Cliente"
+    //component diagram settings
+    package_name_in_tab default show_context default auto_label_position default draw_all_relations default shadow default
+    draw_component_as_icon default show_component_req_prov default show_component_rea default show_stereotype_properties default
+    componentdiagram 128002 "Client"
+      package_name_in_tab default show_context default auto_label_position default draw_all_relations default shadow default
+      draw_component_as_icon default show_component_req_prov default show_component_rea default show_stereotype_properties default
+      size A4
+    end
+
+    component 128002 "Client"
+    end
+
+    component 128130 "NeuroTelCal"
+    end
+  end
+
+  classview 128002 "NeuroTelCal"
+    //class diagram settings
+    draw_all_relations default hide_attributes default hide_operations default hide_getset_operations default show_members_full_definition default show_members_visibility default show_members_stereotype default show_members_context default show_members_multiplicity default show_members_initialization default show_attribute_modifiers default member_max_width 0 show_parameter_dir default show_parameter_name default package_name_in_tab default class_drawing_mode default drawing_language default show_context_mode default auto_label_position default show_relation_modifiers default show_relation_visibility default show_infonote default shadow default show_stereotype_properties default
+    //collaboration diagram settings
+    show_full_operations_definition default show_hierarchical_rank default write_horizontally default drawing_language default package_name_in_tab default show_context default show_msg_context default draw_all_relations default shadow default show_stereotype_properties default
+    //object diagram settings
+     write_horizontally default package_name_in_tab default show_context default auto_label_position default draw_all_relations default shadow default show_stereotype_properties default
+    //sequence diagram settings
+    show_full_operations_definition default write_horizontally default class_drawing_mode default drawing_language default draw_all_relations default shadow default show_stereotype_properties default show_class_context_mode default show_msg_context_mode default
+    //state diagram settings
+    package_name_in_tab default show_context default auto_label_position default write_trans_label_horizontally default show_trans_definition default draw_all_relations default shadow default
+    show_activities default region_horizontally default drawing_language default show_stereotype_properties default
+    //class settings
+    //activity diagram settings
+    package_name_in_tab default show_context default show_opaque_action_definition default auto_label_position default write_flow_label_horizontally default draw_all_relations default shadow default
+    show_infonote default drawing_language default show_stereotype_properties default
+    classdiagram 128130 "Model"
+      draw_all_relations no hide_attributes default hide_operations default hide_getset_operations default show_members_full_definition default show_members_visibility default show_members_stereotype default show_members_context default show_members_multiplicity default show_members_initialization default show_attribute_modifiers default member_max_width 0 show_parameter_dir default show_parameter_name default package_name_in_tab default class_drawing_mode default drawing_language default show_context_mode default auto_label_position default show_relation_modifiers default show_relation_visibility default show_infonote default shadow default show_stereotype_properties default
+      size A4
+    end
+
+    sequencediagram 134658 "ClientOneCall"
+      show_full_operations_definition default write_horizontally default class_drawing_mode default drawing_language default draw_all_relations default shadow default show_stereotype_properties default show_class_context_mode default show_msg_context_mode default
+      overlapping_bars size A4
+    end
+
+    class 128002 "Mensaje"
+      visibility public stereotype "model"
+      cpp_decl ""
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl "class ${name}${inherit}:
+${docstring}${members}
+"
+      idl_decl ""
+      explicit_switch_type ""
+      
+      ncouples 2
+      key "nombre" value ""
+      key "descripcion" value ""
+      comment "Mensaje.
+Ha ser dicho al oyente, o cliente."
+      attribute 128002 "nombre"
+	private explicit_type "string"
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+      end
+
+      attribute 128130 "descripcion"
+	private explicit_type "string"
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+	comment "La descripción del mensaje se parsea al estilo Ronela.
+La primer palabra es una accion y el resto un argumento.
+ej:
+Reproducir saludos.ogg
+Decir $time"
+      end
+
+      attribute 130306 "campaña"
+	private type class_ref 128258 // Campaña
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+      end
+
+      classrelation 129154 // <association>
+	relation 128642 ----
+	  a role_name "" multiplicity "1" private
+	    python "${comment}${self}${name} = ${value}
+"
+	    classrelation_ref 129154 // <association>
+	  b role_name "" multiplicity "1..*" private
+	    python "${comment}${self}${name} = ${value}
+"
+	    classrelation_ref 129282 // <association>
+      end
+
+      classrelation 129794 // <association>
+	relation_ref 128898 // <association>
+      end
+
+      classrelation 143618 // <association>
+	relation_ref 142210 // <association>
+      end
+
+      attribute 146434 "procesado_p"
+	private explicit_type "bool"
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+      end
+
+      attribute 146562 "llamar_el"
+	private explicit_type "datetime"
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+      end
+
+      attribute 146690 "repetir_intervalo"
+	private explicit_type "int"
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+      end
+
+      classrelation 144770 // <association>
+	relation 142850 ----
+	  a role_name "" private
+	    python "${comment}${self}${name} = ${value}
+"
+	    classrelation_ref 144770 // <association>
+	  b role_name "" private
+	    python "${comment}${self}${name} = ${value}
+"
+	    classrelation_ref 144898 // <association>
+      end
+    end
+
+    class 128130 "LlamadaCliente"
+      visibility package 
+      cpp_decl ""
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl "class ${name}${inherit}:
+${docstring}${members}
+"
+      idl_decl ""
+      explicit_switch_type ""
+      
+      comment "Almacena llamadas
+realizadas"
+      attribute 129026 "mensaje"
+	private type class_ref 128002 // Mensaje
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+      end
+
+      attribute 129154 "duracion"
+	private explicit_type "int"
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+	comment "Duración en minutos de la llamada"
+      end
+
+      classrelation 129410 // <association>
+	relation 128770 ----
+	  a role_name "" multiplicity "1" private
+	    python "${comment}${self}${name} = ${value}
+"
+	    classrelation_ref 129410 // <association>
+	  b role_name "" multiplicity "1..*" private
+	    python "${comment}${self}${name} = ${value}
+"
+	    classrelation_ref 129538 // <association>
+      end
+
+      classrelation 129666 // <association>
+	relation 128898 ----
+	  a role_name "" multiplicity "1" private
+	    python "${comment}${self}${name} = ${value}
+"
+	    classrelation_ref 129666 // <association>
+	  b role_name "" multiplicity "*" private
+	    python "${comment}${self}${name} = ${value}
+"
+	    classrelation_ref 129794 // <association>
+      end
+
+      classrelation 130178 // <association>
+	relation 129154 ----
+	  a role_name "" multiplicity "*" private
+	    python "${comment}${self}${name} = ${value}
+"
+	    classrelation_ref 130178 // <association>
+	  b role_name "" multiplicity "1" private
+	    python "${comment}${self}${name} = ${value}
+"
+	    classrelation_ref 130306 // <association>
+      end
+
+      attribute 131970 "cliente"
+	private type class_ref 128514 // Cliente
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+      end
+
+      classrelation 144642 // <association>
+	relation_ref 142722 // <association>
+      end
+
+      classrelation 144898 // <association>
+	relation_ref 142850 // <association>
+      end
+
+      attribute 146818 "ingresada"
+	private explicit_type "datetime"
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+	comment "Fecha y hora de cuando se registro, para empezar la llamada
+"
+      end
+
+      attribute 146946 "realizada"
+	private explicit_type "datetime"
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+	comment "Fecha y hora de cuando se realizo la llamada."
+      end
+
+      attribute 147074 "estado"
+	private explicit_type "string"
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+	comment "Una descripción de la llamada:
+llamada,número invalido"
+      end
+
+      attribute 147202 "estado_colgado"
+	private explicit_type "string"
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+	comment "Estado al terminar la llamada. Exportados Freeswitch"
+      end
+    end
+
+    class 128258 "Campaña"
+      visibility package 
+      cpp_decl ""
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl "class ${name}${inherit}:
+${docstring}${members}
+"
+      idl_decl ""
+      explicit_switch_type ""
+      
+      comment "los camplos plivo* no son de aqui (no se como borrarlos)"
+      attribute 128258 "nombre"
+	unique private explicit_type "string"
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+      end
+
+      attribute 128386 "descripcion"
+	private explicit_type "string"
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+      end
+
+      classrelation 128130 // <aggregation>
+	relation 128130 o---
+	  a role_name "" private
+	    python "${comment}${self}${name} = ${value}
+"
+	    classrelation_ref 128130 // <aggregation>
+	  b role_name "" private
+	    python "${comment}${self}${name} = ${value}
+"
+	    classrelation_ref 128258 // <aggregation>
+      end
+
+      classrelation 128514 // <association>
+	relation_ref 128258 // <association>
+      end
+
+      classrelation 128770 // <association>
+	relation_ref 128386 // <association>
+      end
+
+      classrelation 129026 // <aggregation>
+	relation_ref 128514 // <aggregation>
+      end
+
+      classrelation 129282 // <association>
+	relation_ref 128642 // <association>
+      end
+
+      attribute 132098 "plivo_api_url"
+	private explicit_type "string"
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+      end
+
+      attribute 132226 "plivo_sid"
+	private explicit_type "string"
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+      end
+
+      attribute 132354 "plivo_auth_token"
+	private explicit_type "string"
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+      end
+
+      classrelation 136962 // <association>
+	relation_ref 135682 // <association>
+      end
+
+      classrelation 143746 // <association>
+	relation 142338 ----
+	  a role_name "" multiplicity "1" private
+	    python "${comment}${self}${name} = ${value}
+"
+	    classrelation_ref 143746 // <association>
+	  b role_name "" multiplicity "1..*" private
+	    python "${comment}${self}${name} = ${value}
+"
+	    classrelation_ref 143874 // <association>
+      end
+    end
+
+    class 128386 "Calendario"
+      visibility package 
+      cpp_decl ""
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl "class ${name}${inherit}:
+${docstring}${members}
+"
+      idl_decl ""
+      explicit_switch_type ""
+      
+      attribute 128514 "nombre"
+	unique private explicit_type "string"
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+      end
+
+      attribute 128642 "intervalo"
+	private explicit_type "int"
+	init_value "0"
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+	comment "Número de días que se repite los mensajes de esta campaña"
+      end
+
+      attribute 128770 "llamar"
+	private explicit_type "datetime"
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+	comment "Fecha y hora de cuando llamar. Esto es usado por el demonio para iniciar las llamadas. Este también se puede considerar como el startpoint de la llamada."
+      end
+
+      attribute 128898 "campaña"
+	private type class_ref 128258 // Campaña
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+      end
+
+      classrelation 128002 // <dependency>
+	relation 128002 -_->
+	  a default
+	    python "${type}"
+	    classrelation_ref 128002 // <dependency>
+	  b parent class_ref 128258 // Campaña
+      end
+
+      classrelation 128258 // <aggregation>
+	relation_ref 128130 // <aggregation>
+      end
+
+      classrelation 128386 // <association>
+	relation 128258 ----
+	  a role_name "" multiplicity "0..1" private
+	    python "${comment}${self}${name} = ${value}
+"
+	    classrelation_ref 128386 // <association>
+	  b role_name "" multiplicity "1..*" private
+	    python "${comment}${self}${name} = ${value}
+"
+	    classrelation_ref 128514 // <association>
+      end
+
+      classrelation 129538 // <association>
+	relation_ref 128770 // <association>
+      end
+
+      attribute 146178 "mensaje"
+	private type class_ref 128002 // Mensaje
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+      end
+
+      classrelation 143490 // <association>
+	relation 142210 ----
+	  a role_name "" multiplicity "1..*" private
+	    python "${comment}${self}${name} = ${value}
+"
+	    classrelation_ref 143490 // <association>
+	  b role_name "" multiplicity "1" private
+	    python "${comment}${self}${name} = ${value}
+"
+	    classrelation_ref 143618 // <association>
+      end
+
+      attribute 146306 "grupo"
+	private type class_ref 128898 // Grupo
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+      end
+
+      classrelation 144258 // <association>
+	relation 142594 ----
+	  a role_name "" private
+	    python "${comment}${self}${name} = ${value}
+"
+	    classrelation_ref 144258 // <association>
+	  b role_name "" private
+	    python "${comment}${self}${name} = ${value}
+"
+	    classrelation_ref 144386 // <association>
+      end
+    end
+
+    class 128514 "Cliente"
+      abstract visibility package 
+      cpp_decl ""
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl "class ${name}${inherit}:
+${docstring}${members}
+"
+      idl_decl ""
+      explicit_switch_type ""
+      
+      comment "La idea es abstraer que esta clase no sea una tabla, si no sea una composición de otra clase. Utilizar ClienteDinamico."
+      attribute 129410 "nombre_completo"
+	private explicit_type "string"
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+      end
+
+      attribute 129538 "telefono"
+	private explicit_type "string"
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+	comment "Numero de telefono usdo para la llamada
+"
+      end
+
+      attribute 129666 "campaña"
+	private type class_ref 128258 // Campaña
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+	comment "campaña a cual pertence el cliente. La idea es que este cliente pueda ser usado en varias campañas"
+      end
+
+      classrelation 128898 // <aggregation>
+	relation 128514 o---
+	  a role_name "" private
+	    python "${comment}${self}${name} = ${value}
+"
+	    classrelation_ref 128898 // <aggregation>
+	  b role_name "" private
+	    python "${comment}${self}${name} = ${value}
+"
+	    classrelation_ref 129026 // <aggregation>
+      end
+
+      attribute 131842 "grupo"
+	private type class_ref 128898 // Grupo
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+      end
+
+      classrelation 129922 // <association>
+	relation 129026 ----
+	  a role_name "" multiplicity "1" private
+	    python "${comment}${self}${name} = ${value}
+"
+	    classrelation_ref 129922 // <association>
+	  b role_name "" multiplicity "1..*" private
+	    python "${comment}${self}${name} = ${value}
+"
+	    classrelation_ref 130050 // <association>
+      end
+
+      classrelation 130306 // <association>
+	relation_ref 129154 // <association>
+      end
+
+      classrelation 143874 // <association>
+	relation_ref 142338 // <association>
+      end
+
+      classrelation 144002 // <association>
+	relation 142466 ----
+	  a role_name "" private
+	    python "${comment}${self}${name} = ${value}
+"
+	    classrelation_ref 144002 // <association>
+	  b role_name "" private
+	    python "${comment}${self}${name} = ${value}
+"
+	    classrelation_ref 144130 // <association>
+      end
+
+      classrelation 144514 // <association>
+	relation 142722 ----
+	  a role_name "" private
+	    python "${comment}${self}${name} = ${value}
+"
+	    classrelation_ref 144514 // <association>
+	  b role_name "" private
+	    python "${comment}${self}${name} = ${value}
+"
+	    classrelation_ref 144642 // <association>
+      end
+
+      classrelation 145026 // <association>
+	relation 142978 ----
+	  a role_name "" private
+	    python "${comment}${self}${name} = ${value}
+"
+	    classrelation_ref 145026 // <association>
+	  b role_name "" private
+	    python "${comment}${self}${name} = ${value}
+"
+	    classrelation_ref 145154 // <association>
+      end
+    end
+
+    class 128642 "Recurso"
+      visibility package 
+      cpp_decl ""
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl "class ${name}${inherit}:
+${docstring}${members}
+"
+      idl_decl ""
+      explicit_switch_type ""
+      
+      attribute 129794 "nombre"
+	unique private explicit_type "string"
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+	comment "Nombre del recurso, para luego ser usado en la campaña."
+      end
+
+      attribute 129922 "tipo"
+	private explicit_type "string"
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+	comment "Audio,Documento,Otro"
+      end
+
+      attribute 130050 "archivo"
+	private explicit_type "string"
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+	comment "Ruta donde esta almacenado"
+      end
+
+      attribute 130178 "campaña"
+	private type class_ref 128258 // Campaña
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+      end
+
+      classrelation 128642 // <association>
+	relation 128386 ----
+	  a role_name "" multiplicity "1" private
+	    python "${comment}${self}${name} = ${value}
+"
+	    classrelation_ref 128642 // <association>
+	  b role_name "" multiplicity "1..*" private
+	    python "${comment}${self}${name} = ${value}
+"
+	    classrelation_ref 128770 // <association>
+      end
+    end
+
+    class 128770 "ClienteDinamico"
+      visibility package 
+      cpp_decl ""
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl "class ${name}${inherit}:
+${docstring}${members}
+"
+      idl_decl ""
+      explicit_switch_type ""
+      
+      comment "Esta tabla "
+      attribute 130562 "tabla"
+	private explicit_type "string"
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+	comment "Nombre de la tabla de cliente
+"
+      end
+
+      attribute 130690 "llave_primaria"
+	private explicit_type "string"
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+	comment "Nombre de la llave primaria, para consulta. Este valor es el utiziado en vez de Cliente::id"
+      end
+
+      attribute 130818 "campo_telefono"
+	private explicit_type "string"
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+	comment "Nombre del campo donde esta el numero para la marcación"
+      end
+
+      attribute 130946 "campo_mostrar"
+	private explicit_type "string"
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+	comment "Nombre de campo a mostrar en las listas. Por ejemplo el nombre, apellido eso depende de la tabla a la que se haga referencia."
+      end
+
+      attribute 131074 "patron_campo"
+	private explicit_type "string"
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+	comment "Regexp para indicar los campos exportados en el parse de mensaje"
+      end
+
+      attribute 131202 "host"
+	private explicit_type "string"
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+	comment "Host database de clientes
+"
+      end
+
+      attribute 131330 "db_usuario"
+	private explicit_type "string"
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+	comment "nombre de usuario"
+      end
+
+      attribute 131458 "db_pass"
+	private explicit_type "string"
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+	comment "clave de db user
+"
+      end
+
+      attribute 131586 "db_nombre"
+	private explicit_type "string"
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+	comment "Nombre de la base de datos a usar para consultar los clientes.
+"
+      end
+    end
+
+    class 128898 "Grupo"
+      visibility package 
+      cpp_decl ""
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl "class ${name}${inherit}:
+${docstring}${members}
+"
+      idl_decl ""
+      explicit_switch_type ""
+      
+      attribute 131714 "nombre"
+	unique private explicit_type "string"
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+      end
+
+      classrelation 130050 // <association>
+	relation_ref 129026 // <association>
+      end
+
+      attribute 139650 "client"
+	private type class_ref 128514 // Cliente
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+      end
+
+      classrelation 144130 // <association>
+	relation_ref 142466 // <association>
+      end
+
+      classrelation 144386 // <association>
+	relation_ref 142594 // <association>
+      end
+
+      classrelation 145154 // <association>
+	relation_ref 142978 // <association>
+      end
+    end
+
+    class 135426 "Plivo"
+      visibility package 
+      cpp_decl ""
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl "class ${name}${inherit}:
+${docstring}${members}
+"
+      idl_decl ""
+      explicit_switch_type ""
+      
+      associated_diagram classdiagram_ref 128130 // Model
+      comment "Servidores Plivo, esto es usado por los demonios para hacer las llamadas."
+      attribute 138882 "api_url"
+	private explicit_type "string"
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+      end
+
+      attribute 139010 "sid"
+	private explicit_type "string"
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+      end
+
+      attribute 139138 "auth_token"
+	private explicit_type "string"
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+      end
+
+      attribute 139266 "campaign"
+	private type class_ref 148866 // Campaign
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+      end
+
+      classrelation 136834 // <association>
+	relation 135682 ----
+	  a role_name "" multiplicity "1..*" private
+	    python "${comment}${self}${name} = ${stereotype}()
+"
+	    classrelation_ref 136834 // <association>
+	  b role_name "" multiplicity "1" private
+	    python "${comment}${self}${name} = ${value}
+"
+	    classrelation_ref 136962 // <association>
+      end
+
+      attribute 156802 "caller_name"
+	private explicit_type "string"
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+      end
+
+      attribute 156930 "gateway_timeouts"
+	private explicit_type "int"
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+      end
+
+      attribute 157058 "gateway_retries"
+	private explicit_type "int"
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+      end
+
+      attribute 157186 "gateway_codecs"
+	private explicit_type "string"
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+      end
+
+      classrelation 153090 // <association>
+	relation_ref 150146 // <association>
+      end
+    end
+
+    class 135554 "PlivoCall"
+      visibility package 
+      cpp_decl ""
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl "class ${name}${inherit}:
+${docstring}${members}
+"
+      idl_decl ""
+      explicit_switch_type ""
+      
+      comment "Registra la llamada iniciada por plivo."
+      attribute 139394 "uuid"
+	private explicit_type "string"
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+	comment "RequestUUID from Plivo"
+      end
+
+      attribute 139522 "data"
+	private explicit_type "string"
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+	comment "generic data"
+      end
+
+      attribute 155650 "status"
+	private explicit_type "string"
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+	comment "estado de llamada
+"
+      end
+
+      attribute 155778 "hangup_enumeration"
+	private explicit_type "string"
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+      end
+
+      attribute 155906 "call"
+	private type class_ref 149122 // Call
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+      end
+
+      classrelation 152322 // <association>
+	relation_ref 149762 // <association>
+      end
+    end
+
+    classinstance 128002 "Plivo"
+      type class_ref 128386 // Calendario
+      attributes
+        end
+      relations
+        end
+    end
+
+    classinstance 128130 "Controller"
+      type class_ref 135426 // Plivo
+      attributes
+        end
+      relations
+        end
+    end
+
+    classinstance 128258 "PlivoController"
+      type class_ref 135426 // Plivo
+      attributes
+        end
+      relations
+        end
+    end
+
+    classdiagram 134786 "Rails"
+      draw_all_relations default hide_attributes default hide_operations default hide_getset_operations default show_members_full_definition default show_members_visibility default show_members_stereotype default show_members_context default show_members_multiplicity default show_members_initialization default show_attribute_modifiers default member_max_width 0 show_parameter_dir default show_parameter_name default package_name_in_tab default class_drawing_mode default drawing_language default show_context_mode default auto_label_position default show_relation_modifiers default show_relation_visibility default show_infonote default shadow default show_stereotype_properties default
+      size A4
+    end
+
+    class 135810 "PlivoController"
+      visibility package 
+      cpp_decl ""
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl "class ${name}${inherit}:
+${docstring}${members}
+"
+      idl_decl ""
+      explicit_switch_type ""
+      
+    end
+
+    class 142338 "PlivoService"
+      visibility package 
+      cpp_decl ""
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl "class ${name}${inherit}:
+${docstring}${members}
+"
+      idl_decl ""
+      explicit_switch_type ""
+      
+      comment "Este es el encargado de observar y realizar las llamadas programadas. Actualmente se implementa en app/scripts/docall.rb"
+    end
+
+    class 148866 "Campaign"
+      visibility package 
+      cpp_decl ""
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl "class ${name}${inherit}:
+${docstring}${members}
+"
+      idl_decl ""
+      explicit_switch_type ""
+      
+      attribute 153730 "name"
+	private explicit_type "string"
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+      end
+
+      attribute 153858 "description"
+	private explicit_type "string"
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+      end
+
+      classrelation 151810 // <association>
+	relation_ref 149506 // <association>
+      end
+
+      classrelation 152578 // <association>
+	relation_ref 149890 // <association>
+      end
+
+      classrelation 152706 // <association>
+	relation 150018 ----
+	  a role_name "" multiplicity "1" private
+	    python "${comment}${self}${name} = ${value}
+"
+	    classrelation_ref 152706 // <association>
+	  b role_name "" multiplicity "1..*" private
+	    python "${comment}${self}${name} = ${value}
+"
+	    classrelation_ref 152834 // <association>
+      end
+
+      classrelation 152962 // <association>
+	relation 150146 ----
+	  a role_name "" multiplicity "1" private
+	    python "${comment}${self}${name} = ${value}
+"
+	    classrelation_ref 152962 // <association>
+	  b role_name "" multiplicity "1..*" private
+	    python "${comment}${self}${name} = ${value}
+"
+	    classrelation_ref 153090 // <association>
+      end
+
+      classrelation 160130 // <association>
+	relation 156930 ----
+	  a role_name "" multiplicity "1..*" private
+	    python "${comment}${self}${name} = ${value}
+"
+	    classrelation_ref 160130 // <association>
+	  b role_name "" multiplicity "1" private
+	    python "${comment}${self}${name} = ${value}
+"
+	    classrelation_ref 160258 // <association>
+      end
+    end
+
+    class 148994 "Message"
+      visibility package 
+      cpp_decl ""
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl "class ${name}${inherit}:
+${docstring}${members}
+"
+      idl_decl ""
+      explicit_switch_type ""
+      
+      comment "Mensaje para "
+      attribute 153986 "name"
+	private explicit_type "string"
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+      end
+
+      attribute 154114 "campaign"
+	private type class_ref 148866 // Campaign
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+      end
+
+      attribute 154242 "description"
+	private explicit_type "string"
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+      end
+
+      attribute 154370 "call"
+	private explicit_type ""
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+      end
+
+      attribute 154498 "repeat_interval"
+	private explicit_type "int"
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+      end
+
+      attribute 154626 "repeat_until"
+	private explicit_type "string"
+	constraint "datetime"
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+      end
+
+      classrelation 151682 // <association>
+	relation 149506 ----
+	  a role_name "" multiplicity "1..*" private
+	    python "${comment}${self}${name} = ${value}
+"
+	    classrelation_ref 151682 // <association>
+	  b role_name "" multiplicity "1" private
+	    python "${comment}${self}${name} = ${value}
+"
+	    classrelation_ref 151810 // <association>
+      end
+
+      classrelation 151938 // <association>
+	relation 149634 ----
+	  a role_name "" multiplicity "1" private
+	    python "${comment}${self}${name} = ${value}
+"
+	    classrelation_ref 151938 // <association>
+	  b role_name "" multiplicity "1..*" private
+	    python "${comment}${self}${name} = ${value}
+"
+	    classrelation_ref 152066 // <association>
+      end
+    end
+
+    class 149122 "Call"
+      visibility package 
+      cpp_decl ""
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl "class ${name}${inherit}:
+${docstring}${members}
+"
+      idl_decl ""
+      explicit_switch_type ""
+      
+      comment "Registro de la llamada realizada."
+      attribute 154754 "client"
+	private explicit_type ""
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+      end
+
+      attribute 154882 "message"
+	private type class_ref 148994 // Message
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+      end
+
+      attribute 155010 "length"
+	private explicit_type "int"
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+	comment "duración de la llamada en segundos"
+      end
+
+      attribute 155138 "entered"
+	private explicit_type "string"
+	constraint "datetime"
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+	comment "fecha y hora cuando se registro el inicio de la llamada"
+      end
+
+      attribute 155266 "listened"
+	private explicit_type "string"
+	constraint "datetime"
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+	comment "Fecha y hora de cuando se termino la llamada"
+      end
+
+      attribute 155394 "status"
+	private explicit_type "string"
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+	comment "Estado de la llamada
+"
+      end
+
+      attribute 155522 "hangup_enumeration"
+	private explicit_type "string"
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+	comment "Causa del cuelgue"
+      end
+
+      classrelation 152066 // <association>
+	relation_ref 149634 // <association>
+      end
+
+      classrelation 152194 // <association>
+	relation 149762 ----
+	  a role_name "" multiplicity "1" private
+	    python "${comment}${self}${name} = ${value}
+"
+	    classrelation_ref 152194 // <association>
+	  b role_name "" multiplicity "1..*" private
+	    python "${comment}${self}${name} = ${value}
+"
+	    classrelation_ref 152322 // <association>
+      end
+
+      classrelation 153474 // <association>
+	relation 150402 ----
+	  a role_name "" multiplicity "1..*" private
+	    python "${comment}${self}${name} = ${value}
+"
+	    classrelation_ref 153474 // <association>
+	  b role_name "" multiplicity "1" private
+	    python "${comment}${self}${name} = ${value}
+"
+	    classrelation_ref 153602 // <association>
+      end
+    end
+
+    class 149250 "Resource"
+      visibility package 
+      cpp_decl ""
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl "class ${name}${inherit}:
+${docstring}${members}
+"
+      idl_decl ""
+      explicit_switch_type ""
+      
+      attribute 156034 "name"
+	private explicit_type "string"
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+      end
+
+      attribute 156162 "file"
+	private explicit_type "string"
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+	comment "ruta archivo"
+      end
+
+      attribute 156290 "type_file"
+	private explicit_type "string"
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+	comment "tipo de archivo: audio, documento
+"
+      end
+
+      attribute 156418 "campaign"
+	private type class_ref 148866 // Campaign
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+      end
+
+      classrelation 152450 // <association>
+	relation 149890 ----
+	  a role_name "" multiplicity "1..*" private
+	    python "${comment}${self}${name} = ${value}
+"
+	    classrelation_ref 152450 // <association>
+	  b role_name "" multiplicity "1" private
+	    python "${comment}${self}${name} = ${value}
+"
+	    classrelation_ref 152578 // <association>
+      end
+    end
+
+    class 149378 "Group"
+      visibility package 
+      cpp_decl ""
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl "class ${name}${inherit}:
+${docstring}${members}
+"
+      idl_decl ""
+      explicit_switch_type ""
+      
+      attribute 156546 "name"
+	private explicit_type "string"
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+      end
+
+      attribute 156674 "campaign"
+	private type class_ref 148866 // Campaign
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+      end
+
+      classrelation 152834 // <association>
+	relation_ref 150018 // <association>
+      end
+
+      classrelation 153218 // <association>
+	relation 150274 ----
+	  a role_name "" multiplicity "1" private
+	    python "${comment}${self}${name} = ${value}
+"
+	    classrelation_ref 153218 // <association>
+	  b role_name "" multiplicity "1..*" private
+	    python "${comment}${self}${name} = ${value}
+"
+	    classrelation_ref 153346 // <association>
+      end
+    end
+
+    class 149506 "Client"
+      visibility package 
+      cpp_decl ""
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl "class ${name}${inherit}:
+${docstring}${members}
+"
+      idl_decl ""
+      explicit_switch_type ""
+      
+      attribute 157314 "fullname"
+	private explicit_type "string"
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+      end
+
+      attribute 157442 "phonenumber"
+	private explicit_type "string"
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+	comment "sip, numero.etc.."
+      end
+
+      attribute 157570 "group"
+	private type class_ref 149378 // Group
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+      end
+
+      classrelation 153346 // <association>
+	relation_ref 150274 // <association>
+      end
+
+      classrelation 153602 // <association>
+	relation_ref 150402 // <association>
+      end
+    end
+
+    class 156034 "User"
+      visibility package 
+      cpp_decl ""
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl "class ${name}${inherit}:
+${docstring}${members}
+"
+      idl_decl ""
+      explicit_switch_type ""
+      
+      attribute 164098 "name"
+	unique private explicit_type "string"
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+      end
+
+      attribute 164226 "hash_password"
+	private explicit_type "string"
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+      end
+
+      attribute 164354 "salt"
+	private explicit_type "string"
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+      end
+
+      classrelation 160514 // <association>
+	relation_ref 157058 // <association>
+      end
+    end
+
+    class 156162 "UserCampaign"
+      visibility package 
+      cpp_decl ""
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl "class ${name}${inherit}:
+${docstring}${members}
+"
+      idl_decl ""
+      explicit_switch_type ""
+      
+      comment "Control de acceso por ca"
+      attribute 164482 "user_id"
+	private explicit_type "int"
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+      end
+
+      attribute 164610 "campaign_id"
+	private explicit_type "int"
+	cpp_decl ""
+	java_decl ""
+	php_decl ""
+	python_decl "${comment}${self}${name} = ${value}
+"
+	idl_decl ""
+      end
+
+      classrelation 160258 // <association>
+	relation_ref 156930 // <association>
+      end
+
+      classrelation 160386 // <association>
+	relation 157058 ----
+	  a role_name "" multiplicity "1" private
+	    python "${comment}${self}${name} = ${value}
+"
+	    classrelation_ref 160386 // <association>
+	  b role_name "" multiplicity "1..*" private
+	    python "${comment}${self}${name} = ${value}
+"
+	    classrelation_ref 160514 // <association>
+      end
+    end
+  end
+end

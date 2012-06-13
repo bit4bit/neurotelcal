@@ -1,0 +1,13 @@
+class CreatePlivo < ActiveRecord::Migration
+  def up
+    add_column :campaigns, :plivo_api_url, :string, :default => "http://localhost:8088"
+    add_column :campaigns, :plivo_sid, :string, :default => ""
+    add_column :campaigns, :plivo_auth_token, :string, :default => ""
+  end
+
+  def down
+    remove_column :campaigns, :plivo_api_url
+    remove_column :campaigns, :plivo_sid
+    remove_column :campaigns, :plivo_auth_token
+  end
+end

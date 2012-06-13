@@ -1,0 +1,30 @@
+<%= link_to I18n.t('back'), campaigns_path, :class => "button negative" %>
+<%= link_to I18n.t('edit'), edit_campaign_path(@campaign), :class => "button" %> 
+
+
+<h1><%= I18n.t('campaign.show.title')%></h1>
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b><%= I18n.t('campaign.l.name')%>:</b>
+  <%= @campaign.name %>
+</p>
+
+<p>
+  <b><%= I18n.t('campaign.l.description')%>:</b>
+  <%= @campaign.description %>
+</p>
+
+<table>
+  <tr>
+    <th><%= I18n.t('defaults.clients')%></th>
+  </tr>
+<% @campaign.client.all.each do |c| %>
+  <tr>
+    <td>
+      <%= c.fullname %><br />
+    </td>
+  </tr>
+<% end %>
+</table>
+

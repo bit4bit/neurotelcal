@@ -1,0 +1,23 @@
+
+<embed style="width:400px; height:150px;" src="logo.svg" type="image/svg+xml" />
+<div class="app_form">
+  <%= form_tag do %>
+  <fieldset>
+    <legend><%= t('user.login.title')%></legend>
+    <div>
+      <label for="name"><%=t('user.l.username')%>:</label>
+      <%= text_field_tag :name, params[:name] %>
+    </div>
+    
+    <div>
+      <label for="password"><%=t('user.l.password')%>:</label>
+      <%= password_field_tag :password, params[:password]%>
+    </div>
+
+    <div>
+      <%= submit_tag t('user.l.btlogin')%>
+    </div>
+  </fieldset>
+  <% end %>
+</div>
+ Desarrollos Bit4Bit &lt;bit4bit@riseup.net&gt;

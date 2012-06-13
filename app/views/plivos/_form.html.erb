@@ -1,0 +1,49 @@
+<%= simple_form_for(@plivo) do |f| %>
+  <% if @plivo.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@plivo.errors.count, "error") %> prohibited this plivo from being saved:</h2>
+
+      <ul>
+      <% @plivo.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+  
+  <div class="field">
+    <%= f.input :caller_name%>
+  </div>
+  <div class="field">
+    <%= f.input :app_url, :input_html => { :size => 30 }%>
+  </div>
+  <div class="field">
+    <%= f.input :api_url, :input_html => { :size => 30} %>
+  </div>
+  <div class="field">
+    <%= f.input :sid, :input_html => { :size => 30} %>
+
+  </div>
+  <div class="field">
+    <%= f.input :auth_token, :input_html => {:size => 30} %>
+  </div>
+  <div class="field">
+    <%= f.input :gateways, :input_html => { :size => 30}%>
+  </div>
+  <div class="field">
+    <%= f.input :gateway_codecs, :input_html => { :size => 30} %>
+  </div>
+  <div class="field">
+    <%= f.input :gateway_timeouts, :input_html => { :size => 2, :maxlength => 2}%>
+  </div>
+  <div class="field">
+    <%= f.input :gateway_retries, :input_html => { :size => 2, :maxlength => 2 }%>
+  </div>
+  <div class="field">
+    Campaña<br />
+    <%= f.select :campaign_id, options_for_select(@campaigns) %>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

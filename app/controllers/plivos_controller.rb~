@@ -1,0 +1,83 @@
+class PlivosController < ApplicationController
+  # GET /plivos
+  # GET /plivos.json
+  def index
+    @plivos = Plivo.all
+
+    respond_to do |format|
+      format.html # index.html.erb
+      format.json { render :json => @plivos }
+    end
+  end
+
+  # GET /plivos/1
+  # GET /plivos/1.json
+  def show
+    @plivo = Plivo.find(params[:id])
+
+    respond_to do |format|
+      format.html # show.html.erb
+      format.json { render :json => @plivo }
+    end
+  end
+
+  # GET /plivos/new
+  # GET /plivos/new.json
+  def new
+    @plivo = Plivo.new
+
+    respond_to do |format|
+      format.html # new.html.erb
+      format.json { render :json => @plivo }
+    end
+  end
+
+  # GET /plivos/1/edit
+  def edit
+    @plivo = Plivo.find(params[:id])
+  end
+
+  # POST /plivos
+  # POST /plivos.json
+  def create
+    @plivo = Plivo.new(params[:plivo])
+
+    respond_to do |format|
+      if @plivo.save
+        format.html { redirect_to @plivo, :notice => 'Plivo was successfully created.' }
+        format.json { render :json => @plivo, :status => :created, :location => @plivo }
+      else
+        format.html { render :action => "new" }
+        format.json { render :json => @plivo.errors, :status => :unprocessable_entity }
+      end
+    end
+  end
+
+  # PUT /plivos/1
+  # PUT /plivos/1.json
+  def update
+    @plivo = Plivo.find(params[:id])
+
+    respond_to do |format|
+      if @plivo.update_attributes(params[:plivo])
+        format.html { redirect_to @plivo, :notice => 'Plivo was successfully updated.' }
+        format.json { head :no_content }
+      else
+        format.html { render :action => "edit" }
+        format.json { render :json => @plivo.errors, :status => :unprocessable_entity }
+      end
+    end
+  end
+
+  # DELETE /plivos/1
+  # DELETE /plivos/1.json
+  def destroy
+    @plivo = Plivo.find(params[:id])
+    @plivo.destroy
+
+    respond_to do |format|
+      format.html { redirect_to plivos_url }
+      format.json { head :no_content }
+    end
+  end
+end

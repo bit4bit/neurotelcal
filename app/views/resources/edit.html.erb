@@ -1,0 +1,8 @@
+<%= link_to I18n.t('back'), resources_path, :class => "button negative" %>
+<%= link_to I18n.t('show'), @resource, :class => "button" %> 
+
+
+<h1><%= I18n.t('resource.edit.title')%></h1>
+
+<%= render 'form' %>
+

@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  fullname: MyString
+  phonenumber: MyString
+  campaign_id: 1
+  group_id: 1
+
+two:
+  fullname: MyString
+  phonenumber: MyString
+  campaign_id: 1
+  group_id: 1

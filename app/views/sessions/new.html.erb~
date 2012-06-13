@@ -1,0 +1,22 @@
+<h1>Sessions#new</h1>
+
+<div class="app_form">
+  <%= form_tag do %>
+  <fieldset>
+    <legend>Porfavor ingrese</legend>
+    <div>
+      <label for="name">Nombre:</label>
+      <%= text_field_tag :name, params[:name] %>
+    </div>
+    
+    <div>
+      <label for="password">Contraseña:</label>
+      <%= password_field_tag :password, params[:password]%>
+    </div>
+
+    <div>
+      <%= submit_tag "Ingresar"%>
+    </div>
+  </fieldset>
+  <% end %>
+</div>

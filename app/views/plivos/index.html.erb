@@ -1,0 +1,34 @@
+<% content_for :sub_menu do %>
+<% end %>
+<%= link_to I18n.t('plivo.new.title'), new_plivo_path, :class => "button" %>
+<h1><%= I18n.t('plivo.index.title')%></h1>
+
+<table>
+  <tr>
+    <th><%= I18n.t('plivo.l.caller_name')%></th>
+    <th><%= I18n.t('plivo.l.api_url')%></th>
+    <th><%= I18n.t('plivo.l.gateways')%></th>
+    <th><%= I18n.t('defaults.campaign')%></th>
+    <th><%= I18n.t('plivo.l.status')%></th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @plivos.each do |plivo| %>
+  <tr>
+    <td><%= plivo.caller_name %></td>
+    <td><%= plivo.api_url %></td>
+    <td><%= plivo.gateways %></td>
+    <td><%= plivo.campaign.name %></td>
+    <td><%= plivo.status %></td>
+    <td><%= link_to I18n.t('show'), plivo %></td>
+    <td><%= link_to I18n.t('edit'), edit_plivo_path(plivo) %></td>
+    <td><%= link_to I18n.t('destroy'), plivo, :confirm => I18n.t('are_you_sure'), :method => :delete %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+

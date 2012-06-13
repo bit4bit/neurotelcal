@@ -1,0 +1,29 @@
+<h1>Listing calendars for Campaign <%= @campaign.name %></h1>
+
+<table>
+  <tr>
+    <th>Name</th>
+    <th>Interval</th>
+    <th>Do call</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @calendars.each do |calendar| %>
+  <tr>
+    <td><%= calendar.name %></td>
+    <td><%= calendar.interval %></td>
+    <td><%= calendar.do_call %></td>
+    <td><%= link_to 'Show', calendar %></td>
+    <td><%= link_to 'Edit', edit_calendar_path(calendar) %></td>
+    <td><%= link_to 'Destroy', calendar, :confirm => 'Are you sure?', :method => :delete %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+<%= will_paginate @calendars %>
+
+<%= link_to 'New Calendar', new_calendar_path %>
+<%= link_to 'Back', campaigns_path %>

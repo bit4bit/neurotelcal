@@ -1,0 +1,32 @@
+<%= link_to I18n.t('back'), campaigns_path, :class => "button negative" %>
+<%= link_to I18n.t('resource.new.title'), new_resource_path, :class => "button" %>
+<h1><%= I18n.t('resource.index.title')%><br /><%= I18n.t('defaults.campaign')%> <%= @campaign.name %></h1>
+
+<table>
+  <tr>
+    <th><%= I18n.t('resource.l.name')%></th>
+    <th><%= I18n.t('resource.l.type')%></th>
+    <th><%= I18n.t('resource.l.file')%></th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @resources.each do |resource| %>
+  <tr>
+    <td><%= resource.name %></td>
+    <td><%= resource.type_file %></td>
+    <td>
+      <a href="<%= resource.file[6..-1]%>"><%= resource.name_file %> </a>
+    </td>
+    <td><%= link_to I18n.t('show'), resource %></td>
+    <td><%= link_to I18n.t('edit'), edit_resource_path(resource) %></td>
+    <td><%= link_to I18n.t('destroy'), resource, :confirm => I18n.t('are_you_sure'), :method => :delete %></td>
+  </tr>
+<% end %>
+</table>
+<%= will_paginate @resources %>
+<br />
+
+
+

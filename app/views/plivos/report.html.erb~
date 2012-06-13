@@ -1,0 +1,17 @@
+<h1>PlivoCall Reports</h1>
+
+<table>
+  <tr>
+    <th>Llamada UUDI</th>
+    <th>Estado</th>
+  </tr>
+  <% @plivocalls.each do |plivocall| %>
+  <tr>
+    <td><%= plivocall.uuid%></td>
+    <td><%= plivocall.status%></td>
+  </tr>
+
+  <% end %>
+</table>
+
+<%= will_paginate @plivocalls %>

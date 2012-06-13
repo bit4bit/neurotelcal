@@ -1,0 +1,11 @@
+class CreatePlivoCalls < ActiveRecord::Migration
+  def change
+    create_table :plivo_calls do |t|
+      t.string :uuid, :limit => 36, :primary => true
+      t.string :status
+      t.text :data
+      
+      t.timestamps
+    end
+  end
+end

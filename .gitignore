@@ -14,3 +14,11 @@ capybara-*.html
 **.orig
 rerun.txt
 pickle-email-*.html
+**.pdf
+**.mp3
+**.ogg
+/app/tmp/*
+/app/log/*
+**~
+**#
+*~

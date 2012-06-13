@@ -1,0 +1,68 @@
+format 74
+
+classinstance 130306 class_ref 135810 // PlivoController
+  name ""   xyz 204 34 2005 life_line_z 2000
+classinstance 130690 class_ref 128514 // Cliente
+  name ""   xyz 14 23 2005 life_line_z 2000
+classinstance 131458 class_ref 135554 // PlivoCall
+  name ""   xyz 505 38 2005 life_line_z 2000
+classinstance 131586 class_ref 135426 // Plivo
+  name ""   xyz 396 32 2005 life_line_z 2000
+durationcanvas 130818 classinstance_ref 130690 // :Cliente
+  xyzwh 43 132 2010 11 40
+end
+durationcanvas 130946 classinstance_ref 130306 // :PlivoController
+  xyzwh 262 96 2010 11 228
+  overlappingdurationcanvas 133762
+    xyzwh 268 140 2020 11 48
+  end
+end
+durationcanvas 131842 classinstance_ref 131586 // :Plivo
+  xyzwh 417 135 2010 11 173
+  overlappingdurationcanvas 134018
+    xyzwh 423 149 2020 11 39
+  end
+  overlappingdurationcanvas 134530
+    xyzwh 423 212 2020 11 47
+  end
+end
+durationcanvas 132482 classinstance_ref 131458 // :PlivoCall
+  xyzwh 541 194 2010 11 190
+end
+durationcanvas 134786 classinstance_ref 130690 // :Cliente
+  xyzwh 43 72 2010 11 42
+end
+msg 131074 synchronous
+  from durationcanvas_ref 130818
+  to durationcanvas_ref 130946
+  yz 133 2015 explicitmsg "docall_client(:message)"
+  show_full_operations_definition default drawing_language default show_context_mode default
+  label_xy 43 116
+msg 132610 synchronous
+  from durationcanvas_ref 131842
+  to durationcanvas_ref 132482
+  yz 292 2015 explicitmsg "Guardar RequestUUID de llamada realizada"
+  show_full_operations_definition default drawing_language default show_context_mode default
+  label_xy 320 270
+reflexivemsg 133890 synchronous
+  to durationcanvas_ref 133762
+  yz 140 2025 explicitmsg "messge.valid?"
+  show_full_operations_definition default drawing_language default show_context_mode default
+  label_xy 234 118
+msg 134146 synchronous
+  from durationcanvas_ref 130946
+  to durationcanvas_ref 134018
+  yz 166 2025 explicitmsg "connect to server plivo"
+  show_full_operations_definition default drawing_language default show_context_mode default
+  label_xy 262 144
+reflexivemsg 134658 synchronous
+  to durationcanvas_ref 134530
+  yz 212 2025 explicitmsg "Realizar llamada"
+  show_full_operations_definition default drawing_language default show_context_mode default
+  label_xy 380 190
+reflexivemsg 134914 synchronous
+  to durationcanvas_ref 134786
+  yz 72 3005 explicitmsg "crear mensaje"
+  show_full_operations_definition default drawing_language default show_context_mode default
+  label_xy 9 50
+end

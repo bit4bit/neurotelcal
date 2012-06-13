@@ -1,0 +1,54 @@
+<%= link_to I18n.t('back'), plivos_path, :class => "button negative"%>
+<%= link_to I18n.t('edit'), edit_plivo_path(@plivo), :class => "button" %> 
+
+
+<h1><%= I18n.t('plivo.show.title')%></h1>
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b><%= I18n.t('plivo.l.caller_name')%>:</b>
+  <%= @plivo.caller_name%>
+<p>
+
+<p>
+  <b><%= I18n.t('plivo.l.app_url')%>:</b>
+  <%= @plivo.app_url %>
+</p>
+
+<p>
+  <b><%= I18n.t('plivo.l.api_url')%>:</b>
+  <%= @plivo.api_url %>
+</p>
+
+<p>
+  <b>Sid:</b>
+  <%= @plivo.sid %>
+</p>
+
+<p>
+  <b>Auth token:</b>
+  <%= @plivo.auth_token %>
+</p>
+<p>
+  <b>Gateways:</b>
+  <%= @plivo.gateways %>
+</p>
+<p>
+  <b>Gateway Codecs:</b>
+  <%= @plivo.gateway_codecs%>
+</p>
+<p>
+  <b>Gateway Timeouts:</b>
+  <%= @plivo.gateway_timeouts%>
+</p>
+<p>
+  <b>Gateway Retries:</b>
+  <%= @plivo.gateway_retries %>
+</p>
+
+<p>
+  <b><%= I18n.t('defaults.campaign')%>:</b>
+  <%= @plivo.campaign.name %>
+</p>
+
+

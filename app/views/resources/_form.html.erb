@@ -1,0 +1,34 @@
+<%= form_for(@resource) do |f| %>
+  <% if @resource.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@resource.errors.count, "error") %> no se pudo almacenar recurso:</h2>
+
+      <ul>
+      <% @resource.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :name %><br />
+    <%= f.text_field :name %>
+  </div>
+  <div class="field">
+    <%= f.label :type %><br />
+    <%= f.select :type_file, Resource::TYPES, :prompt => 'Seleccion un tipo de recurso' %>
+
+  </div>
+  <div class="field">
+    <%= f.label :file %><br />
+    <%= f.file_field :file %>
+  </div>
+  <div class="field">
+    Campaña<br />
+    <%= @resource.campaign.name %>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

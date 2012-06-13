@@ -1,0 +1,12 @@
+module UUIDHelper
+  def self.append_features(base)
+    base.before_create { |model| base.set_uuid_if_empty(model) }
+    base.before_save { |model| base.set_uuid_if_empty(model) }
+
+    def base.set_uuid_if_empty(model)
+      if column_names.include?('uuid') and model.uuid.blank?
+        model.uuid = UUIDTools::UUID.random_create().to_s
+      end
+    end
+  end
+end

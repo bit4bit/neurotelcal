@@ -1,0 +1,5 @@
+#!/usr/bin/env /home/bit4bit/ruby/neurotelcal/script/rails runner
+
+Message.all.each do |m|
+  p m
+end

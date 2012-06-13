@@ -1,0 +1,6 @@
+<%= link_to I18n.t('back'), clients_path, :class => "button negative" %>
+<%= link_to I18n.t('show'), @client, :class => "button" %> 
+<h1><%= I18n.t('client.edit.title')%></h1>
+
+<%= render 'form' %>
+

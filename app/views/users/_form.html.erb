@@ -1,0 +1,17 @@
+<%= simple_form_for(@user) do |f| %>
+  <%= f.error_notification %>
+
+  <fieldset>
+    <legend>Detalles de usuario/a</legend>
+    <div class="form-inputs">
+      <%= f.input :name, :input_html => { :size => 30 } %>
+      <%= f.input :password, :input_html => { :size => 30 } %>
+      <%= f.input :password_confirmation, :input_html => {:size => 30}%>
+    </div>
+
+    <div class="form-actions">
+      <%= f.button :submit %>
+    </div>
+  </fieldset>
+
+<% end %>

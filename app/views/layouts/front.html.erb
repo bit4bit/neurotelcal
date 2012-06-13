@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title><%= t('appname')%></title>
+  <%= stylesheet_link_tag "blueprint/screen", :media => "screen" %>
+  <%= stylesheet_link_tag "blueprint/print", :media => "print" %>
+  <%= stylesheet_link_tag "blueprint/plugins/link-icons/screen", :media => "screen, projection" %>
+  <%= stylesheet_link_tag "blueprint/plugins/buttons/screen", :media => "screen, projection" %>
+  <%= stylesheet_link_tag "campaigns", :media => "screen" %>
+  <%= javascript_include_tag "application" %>
+  <%= csrf_meta_tags %>
+</head>
+<body>
+  <div class="container">
+    <div id="main">
+      <%= yield %>
+    </div>
+  </div>
+
+</body>
+</html>

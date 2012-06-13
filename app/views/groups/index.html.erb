@@ -1,0 +1,29 @@
+<%= link_to I18n.t('back'), campaigns_path, :class => "button negative" %>
+<%= link_to I18n.t('group.new.title'), new_group_path, :class => "button" %>
+<h1><%= I18n.t('group.index.title')%> <%= @campaign.name %> </h1>
+
+<table>
+  <tr>
+    <th>Name</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @groups.each do |group| %>
+  <tr>
+    <td><%= group.name %></td>
+    <td><%= link_to I18n.t('show'), group %></td>
+    <td><%= link_to I18n.t('edit'), edit_group_path(group) %></td>
+    <td><%= link_to I18n.t('destroy'), group, :confirm => I18n.t('are_you_sure'), :method => :delete %></td>
+    <td>
+      <%= link_to I18n.t('defaults.messages'), messages_path(:group_id => group)%>
+    </td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+
+

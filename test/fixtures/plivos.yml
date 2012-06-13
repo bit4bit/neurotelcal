@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  api_url: MyString
+  sid: 
+  auth_token: 
+  campaign_id: 1
+
+two:
+  api_url: MyString
+  sid: 
+  auth_token: 
+  campaign_id: 1

@@ -1,0 +1,13 @@
+class CreatePlivos < ActiveRecord::Migration
+  def change
+    create_table :plivos do |t|
+      t.string :api_url, :default => 'http://localhost:8088'
+      t.string :sid
+      t.string :auth_token
+      t.string :status #estado de este servicio
+      t.integer :campaign_id
+
+      t.timestamps
+    end
+  end
+end

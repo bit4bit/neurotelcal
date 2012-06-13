@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  name: MyString
+  interval: 1
+  do_call: 2012-05-09 00:59:58
+  campaign_id: 1
+
+two:
+  name: MyString
+  interval: 1
+  do_call: 2012-05-09 00:59:58
+  campaign_id: 1

@@ -1,0 +1,3 @@
+class Resource < ActiveRecord::Base
+  attr_accessible :campaign_id, :file, :name, :type
+end
