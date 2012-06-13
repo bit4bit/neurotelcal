@@ -1,4 +1,0 @@
-neurotelcal
-===========
-
-AutoMarcador. AutoDialer.
