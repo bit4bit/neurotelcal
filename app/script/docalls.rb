@@ -57,14 +57,20 @@ module Service
           
           
           #Se inicio registro de llamada
-          call = Call.new
-          call.client_id = client.id
+          #se registra llamada
+        call = Call.new
           call.message_id = message.id
-          call.completed_p = false
+          call.client_id = client.id
           call.length = 0
-          call.entered = Time.now
-          call.listened = nil
+          call.completed_p = false
+          call.enter = Time.now
+          call.terminate = nil
+          call.enter_listen = nil
+          call.terminate_listen = nil
+          call.status = nil
+          call.hangup_enumeration = nil
           call.save
+
 
           #Se registra la llamada iniciada
           plivocall = PlivoCall.new
@@ -88,28 +94,31 @@ module Service
 
     #Procesa mensaje y realiza las llamadas indicadas
     def process_queue
-      @campaign.message.find_each do |message|
-        p("Revisado mensaje %s" % message.name)
-
-        @campaign.client.find_each do |client|
-          ncalls = Call.where(:message_id => message.id, :client_id => client.id, :completed_p => true).count
-
-          #si ya se llama no se hace nada
-          p("N de llamadas %s para mensaje %s fecha %s" % [ncalls.to_s, message.name, message.call.to_s])
-          if ncalls == 0
-             if  Time.now >= message.call
-               p('[%s] Llamando a %s programada para el %s' % [@campaign.name, client.fullname, message.call.to_s])
-               docall(message, client)
-             end
-
-          elsif ncalls > 0 
-
-            last_call =  Call.where(:message_id => message.id, :client_id => client.id, :completed_p => true).order("created_at DESC").first
-
-            #realiza llamada si ya se empezo y tiene intevarlo y este se cumple apartir desde la ultima llamada
-            if message.call >= Time.now and message.repeat_interval > 0 and  (((Time.now - last_call.created_at) / (3600 * 24)).round % message.repeat_interval) == 0 and message.repeat_until <= Time.now
-              p('[%s] Llamando a %s programada para el %s por intervalos de %d' % [@campaign.name, client.fullname, message.call.to_s, message.repeat_interval])
-              docall(message, client)
+      @campaign.group.find_each do |group|
+        group.message.find_each do |message|
+          
+          p("Revisado mensaje %s" % message.name)
+          
+          @campaign.client.find_each do |client|
+            ncalls = Call.where(:message_id => message.id, :client_id => client.id, :completed_p => true).count
+            
+            #si ya se llama no se hace nada
+            p("N de llamadas %s para mensaje %s fecha %s" % [ncalls.to_s, message.name, message.call.to_s])
+            if ncalls == 0
+              if  Time.now >= message.call
+                p('[%s] Llamando a %s programada para el %s' % [@campaign.name, client.fullname, message.call.to_s])
+                docall(message, client)
+              end
+              
+            elsif ncalls > 0 
+              
+              last_call =  Call.where(:message_id => message.id, :client_id => client.id, :completed_p => true).order("created_at DESC").first
+              
+              #realiza llamada si ya se empezo y tiene intevarlo y este se cumple apartir desde la ultima llamada
+              if message.call >= Time.now and message.repeat_interval > 0 and  (((Time.now - last_call.created_at) / (3600 * 24)).round % message.repeat_interval) == 0 and message.repeat_until <= Time.now
+                p('[%s] Llamando a %s programada para el %s por intervalos de %d' % [@campaign.name, client.fullname, message.call.to_s, message.repeat_interval])
+                docall(message, client)
+              end
             end
           end
         end

@@ -3,7 +3,7 @@ class Campaign < ActiveRecord::Base
   
   validates :name, :presence => true, :uniqueness => true
   has_many :resource
-  has_many :message
   has_many :client
   has_many :plivo
+  has_many :group
 end
