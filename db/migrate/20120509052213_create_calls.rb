@@ -6,9 +6,11 @@ class CreateCalls < ActiveRecord::Migration
       t.integer :length
       t.boolean :completed_p, :default => false
       #cuando se ingreso para ser llamada
-      t.datetime :entered
-      #y cuando por fin fue escuchada
-      t.datetime :listened
+      t.datetime :enter
+      #y cuando por fin se termino de escuchar
+      t.datetime :terminate
+      t.datetime :enter_listen
+      t.datetime :terminate_listen
       t.string :status
       #mirar http://wiki.freeswitch.org/wiki/Hangup_causes
       t.string :hangup_enumeration

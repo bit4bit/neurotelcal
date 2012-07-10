@@ -25,11 +25,13 @@ class ApplicationController < ActionController::Base
 
   def authorize
     if request.remote_ip == '127.0.0.1'
+      logger.debug("Direct access to 127.0.0.1")
       return
     end
 
     #Permisos de servidor plivo
     if not Plivo.where('api_url LIKE ?', '%'+request.remote_ip+'%').empty?
+      logger.debug("Direct access to "+request.remote_ip)
       return
     end
     

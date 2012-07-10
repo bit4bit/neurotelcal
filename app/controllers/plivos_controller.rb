@@ -121,11 +121,25 @@ class PlivosController < ApplicationController
   def answer_client
     logger.debug('answer')
     logger.debug(params)
+    
     @plivocall = PlivoCall.where(:uuid => params["ALegRequestUUID"]).first
     @call_sequence = YAML::load(@plivocall.data)
     #actualiza estado
     @plivocall.status = "answered"
     @plivocall.save
+
+    @plivo = nil
+    #actualiza estado de llamada
+    call = Call.find(@plivocall.call_id)
+    if call
+      call.enter_listen = Time.now
+      call.status = @plivocall.status
+      call.save
+      if call.message
+        @plivo = call.message.group.campaign.plivo.first
+      end
+    end
+    logger.debug('Trying first plivo from campaign to url ' + @plivo.app_url)
     respond_to do |format|
       format.xml
     end
@@ -134,7 +148,7 @@ class PlivosController < ApplicationController
   def hangup_client
     logger.debug('hangup')
     #logger.debug('hangup')
-    plivocall = PlivoCall.where(:uuid => params["RequestUUID"]).first
+    plivocall = PlivoCall.where(:uuid => params["ALegRequestUUID"]).first
     plivocall.status = params["CallStatus"]
 
     #@todo mejorar esto un campo y listo
@@ -149,10 +163,21 @@ class PlivosController < ApplicationController
     #se notifica que porfin se contesto
     call = Call.find(plivocall.call_id)
     if call
-      call.listened = Time.now
+      call.terminate = Time.now
       call.completed_p = true
+      if call.status == "answered"
+        call.terminate_listen = Time.now
+      else
+        call.terminate_listen = nil
+      end
       call.status = plivocall.status
       call.hangup_enumeration = plivocall.hangup_enumeration
+
+      if call.terminate_listen and call.enter_listen
+        call.length = call.terminate_listen - call.enter_listen
+      else
+        call.length = 0
+      end
       call.save
     end
 
@@ -165,8 +190,20 @@ class PlivosController < ApplicationController
   end
 
   def ringing_client
-    logger.debug('hangup')
+    logger.debug('ringing')
     logger.debug(params)
+
+    plivocall = PlivoCall.where(:uuid => params["RequestUUID"]).first
+    plivocall.status = params["CallStatus"]
+    plivocall.save
+
+    #se notifica que porfin se contesto
+    call = Call.find(plivocall.call_id)
+    call.status = plivocall.status
+    call.save
+
+
+
     respond_to do |format|
       format.xml
     end
@@ -175,14 +212,15 @@ class PlivosController < ApplicationController
   def docall_client
     @campaign = Campaign.find(session[:campaign_id])
     @client = Client.find(params[:id])
-    params[:message][:name] = UUIDTools::UUID.random_create
+    params[:message][:id] = nil
+    params[:message][:name] = I18n.t('defaults.direct_message') + UUIDTools::UUID.random_create
     params[:message][:call] = Time.now
     @message = Message.new(params[:message])
     @message.group_id = session[:group_id]
 
-
     if @message.valid?
       sequence = @message.description_to_call_sequence('!client_fullname' => @client.fullname, '!client_id' => @client.id)
+      @message.save
       plivo = @campaign.plivo.first
       
       if plivo.nil?
@@ -216,13 +254,27 @@ class PlivosController < ApplicationController
         plivor = PlivoHelper::Rest.new(plivo.api_url, plivo.sid, plivo.auth_token)
         result = ActiveSupport::JSON.decode(plivor.call(call_params).body)
         
-        #Se registra la llamada iniciada
+        #se registra llamada
+        call = Call.new
+        call.message_id = @message.id
+        call.client_id = @client.id
+        call.length = 0
+        call.completed_p = false
+        call.enter = Time.now
+        call.terminate = nil
+        call.enter_listen = nil
+        call.terminate_listen = nil
+        call.status = nil
+        call.hangup_enumeration = nil
+        call.save
+
+        #Se registra la llamada iniciada de plivo
         plivocall = PlivoCall.new
         plivocall.uuid = result["RequestUUID"]
         plivocall.status = 'calling'
         plivocall.hangup_enumeration = nil
         plivocall.data = sequence.to_yaml
-        plivocall.call_id = 0
+        plivocall.call_id = call.id
         plivocall.save
         
       rescue Errno::ECONNREFUSED => e

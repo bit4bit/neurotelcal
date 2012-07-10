@@ -8,6 +8,7 @@ class Message < ActiveRecord::Base
 
   belongs_to :group
 
+
   #Validación del lenguaje para llamadas
   #es muy sencillo se tiene los 2 verbos: Reproducir, Decir
   #Reproducir busca un recurso con el nombre indicado y reproduce
@@ -40,7 +41,7 @@ class Message < ActiveRecord::Base
           #indicado.
         when 'Reproducir'
           resource = Resource.where(:campaign_id => campaign_id, :type_file => 'audio', :name => arg).first
-          unless resource
+          if resource.nil?
             errors.add(:description, 'Recurso [%s] para reproducir no encontrado.' % arg);
           end
         end

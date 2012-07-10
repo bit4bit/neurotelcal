@@ -4,22 +4,37 @@
 <table>
   <tr>
     <th><%= I18n.t('defaults.campaign')%></th>
-    <th><%= I18n.t('defaults.client')%></th>
     <th><%= I18n.t('defaults.message')%></th>
     <th><%= I18n.t('message.l.call')%></th>
-    <th><%= I18n.t('report.l.entered')%></th>
-    <th><%= I18n.t('report.l.listened')%></th>
+    <th><%= I18n.t('defaults.client')%></th>
+    <th><%= I18n.t('report.l.enter')%></th>
+    <th><%= I18n.t('report.l.terminate')%></th>
+    <th><%= I18n.t('report.l.enter_listen')%></th>
+    <th><%= I18n.t('report.l.terminate_listen')%></th>
+    <th><%= I18n.t('report.length')%></th>
     <th><%= I18n.t('report.l.status')%></th>
   </tr>
   <% @calls.each do |call| %>
   <tr>
-    <td><%= call.message.campaign.name %></td>
-    <td><%= call.client.fullname%></td>
+    <td><%= call.client.campaign.name %></td>
+    <% if call.message.nil? %>
+    <td><%= I18n.t('defaults.direct_message')%></td> 
+    <td></td>
+    <% else%>    
     <td><%= call.message.name %></td>
     <td><%= call.message.call %></td>
-    <td><%= call.entered%></td>
-    <td><%= call.listened%></td>
+    <% end %>
+    <td><%= call.client.fullname%></td>
+    <td><%= call.enter%></td>
+    <td><%= call.terminate%></td>
+    <td><%= call.enter_listen%></td>
+    <td><%= call.terminate_listen%></td>
+    <td><%= call.length%></td>
+    <% if call.hangup_status %>
     <td><%= call.hangup_status%></td>
+    <% else %>
+    <td><%= call.status%></td>
+    <% end %>
   </tr>
   <% end %>
   

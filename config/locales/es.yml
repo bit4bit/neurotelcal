@@ -54,6 +54,7 @@ es:
     call: 'Llamar'
     client: 'Client'
     message: 'Mensaje'
+    direct_message: 'MENSAJE DIRECTO'
   clients:
     fullname: 'Nombre completo'
   campaign:
@@ -137,10 +138,13 @@ es:
       title: 'Mostrando Plivo'
   report:
     export_csv: 'Exportar CSV'
+    length: 'Duración'
     l:
-      entered: 'Llamada ini.'
-      listened: 'Llamada fin.'
+      enter: 'Llamada ini.'
+      terminate: 'Llamada fin.'
       status: 'Estado'
+      enter_listen: 'Contesto ini.'
+      terminate_listen: 'Contesto fin.'
     index:
       title: 'Reportes'
   user:

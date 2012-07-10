@@ -9,7 +9,7 @@ Run "rake doc:app" to generate API documentation for your models, controllers, h
 
 ==Bluebox
 ==Freeswitch
- * mod_shout
+ * mod_shout (mp3/ogg)
  * mod_esl
 ===INSTALL
  # cd /usr/local/src
@@ -25,3 +25,6 @@ Run "rake doc:app" to generate API documentation for your models, controllers, h
    $ thin start
   * Para serivod Webrick muy lento:
    $ rails server
+
+==PRESENTE
+ * Cuando se realize pruebas de llamadas directamente de la interfaz web, crear un grupo de prueba, ya que cada vez que se realiza la llamada esta crea un mensaje para el grupo.

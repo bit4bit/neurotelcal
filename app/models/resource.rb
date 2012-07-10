@@ -9,7 +9,7 @@ class Resource < ActiveRecord::Base
   validates :name, :type_file, :file, :presence => true
   validates :name, :uniqueness => true
   validates :type_file, :inclusion => TYPES
-  validate :recurso_es_valido, :on => :new
+  validate :recurso_es_valido
   before_save :archivo_local
 
   #pertenece a campañas
@@ -54,6 +54,7 @@ class Resource < ActiveRecord::Base
     #valida el archivo enviado
     #corresponda al tipo indicado y sea soportado
     if file
+      #el modshout usado por plivo en freeswitch solo soporta mp3
       mime_audio = ['audio/mpeg', 'audio/ogg']
       mime_document = ['application/pdf', 'application/vnd.oasis.opendocument.text']
       case type_file
