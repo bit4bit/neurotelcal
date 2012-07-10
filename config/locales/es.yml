@@ -169,3 +169,10 @@ es:
       developer: 'Desarrollado por Bit4Bit'
       email: 'bit4bit@riseup.net'
       license: 'Este es software libre, bajo licencia GPLv3 o superior'
+  call:
+    hangup_status:
+      user_busy: 'USUARIO/A OCUPADO/A'
+      subscriber_absent: 'USUARIO/A AUSTENT'
+      call_rejected: 'LLAMADA RECHAZADA'
+      normal_clearing: 'COLGADO NORMAL'
+      no_answer: 'SIN RESPUESTA'

@@ -8,13 +8,15 @@ class Call < ActiveRecord::Base
   def hangup_status
     case self.hangup_enumeration
     when 'USER_BUSY'
-      return 'USUARIO/A OCUPADO/A'
+      return I18n.t('call.hangup_status.user_busy')
     when 'SUBSCRIBER_ABSENT'
-      return 'USUARI/A AUSENTE'
+      return I18n.t('call.hangup_status.subscriber_absent')
     when 'CALL_REJECTED'
-      return 'LLAMADA_RECHAZADA'
+      return I18n.t('call.hangup_status.call_rejected')
     when 'NORMAL_CLEARING'
-      return 'COLGADO NORMAL'
+      return I18n.t('call.hangup_status.normal_clearing')
+    when 'NO_ANSWER'
+      return I18n.t('call.hangup_status.no_answer')
     else
       return self.hangup_enumeration
     end

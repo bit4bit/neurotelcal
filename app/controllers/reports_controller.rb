@@ -8,9 +8,9 @@ class ReportsController < ApplicationController
 
   def export_csv_index
     csv_string = CSV.generate do |csv|
-      csv << ["Campaña", "Client", "Mensaje", "Programado para", "LLamada inicio", "Llamada finalizo", "Estado de Cuelgue"]
+      csv << ["Campaña", "Client", "Mensaje", "Programado para", "LLamada inicio", "Llamada finalizo", "Contesta inicio", "Contesta finalizo", "Duración", "Estado Final"]
       Call.find_each  do |call|
-        csv << [call.message.campaign.name, call.client.fullname, call.message.name, call.message.call, call.entered, call.listened, call.hangup_status]
+        csv << [call.message.group.campaign.name, call.client.fullname, call.message.name, call.message.call, call.enter, call.terminate, call.enter_listen, call.terminate_listen, call.length,  call.hangup_status]
       end
 
     end
