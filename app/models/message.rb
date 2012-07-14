@@ -40,7 +40,7 @@ class Message < ActiveRecord::Base
           #que si exista un recurso audio con el nombre
           #indicado.
         when 'Reproducir'
-          resource = Resource.where(:campaign_id => campaign_id, :type_file => 'audio', :name => arg).first
+          resource = Resource.where(:campaign_id => group.campaign.id, :type_file => 'audio', :name => arg).first
           if resource.nil?
             errors.add(:description, 'Recurso [%s] para reproducir no encontrado.' % arg);
           end
@@ -72,7 +72,7 @@ class Message < ActiveRecord::Base
       when 'ReproducirLocal'
         sequence << {:audio_local => arg}
       when 'Reproducir'
-        resource = Resource.where(:campaign_id => campaign_id, :type_file => 'audio', :name => arg).first
+        resource = Resource.where(:campaign_id => group.campaign.id, :type_file => 'audio', :name => arg).first
         sequence << {:audio => resource.file}
       when 'Decir'
         replaces.each do |key, value|

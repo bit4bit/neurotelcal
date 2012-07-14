@@ -55,7 +55,8 @@ class Resource < ActiveRecord::Base
     #corresponda al tipo indicado y sea soportado
     if file
       #el modshout usado por plivo en freeswitch solo soporta mp3
-      mime_audio = ['audio/mpeg', 'audio/ogg']
+      #ni audio/x-wav, audio/ogg
+      mime_audio = ['audio/mpeg']
       mime_document = ['application/pdf', 'application/vnd.oasis.opendocument.text']
       case type_file
       when 'audio'

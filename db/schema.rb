@@ -63,7 +63,6 @@ ActiveRecord::Schema.define(:version => 20120515154145) do
   create_table "messages", :force => true do |t|
     t.string   "name"
     t.text     "description"
-    t.integer  "campaign_id"
     t.integer  "group_id"
     t.boolean  "processed"
     t.datetime "call"

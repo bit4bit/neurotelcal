@@ -216,7 +216,8 @@ class PlivosController < ApplicationController
     params[:message][:name] = I18n.t('defaults.direct_message') + UUIDTools::UUID.random_create
     params[:message][:call] = Time.now
     @message = Message.new(params[:message])
-    @message.group_id = session[:group_id]
+    @message.group_id = @client.group.id
+
 
     if @message.valid?
       sequence = @message.description_to_call_sequence('!client_fullname' => @client.fullname, '!client_id' => @client.id)

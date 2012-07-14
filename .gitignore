@@ -17,6 +17,7 @@ pickle-email-*.html
 **.pdf
 **.mp3
 **.ogg
+**.wav
 /app/tmp/*
 /app/log/*
 **~
