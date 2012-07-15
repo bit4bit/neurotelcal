@@ -4,6 +4,9 @@ class CreateCampaigns < ActiveRecord::Migration
       t.string :name
       t.text :description
       t.integer :status #0: start, 1:end, 2:pause, 3:abort
+      t.datetime :start
+      t.datetime :pause
+      t.datetime :stop
       t.timestamps
     end
   end

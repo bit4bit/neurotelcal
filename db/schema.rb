@@ -11,15 +11,14 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120515154145) do
+ActiveRecord::Schema.define(:version => 20120715041737) do
 
   create_table "calendars", :force => true do |t|
-    t.string   "name"
-    t.integer  "interval"
-    t.datetime "do_call"
-    t.integer  "campaign_id"
-    t.datetime "created_at",  :null => false
-    t.datetime "updated_at",  :null => false
+    t.integer  "message_id"
+    t.datetime "start"
+    t.datetime "stop"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
   end
 
   create_table "calls", :force => true do |t|
@@ -31,6 +30,7 @@ ActiveRecord::Schema.define(:version => 20120515154145) do
     t.datetime "terminate"
     t.datetime "enter_listen"
     t.datetime "terminate_listen"
+    t.string   "digits"
     t.string   "status"
     t.string   "hangup_enumeration"
     t.datetime "created_at",                            :null => false
@@ -41,6 +41,9 @@ ActiveRecord::Schema.define(:version => 20120515154145) do
     t.string   "name"
     t.text     "description"
     t.integer  "status"
+    t.datetime "start"
+    t.datetime "pause"
+    t.datetime "stop"
     t.datetime "created_at",  :null => false
     t.datetime "updated_at",  :null => false
   end
@@ -61,34 +64,38 @@ ActiveRecord::Schema.define(:version => 20120515154145) do
     t.datetime "updated_at",  :null => false
   end
 
+  create_table "message_calendars", :force => true do |t|
+    t.integer  "message_id"
+    t.datetime "start"
+    t.datetime "stop"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
   create_table "messages", :force => true do |t|
     t.string   "name"
     t.text     "description"
     t.integer  "group_id"
     t.boolean  "processed"
     t.datetime "call"
-    t.integer  "repeat_interval", :default => 0
-    t.datetime "repeat_until"
+    t.datetime "call_end"
+    t.boolean  "anonymous",   :default => false
     t.datetime "created_at",                     :null => false
     t.datetime "updated_at",                     :null => false
-    t.boolean  "anonymous"
   end
 
   create_table "plivo_calls", :force => true do |t|
+    t.integer  "plivo_id"
+    t.string   "number"
     t.string   "uuid"
     t.string   "status"
     t.string   "hangup_enumeration"
     t.text     "data"
+    t.integer  "step",               :default => 0
     t.integer  "call_id"
-    t.datetime "created_at",         :null => false
-    t.datetime "updated_at",         :null => false
-    t.integer  "plivo_id"
-    t.boolean  "completed"
-    t.boolean  "end"
-    t.text     "digits"
-    t.integer  "step"
-    t.text     "toEE"
-    t.text     "number"
+    t.boolean  "end",                :default => false
+    t.datetime "created_at",                            :null => false
+    t.datetime "updated_at",                            :null => false
   end
 
   create_table "plivos", :force => true do |t|
@@ -103,9 +110,9 @@ ActiveRecord::Schema.define(:version => 20120515154145) do
     t.integer  "gateway_retries",  :default => 1
     t.string   "caller_name",      :default => "Neurotelcal"
     t.integer  "campaign_id"
+    t.integer  "channels",         :default => 100
     t.datetime "created_at",                                            :null => false
     t.datetime "updated_at",                                            :null => false
-    t.integer  "channels"
   end
 
   create_table "resources", :force => true do |t|

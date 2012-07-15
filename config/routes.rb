@@ -1,4 +1,6 @@
 Neurotelcal::Application.routes.draw do
+  resources :message_calendars
+
   get "page/about"
 
   get "reports/index"

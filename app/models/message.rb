@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 class Message < ActiveRecord::Base
-  attr_accessible :group_id, :description, :name, :processed, :call, :repeat_until, :repeat_interval, :entered, :listened, :anonymous
+  attr_accessible :group_id, :description, :name, :processed, :call, :entered, :listened, :anonymous, :call_end
   validates :name, :description, :call, :presence => true
   validates :name, :uniqueness => true
 
   validate :validate_description_call_language
 
   belongs_to :group
-
+  has_many :message_calendar
 
   #Validación del lenguaje para llamadas
   #es muy sencillo se tiene los 2 verbos: Reproducir, Decir

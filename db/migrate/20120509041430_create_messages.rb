@@ -10,8 +10,7 @@ class CreateMessages < ActiveRecord::Migration
       t.boolean :processed
       #fecha de iniciar la llamada
       t.datetime :call
-      t.integer :repeat_interval, :default => 0
-      t.datetime :repeat_until
+      t.datetime :call_end
       
       t.boolean :anonymous, :default => false
       t.timestamps

@@ -8,6 +8,7 @@ es:
       message: 'Mensaje'
       client: 'Cliente'
       group: 'Grupo'
+      message_calendar: 'Calendario de Mensaje'
     attributes:
       group:
         name: 'Nombre'
@@ -22,13 +23,16 @@ es:
         name: 'Nombre'
         description: 'Descripción'
         call: 'Programar Para el'
+        call_end: 'Hasta el'
         repeat_interval: 'Intervalo de repetición'
         repeat_until: 'Repetir hasta'
       client:
         fullname: 'Nombre Completo'
         phonenumbre: 'Número télefonico/sip'
         group: 'Grupo'
-      
+      message_calendar:
+        start: 'Inicia'
+        stop: 'Termina'
   back: 'Atrás'	
   edit: 'Editar'
   show: 'Mostrar'
@@ -54,6 +58,7 @@ es:
     call: 'Llamar'
     client: 'Client'
     message: 'Mensaje'
+    message_calendar: 'Calendario de Mensaje'
     direct_message: 'MENSAJE DIRECTO'
   clients:
     fullname: 'Nombre completo'
@@ -99,6 +104,7 @@ es:
       call: 'Programada Para'
       repeat_interval: 'Repetir Intervalo'
       repeat_until: 'Repetir Hasta'
+      call_end: 'Hasta'
     index:
       title: 'Listando Mensajes'
     edit:
@@ -177,3 +183,15 @@ es:
       call_rejected: 'LLAMADA RECHAZADA'
       normal_clearing: 'COLGADO NORMAL'
       no_answer: 'SIN RESPUESTA'
+  message_calendar:
+    index:
+      title: 'Listando Calendario de Mensaje'
+    edit:
+      title: 'Editando Calendario de Mensaje'
+    new:
+      title: 'Nuevo Calendario de Mensaje'
+    show:
+      title: 'Mostrando Calendario de Mensaje'
+    l:
+      start: 'Inicia'
+      stop: 'Termina'

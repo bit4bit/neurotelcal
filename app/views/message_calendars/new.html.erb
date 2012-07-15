@@ -1,0 +1,6 @@
+<%= link_to I18n.t('back'), message_calendars_path(:message_id => @message_calendar.message), :class => 'button negative' %>
+<h1><%= I18n.t('message_calendar.new.title')%></h1>
+
+<%= render 'form' %>
+
+

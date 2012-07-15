@@ -1,6 +1,6 @@
-class CreateCalendars < ActiveRecord::Migration
+class CreateMessageCalendars < ActiveRecord::Migration
   def change
-    create_table :calendars do |t|
+    create_table :message_calendars do |t|
       t.integer :message_id
       t.datetime :start
       t.datetime :stop

@@ -1,6 +1,18 @@
 #!/usr/bin/env /home/bit4bit/ruby/neurotelcal/script/rails runner
+# -*- coding: utf-8 -*-
 # Servidor que realiza las llamadas de NeuroTelcal
 
+#
+#Las campañas tienen una fecha inicio y parada
+#los mensajes tienen una feach de inicio y parada
+#ademas de un calendario de inicio y parada
+# Campaña inicio
+# |        Mensaje inicio
+# |        |      Calendario mensaje inicio
+# |        |      |
+# |--------|-----­|=======|-----|========|------|===========|-----|--------|
+#inicio inicio inicio1 parada1 inicio2 parada2 inicio.....parada parada parada
+#
 require 'plivohelper'
 require 'forever'
 

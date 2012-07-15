@@ -1,0 +1,17 @@
+<%= link_to I18n.t('back'), message_calendars_path(:message_id => @message_calendar.message), :class => 'button negative' %>
+<%= link_to I18n.t('edit'), edit_message_calendar_path(@message_calendar), :class => 'button' %> 
+
+<h1><%= I18n.t('message_calendar.show.title')%></h1>
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Start:</b>
+  <%= @message_calendar.start %>
+</p>
+
+<p>
+  <b>Stop:</b>
+  <%= @message_calendar.stop %>
+</p>
+
+
