@@ -1,6 +1,8 @@
-<h1>Editing message_calendar</h1>
+<%= link_to I18n.t('back'), message_calendars_path(:message_id => @message_calendar.message), :class => 'button negative' %>
+<%= link_to I18n.t('show'), @message_calendar, :class => 'button' %> 
+<h1><%= I18n.t('message_calendar.edit.title')%></h1>
 
 <%= render 'form' %>
 
-<%= link_to 'Show', @message_calendar %> |
-<%= link_to 'Back', message_calendars_path %>
+
+

@@ -24,6 +24,7 @@ es:
         description: 'Descripción'
         call: 'Programar Para el'
         call_end: 'Hasta el'
+        retries: 'Reintentos'
         repeat_interval: 'Intervalo de repetición'
         repeat_until: 'Repetir hasta'
       client:
@@ -105,6 +106,7 @@ es:
       repeat_interval: 'Repetir Intervalo'
       repeat_until: 'Repetir Hasta'
       call_end: 'Hasta'
+      retries: 'Reintentos'
     index:
       title: 'Listando Mensajes'
     edit:

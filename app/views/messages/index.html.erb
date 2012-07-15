@@ -8,6 +8,7 @@
     <th><%= I18n.t('message.l.description')%></th>
     <th><%= I18n.t('message.l.call')%></th>
     <th><%= I18n.t('message.l.call_end')%></th>
+    <th><%= I18n.t('message.l.retries')%></th>
     <th></th>
     <th></th>
     <th></th>
@@ -20,6 +21,7 @@
     <td><%= message.description %></td>
     <td><%= message.call %></td>
     <td><%= message.call_end %></td>
+    <td><%= message.retries %></td>
     <td><%= link_to I18n.t('defaults.message_calendar'), message_calendars_path(:message_id => message) %></td>
     <td><%= link_to I18n.t('show'), message %></td>
     <td><%= link_to I18n.t('edit'), edit_message_path(message) %></td>

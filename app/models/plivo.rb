@@ -3,6 +3,11 @@
 class PlivoCannotCall < Exception
 end
 
+class PlivoChannelFull < Exception
+end
+
+class PlivoNotFound < Exception
+end
 
 class Plivo < ActiveRecord::Base
   attr_accessible :app_url, :api_url, :auth_token, :campaign_id, :sid, :status, :gateways, :caller_name, :gateway_timeouts, :gateway_retries, :gateway_codecs, :channels
@@ -74,7 +79,7 @@ class Plivo < ActiveRecord::Base
   #LLamar con el mensaje al cliente
   #@throw PlivoCannotCall
   def call_client(client, message)
-    raise PlivoCannotCall unless can_call?
+    raise PlivoChannelFull, "No hay canales disponibles" unless can_call?
 
     extra_dial_string = "leg_delay_start=1,bridge_early_media=true,hangup_after_bridge=true" 
     
@@ -92,10 +97,9 @@ class Plivo < ActiveRecord::Base
     }
     logger.debug(call_params)      
     
-    
+
     plivor = PlivoHelper::Rest.new(self.api_url, self.sid, self.auth_token)
     result = ActiveSupport::JSON.decode(plivor.call(call_params).body)
-    
     return false unless result["Success"]
     #se registra llamada
     call = Call.new

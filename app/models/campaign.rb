@@ -27,18 +27,20 @@ class Campaign < ActiveRecord::Base
   #Campaign llama cliente, buscando un espacio disponible entre sus servidores plivos
   def call_client(client, message)
     called = false
+    raise PlivoNotFound, "There is not plivo server, first add one" unless self.plivo.exists?
+
     self.plivo.all.each { |plivo|
       begin
         plivo.call_client(client, message)
         called = true
         break
-      rescue PlivoCannotCall => e
-        logger.debug("Plivo id %d full trying next plivo")
+      rescue PlivoChannelFull => e
+        logger.debug("Plivo id %d full trying next plivo" % plivo.id)
         next
       end
     }
 
-    raise PlivoCannotCall unless called
+    raise PlivoCannotCall, "cant find plivo to call" unless called
   end
   
   

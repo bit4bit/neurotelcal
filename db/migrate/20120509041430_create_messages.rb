@@ -13,6 +13,8 @@ class CreateMessages < ActiveRecord::Migration
       t.datetime :call_end
       
       t.boolean :anonymous, :default => false
+
+      t.integer :retries, :default => 1 #reintentos hasta que contest
       t.timestamps
     end
   end

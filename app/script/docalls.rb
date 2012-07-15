@@ -16,6 +16,11 @@
 require 'plivohelper'
 require 'forever'
 
+
+$running = true
+Rails.logger = Logger.new(Rails.root.join('log', 'docalls.log'), 3, 5*1024*1024)
+
+
 #Realiza llamadas respectivas de una campana
 module Service
   class CampaignCall
@@ -27,81 +32,37 @@ module Service
         when Campaign
         @campaign = name
       end
-      p "Para campana %s at %s" % [@campaign.name, Time.now]
-      process_queue
+      Rails.logger.debug("Servicio de campaña %s at %s" % [@campaign.name, Time.now])
     end
 
     #Realiza la llamada usando plivo
     #@param Message message mensaje a usar para realizar la llamada
     #@param Client client cliente para llamar
     def docall(message, client)
-      if message.valid?
-        sequence = message.description_to_call_sequence("!client_id" => client.id)
-        extra_dial_string = "leg_delay_start=1,bridge_early_media=true,hangup_after_bridge=true" 
-        plivo = @campaign.plivo.first
+      ncalls = Call.where(:message_id => message.id, :client_id => client.id).count
+      if ncalls > 0
+        calls_faileds = Call.where('hangup_enumeration != ? AND message_id = ? AND client_id = ? AND terminate IS NOT NULL', 'NORMAL_CLEARING', message.id, client.id).count
+        return false if calls_faileds >= message.retries
 
-        if plivo.nil?
-          p 'No se encontro servidor plivo valido'
-          return
-        end
-        
-        call_params = {
-          'From' => plivo.caller_name,
-          'To' => client.phonenumber,
-          'Gateways' => plivo.gateways,
-          'GatewayCodecs' => plivo.gateway_codecs_quote,
-          'GatewayTimeouts' => plivo.gateway_timeouts,
-          'GatewayRetries' => plivo.gateway_retries,
-          #'AnswerUrl' => answer_client_plivo_url(),
-          #'HangupUrl' => hangup_client_plivo_url(),
-          #'RingUrl' => ringing_client_plivo_url()
-          'ExtraDialString' => extra_dial_string,
-          'AnswerUrl' => "%s/plivos/0/answer_client" % plivo.app_url,
-          'HangupUrl' => "%s/plivos/0/hangup_client" % plivo.app_url,
-          'RingUrl' => "%s/plivos/0/ringing_client" % plivo.app_url
-        }
-
-
-        
-        begin
-          plivor = ::PlivoHelper::Rest.new(plivo.api_url, plivo.sid, plivo.auth_token)
-          result = ActiveSupport::JSON.decode(plivor.call(call_params).body)
-          
-          
-          #Se inicio registro de llamada
-          #se registra llamada
-          call = Call.new
-          call.message_id = message.id
-          call.client_id = client.id
-          call.length = 0
-          call.completed_p = false
-          call.enter = Time.now
-          call.terminate = nil
-          call.enter_listen = nil
-          call.terminate_listen = nil
-          call.status = nil
-          call.hangup_enumeration = nil
-          call.save
-
-
-          #Se registra la llamada iniciada
-          plivocall = PlivoCall.new
-          plivocall.uuid = result["RequestUUID"]
-          plivocall.status = 'calling'
-          plivocall.data = sequence.to_yaml
-          plivocall.call_id = call.id
-          plivocall.save
-
-        rescue Errno::ECONNREFUSED => e
-          p 'No se pudo conectar a plivo en %s' % plivo.api_url
-        rescue Exception => e
-          p(e)
-          p "error:" + e.class.to_s
-        end
-        
-        
+        #ya hay marcacion en camino
+        return false if Call.where(:message_id => message.id, :client_id => client.id, :terminate => nil).exists?
       end
       
+
+      if message.valid?        
+        begin
+          @campaign.call_client(client, message)
+          Rails.logger.debug('[%s] Llamando a %s programada para el %s' % [@campaign.name, client.fullname, message.call.to_s])
+        rescue PlivoNotFound => e
+          Rails.logger.debug 'No hoo %s' % e.to_s
+        rescue PlivoCannotCall => e
+          Rails.logger.debug 'Error plivo %s' % e.to_s
+        rescue Errno::ECONNREFUSED => e
+          logge.debug 'No se pudo conectar a plivo en %s' % plivo.api_url
+        rescue Exception => e
+          Rails.logger.debug "error:" + e.to_s
+        end
+      end
     end
 
     #Procesa mensaje y realiza las llamadas indicadas
@@ -112,33 +73,31 @@ module Service
         next if @campaign.pause?
         
         group.message.find_each do |message|
+          #se termina en caso de forzado, y espera la ultima llamada
+          return false unless $running
+
           
-          p("Revisado mensaje %s" % message.name)
+
+          
+
+          #se omite mensaje que no esta en fecha de verificacion
+          next if Time.now < Time.parse(message.call.to_s) or Time.now > Time.parse(message.call_end.to_s) 
+          Rails.logger.debug("Revisando mensaje %s inicia %s y termina %s" % [message.name, message.call.to_s, message.call_end.to_s])
           
           @campaign.client.find_each do |client|
-            ncalls = Call.where(:message_id => message.id, :client_id => client.id, :completed_p => true).count
+            Rails.logger.debug("Para cliente %s" % client.fullname)
             
-            #si ya se llama no se hace nada
-            p("N de llamadas %s para mensaje %s fecha %s" % [ncalls.to_s, message.name, message.call.to_s])
-            if ncalls == 0
-              if  Time.now >= message.call
-                p('[%s] Llamando a %s programada para el %s' % [@campaign.name, client.fullname, message.call.to_s])
+            #si no hay calendario se realiza marcacion directa
+            return docall(message, client) unless message.message_calendar.exists?
+
+            #se busca el calendario para iniciar marcacion
+            Rails.logger.debug("Se busca en calendario")
+            message.message_calendar.find_each do |message_calendar|
+              if Time.now >= Time.parse(message_calendar.start.to_s) and  Time.now <= Time.parse(message_calendar.stop.to_s)
                 docall(message, client)
               end
-              
-            elsif ncalls > 0 
-              
-              last_call =  Call.where(:message_id => message.id, :client_id => client.id, :completed_p => true).order("terminate DESC").first
-              
-              #realiza llamada si ya se empezo y tiene intevarlo y este se cumple apartir desde la ultima llamada
-              #el intervalo es por minuto o por dia (3600 * 24)
-              #p( ((Time.now - last_call.created_at) / 60))
-              p((Time.now - last_call.terminate) / 60)
-              if message.call >= Time.now and message.repeat_interval > 0 and  (((Time.now - last_call.enter) / (60)).round % message.repeat_interval) > 0 and message.repeat_until <= Time.now
-                p('[%s] Llamando a %s programada para el %s por intervalos de %d' % [@campaign.name, client.fullname, message.call.to_s, message.repeat_interval])
-                #docall(message, client)
-              end
             end
+            
           end
         end
       end
@@ -149,16 +108,33 @@ end
 
 
 #Run services
-#Forever.run do
+print "Servicio de automarcador iniciado " + Time.now.to_s + "\n"
+Rails.logger.debug('--STARTED ' + Time.now.to_s)
+$threads_campaigns = []
+
+
+Signal.trap('SIGINT') do
+  print 'Forzando salida...espere..' + "\n"
+  $running = false
+  $threads_campaigns.each { |thread| thread.join}
+end
+
+
+while($running) do
   
-#  every 1.minute do
-loop {
-    Campaign.find_each do |campaign|
-      unless campaign.end?
-        srv = Service::CampaignCall.new(campaign)
-      end
+  Campaign.all.each do |campaign|
+    unless campaign.end?
+      $threads_campaigns << Thread.new(campaign) { |doCampaign|
+        srv = Service::CampaignCall.new(doCampaign)
+        srv.process_queue
+        ActiveRecord::Base.connection.close 
+      }
     end
-  sleep 60
-}
-#  end
-#end
+  end
+
+  $threads_campaigns.each { |thread| thread.join}
+  $threads_campaigns.clear
+end
+
+Rails.logger.debug('--ENDED ' + Time.now.to_s)
+print "Servicio de automarcador terminado " + Time.now.to_s + "\n"

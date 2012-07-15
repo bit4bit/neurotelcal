@@ -244,6 +244,7 @@ class PlivosController < ApplicationController
     params[:message][:id] = nil
     params[:message][:name] = I18n.t('defaults.direct_message') + UUIDTools::UUID.random_create
     params[:message][:call] = Time.now
+    params[:message][:call_end] = Time.now
     params[:message][:anonymous] = true
     @message = Message.new(params[:message])
     @message.group_id = @client.group.id

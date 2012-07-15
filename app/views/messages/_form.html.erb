@@ -31,6 +31,10 @@
     <%= f.label :call_end%><br />
     <%= f.datetime_select :call_end%>
   </div>
+  <div class="field">
+    <%= f.label :retries%><br />
+    <%= f.input :retries, :input_html => {:maxlength => 2, :size => 2}%>
+  </div>
   <div class="actions">
     <%= f.submit %>
   </div>
