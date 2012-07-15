@@ -61,6 +61,7 @@ es:
     l:
      name: 'Nombre'
      description: 'Descripción'
+     status: 'Estado'
     index:
       title: 'Listando Campañas'
     edit:

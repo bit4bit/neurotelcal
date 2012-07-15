@@ -20,6 +20,7 @@ Neurotelcal::Application.routes.draw do
       post 'answer_client', :defaults => { :format => 'xml' }
       post 'hangup_client', :defaults => { :format => 'xml' }
       post 'ringing_client', :defaults => { :format => 'xml' }
+      post 'get_digits_client', :defaults => { :format => 'xml' }
     end
   end
 

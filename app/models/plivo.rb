@@ -79,24 +79,21 @@ class Plivo < ActiveRecord::Base
     extra_dial_string = "leg_delay_start=1,bridge_early_media=true,hangup_after_bridge=true" 
     
     call_params = {
-      'From' => caller_name,
+      'From' => self.caller_name,
       'To' => client.phonenumber,
-      'Gateways' => gateways,
-      'GatewayCodecs' => gateway_codecs_quote,
-      'GatewayTimeouts' => gateway_timeouts,
-      'GatewayRetries' => gateway_retries,
-      #'AnswerUrl' => answer_client_plivo_url(),
-      #'HangupUrl' => hangup_client_plivo_url(),
-      #'RingUrl' => ringing_client_plivo_url()
+      'Gateways' => self.gateways,
+      'GatewayCodecs' => self.gateway_codecs_quote,
+      'GatewayTimeouts' => self.gateway_timeouts,
+      'GatewayRetries' => self.gateway_retries,
       'ExtraDialString' => extra_dial_string,
-      'AnswerUrl' => "%s/plivos/0/answer_client" % app_url,
-      'HangupUrl' => "%s/plivos/0/hangup_client" % app_url,
-      'RingUrl' => "%s/plivos/0/ringing_client" % app_url
+      'AnswerUrl' => "%s/plivos/0/answer_client" % self.app_url,
+      'HangupUrl' => "%s/plivos/0/hangup_client" % self.app_url,
+      'RingUrl' => "%s/plivos/0/ringing_client" % self.app_url
     }
     logger.debug(call_params)      
     
     
-    plivor = PlivoHelper::Rest.new(api_url, sid, auth_token)
+    plivor = PlivoHelper::Rest.new(self.api_url, self.sid, self.auth_token)
     result = ActiveSupport::JSON.decode(plivor.call(call_params).body)
     
     return false unless result["Success"]

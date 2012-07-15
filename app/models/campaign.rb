@@ -22,6 +22,24 @@ class Campaign < ActiveRecord::Base
   def start?
     return STATUS['START'] == status
   end
+
+
+  #Campaign llama cliente, buscando un espacio disponible entre sus servidores plivos
+  def call_client(client, message)
+    called = false
+    self.plivo.all.each { |plivo|
+      begin
+        plivo.call_client(client, message)
+        called = true
+        break
+      rescue PlivoCannotCall => e
+        logger.debug("Plivo id %d full trying next plivo")
+        next
+      end
+    }
+
+    raise PlivoCannotCall unless called
+  end
   
   
 end

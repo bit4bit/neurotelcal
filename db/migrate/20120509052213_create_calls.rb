@@ -11,6 +11,8 @@ class CreateCalls < ActiveRecord::Migration
       t.datetime :terminate
       t.datetime :enter_listen
       t.datetime :terminate_listen
+      #digitos presionados
+      t.string :digits
       t.string :status
       #mirar http://wiki.freeswitch.org/wiki/Hangup_causes
       t.string :hangup_enumeration

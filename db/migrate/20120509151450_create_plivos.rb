@@ -13,7 +13,7 @@ class CreatePlivos < ActiveRecord::Migration
       t.integer :gateway_retries, :default => 1
       t.string :caller_name, :default => 'Neurotelcal'
       t.integer :campaign_id
-
+      t.integer :channels, :default => 100 #maximo de  canales o llamadas
       t.timestamps
     end
   end

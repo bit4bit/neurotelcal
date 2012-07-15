@@ -12,7 +12,8 @@ class CreateMessages < ActiveRecord::Migration
       t.datetime :call
       t.integer :repeat_interval, :default => 0
       t.datetime :repeat_until
-
+      
+      t.boolean :anonymous, :default => false
       t.timestamps
     end
   end

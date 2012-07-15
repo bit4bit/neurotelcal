@@ -40,6 +40,7 @@ ActiveRecord::Schema.define(:version => 20120515154145) do
   create_table "campaigns", :force => true do |t|
     t.string   "name"
     t.text     "description"
+    t.integer  "status"
     t.datetime "created_at",  :null => false
     t.datetime "updated_at",  :null => false
   end
@@ -70,6 +71,7 @@ ActiveRecord::Schema.define(:version => 20120515154145) do
     t.datetime "repeat_until"
     t.datetime "created_at",                     :null => false
     t.datetime "updated_at",                     :null => false
+    t.boolean  "anonymous"
   end
 
   create_table "plivo_calls", :force => true do |t|
@@ -80,6 +82,13 @@ ActiveRecord::Schema.define(:version => 20120515154145) do
     t.integer  "call_id"
     t.datetime "created_at",         :null => false
     t.datetime "updated_at",         :null => false
+    t.integer  "plivo_id"
+    t.boolean  "completed"
+    t.boolean  "end"
+    t.text     "digits"
+    t.integer  "step"
+    t.text     "toEE"
+    t.text     "number"
   end
 
   create_table "plivos", :force => true do |t|
@@ -96,6 +105,7 @@ ActiveRecord::Schema.define(:version => 20120515154145) do
     t.integer  "campaign_id"
     t.datetime "created_at",                                            :null => false
     t.datetime "updated_at",                                            :null => false
+    t.integer  "channels"
   end
 
   create_table "resources", :force => true do |t|

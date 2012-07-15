@@ -251,17 +251,9 @@ class PlivosController < ApplicationController
 
     if @message.valid?
       @message.save
-      plivo = @campaign.plivo.first
       
-      if plivo.nil?
-        flash[:notice] = 'No hay servidor plivo activo'
-        respond_to do |format|
-          format.html { render :action => 'call_client' }
-        end
-        return
-      end
     begin
-      plivo.call_client(@client, @message)
+      @campaign.call_client(@client, @message)
     rescue PlivoCannotCall => e
       flash[:notice] = 'No hay canales disponibles'
     rescue Errno::ECONNREFUSED => e
