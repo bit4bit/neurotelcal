@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 class Message < ActiveRecord::Base
-  attr_accessible :group_id, :description, :name, :processed, :call, :repeat_until, :repeat_interval, :entered, :listened
+  attr_accessible :group_id, :description, :name, :processed, :call, :repeat_until, :repeat_interval, :entered, :listened, :anonymous
   validates :name, :description, :call, :presence => true
   validates :name, :uniqueness => true
 
@@ -20,7 +20,9 @@ class Message < ActiveRecord::Base
   def validate_description_call_language
     verbs = ['Reproducir', 
              'ReproducirLocal',
-             'Decir']
+             'Decir',
+             'Registrar'
+            ]
 
     if not description.nil?
 
@@ -44,6 +46,12 @@ class Message < ActiveRecord::Base
           if resource.nil?
             errors.add(:description, 'Recurso [%s] para reproducir no encontrado.' % arg);
           end
+        when 'Registrar'
+          register = arg.split[0]
+          if register == 'digitos'
+          elsif register == 'voz'
+          end
+          
         end
       end
 
@@ -82,6 +90,30 @@ class Message < ActiveRecord::Base
         decir_str = erb.result
         logger.debug(decir_str)
         sequence << {:decir => decir_str }
+      when 'Registrar'
+        register = arg.split[0]
+        case register
+          when 'digitos'
+          options = {:retries => 1, :timeout => 5, :numDigits => 99, :validDigits => '0123456789*#'}
+          words.each do |word|
+            if option = word.to_s.match(/([0-9a-zA-Z\-_\/\\\.ñÑáéíóúÁÉÍÓÚ]+)=([0-9a-zA-Z\-_\/\\\.ñÑáéíóúÁÉÍÓÚ]+)/)
+              case option[1]
+                when 'intentos'
+                options[:retries] = option[2].to_i
+                when 'duracion'
+                options[:timeout] = option[2].to_i
+                when 'cantidad'
+                options[:numDigits] = option[2].to_i
+                when 'digitosValidos'
+                options[:validDigits] = option[2].to_s
+              end
+            end
+          end
+          
+          logger.debug("Options for get digits " + options.to_s)
+
+          sequence << {:register => :digits, :options => options}
+          end
       end
     end    
     

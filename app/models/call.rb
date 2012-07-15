@@ -22,4 +22,8 @@ class Call < ActiveRecord::Base
     end
   end
 
+  def answered?
+    return self.hangup_enumeration == 'NORMAL_CLEARING'
+  end
+  
 end

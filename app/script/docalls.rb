@@ -58,7 +58,7 @@ module Service
           
           #Se inicio registro de llamada
           #se registra llamada
-        call = Call.new
+          call = Call.new
           call.message_id = message.id
           call.client_id = client.id
           call.length = 0
@@ -95,6 +95,10 @@ module Service
     #Procesa mensaje y realiza las llamadas indicadas
     def process_queue
       @campaign.group.find_each do |group|
+
+        #si esta pausado no se realiza las llamadas
+        next if @campaign.pause?
+        
         group.message.find_each do |message|
           
           p("Revisado mensaje %s" % message.name)
@@ -112,12 +116,15 @@ module Service
               
             elsif ncalls > 0 
               
-              last_call =  Call.where(:message_id => message.id, :client_id => client.id, :completed_p => true).order("created_at DESC").first
+              last_call =  Call.where(:message_id => message.id, :client_id => client.id, :completed_p => true).order("terminate DESC").first
               
               #realiza llamada si ya se empezo y tiene intevarlo y este se cumple apartir desde la ultima llamada
-              if message.call >= Time.now and message.repeat_interval > 0 and  (((Time.now - last_call.created_at) / (3600 * 24)).round % message.repeat_interval) == 0 and message.repeat_until <= Time.now
+              #el intervalo es por minuto o por dia (3600 * 24)
+              #p( ((Time.now - last_call.created_at) / 60))
+              p((Time.now - last_call.terminate) / 60)
+              if message.call >= Time.now and message.repeat_interval > 0 and  (((Time.now - last_call.enter) / (60)).round % message.repeat_interval) > 0 and message.repeat_until <= Time.now
                 p('[%s] Llamando a %s programada para el %s por intervalos de %d' % [@campaign.name, client.fullname, message.call.to_s, message.repeat_interval])
-                docall(message, client)
+                #docall(message, client)
               end
             end
           end
@@ -130,11 +137,16 @@ end
 
 
 #Run services
-Forever.run do
+#Forever.run do
   
-  every 1.minute do
+#  every 1.minute do
+loop {
     Campaign.find_each do |campaign|
-      srv = Service::CampaignCall.new(campaign)
+      unless campaign.end?
+        srv = Service::CampaignCall.new(campaign)
+      end
     end
-  end
-end
+  sleep 60
+}
+#  end
+#end

@@ -40,6 +40,9 @@
     <%= f.input :gateway_retries, :input_html => { :size => 2, :maxlength => 2 }%>
   </div>
   <div class="field">
+    <%= f.input :channels, :input_html => { :size => 3, :maxlength => 3}%>
+  </div>
+  <div class="field">
     Campaña<br />
     <%= f.select :campaign_id, options_for_select(@campaigns) %>
   </div>

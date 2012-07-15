@@ -109,6 +109,35 @@ class PlivosController < ApplicationController
     end
   end
 
+
+  def get_digits_client
+    logger.debug('get_digits')
+    logger.debug(params)
+
+    @plivocall = PlivoCall.where(:uuid => params["id"]).first
+    @call_sequence = @plivocall.call_sequence
+    
+    @plivocall.status = params['CallStatus']
+    #almacena resultado de esta peticion
+    @call_sequence[@plivocall.step-1][:result] = params['Digits']
+    @plivocall.data = @call_sequence.to_yaml
+    @plivocall.save
+
+
+    @plivo = @plivocall.plivo
+    #actualiza estado de llamada
+    call = Call.find(@plivocall.call_id)
+    if call
+      call.enter_listen = Time.now
+      call.status = @plivocall.status
+      call.save
+    end
+
+
+    respond_to do |format|
+      format.xml { render 'answer_client' }
+    end
+  end
   
   #Muestra formulario para 
   #realizar llamada
@@ -123,21 +152,18 @@ class PlivosController < ApplicationController
     logger.debug(params)
     
     @plivocall = PlivoCall.where(:uuid => params["ALegRequestUUID"]).first
-    @call_sequence = YAML::load(@plivocall.data)
+    @call_sequence = @plivocall.call_sequence
     #actualiza estado
     @plivocall.status = "answered"
     @plivocall.save
 
-    @plivo = nil
+    @plivo = @plivocall.plivo
     #actualiza estado de llamada
     call = Call.find(@plivocall.call_id)
     if call
       call.enter_listen = Time.now
       call.status = @plivocall.status
       call.save
-      if call.message
-        @plivo = call.message.group.campaign.plivo.first
-      end
     end
     logger.debug('Trying first plivo from campaign to url ' + @plivo.app_url)
     respond_to do |format|
@@ -148,11 +174,12 @@ class PlivosController < ApplicationController
   def hangup_client
     logger.debug('hangup')
     #logger.debug('hangup')
-    plivocall = PlivoCall.where(:uuid => params["ALegRequestUUID"]).first
+    plivocall = PlivoCall.where(:uuid => params["RequestUUID"]).first
     plivocall.status = params["CallStatus"]
 
     #@todo mejorar esto un campo y listo
     plivocall.hangup_enumeration = params["HangupCause"] if params["HangupCause"]
+    plivocall.end = true
     plivocall.save
 
     
@@ -165,11 +192,13 @@ class PlivosController < ApplicationController
     if call
       call.terminate = Time.now
       call.completed_p = true
-      if call.status == "answered"
+
+      if plivocall.answered?
         call.terminate_listen = Time.now
       else
         call.terminate_listen = nil
       end
+
       call.status = plivocall.status
       call.hangup_enumeration = plivocall.hangup_enumeration
 
@@ -215,12 +244,12 @@ class PlivosController < ApplicationController
     params[:message][:id] = nil
     params[:message][:name] = I18n.t('defaults.direct_message') + UUIDTools::UUID.random_create
     params[:message][:call] = Time.now
+    params[:message][:anonymous] = true
     @message = Message.new(params[:message])
     @message.group_id = @client.group.id
 
 
     if @message.valid?
-      sequence = @message.description_to_call_sequence('!client_fullname' => @client.fullname, '!client_id' => @client.id)
       @message.save
       plivo = @campaign.plivo.first
       
@@ -231,59 +260,18 @@ class PlivosController < ApplicationController
         end
         return
       end
-      
-      extra_dial_string = "leg_delay_start=1,bridge_early_media=true,hangup_after_bridge=true" 
-
-      call_params = {
-        'From' => plivo.caller_name,
-        'To' => @client.phonenumber,
-        'Gateways' => plivo.gateways,
-        'GatewayCodecs' => plivo.gateway_codecs_quote,
-        'GatewayTimeouts' => plivo.gateway_timeouts,
-        'GatewayRetries' => plivo.gateway_retries,
-        #'AnswerUrl' => answer_client_plivo_url(),
-        #'HangupUrl' => hangup_client_plivo_url(),
-        #'RingUrl' => ringing_client_plivo_url()
-        'ExtraDialString' => extra_dial_string,
-        'AnswerUrl' => "%s/plivos/0/answer_client" % plivo.app_url,
-        'HangupUrl' => "%s/plivos/0/hangup_client" % plivo.app_url,
-        'RingUrl' => "%s/plivos/0/ringing_client" % plivo.app_url
-      }
-      logger.debug(call_params)      
-      
-      begin
-        plivor = PlivoHelper::Rest.new(plivo.api_url, plivo.sid, plivo.auth_token)
-        result = ActiveSupport::JSON.decode(plivor.call(call_params).body)
-        
-        #se registra llamada
-        call = Call.new
-        call.message_id = @message.id
-        call.client_id = @client.id
-        call.length = 0
-        call.completed_p = false
-        call.enter = Time.now
-        call.terminate = nil
-        call.enter_listen = nil
-        call.terminate_listen = nil
-        call.status = nil
-        call.hangup_enumeration = nil
-        call.save
-
-        #Se registra la llamada iniciada de plivo
-        plivocall = PlivoCall.new
-        plivocall.uuid = result["RequestUUID"]
-        plivocall.status = 'calling'
-        plivocall.hangup_enumeration = nil
-        plivocall.data = sequence.to_yaml
-        plivocall.call_id = call.id
-        plivocall.save
-        
-      rescue Errno::ECONNREFUSED => e
-        flash[:notice] = 'No se pudo conectar a plivo en %s' % plivo.api_url
-      rescue Exception => e
-        logger.debug(e)
-        flash[:notice] = "error:" + e.class.to_s
-      end
+    begin
+      plivo.call_client(@client, @message)
+    rescue PlivoCannotCall => e
+      flash[:notice] = 'No hay canales disponibles'
+    rescue Errno::ECONNREFUSED => e
+      flash[:notice] = 'No se pudo conectar a plivo en %s' % plivo.api_url
+    rescue Exception => e
+      logger.debug(e)
+      flash[:notice] = "error:" + e.class.to_s
+    end
+     
+      flash[:notice] = ''
       
       
     end

@@ -10,6 +10,7 @@
   <tr>
     <th><%= I18n.t('campaign.l.name')%></th>
     <th><%= I18n.t('campaign.l.description')%></th>
+    <th><%= I18n.t('campaign.l.status')%></th>
     <th></th>
     <th></th>
     <th></th>
@@ -20,6 +21,7 @@
   <tr>
     <td><%= campaign.name %></td>
     <td><%= campaign.description %></td>
+    <td><%= Campaign::STATUS.invert[campaign.status] %></td>
     <td><%= link_to I18n.t('show'), campaign %></td>
     <td><%= link_to I18n.t('edit'), edit_campaign_path(campaign) %></td>
     <td><%= link_to I18n.t('destroy'), campaign, :confirm => I18n.t('are_you_sure'), :method => :delete %></td>
