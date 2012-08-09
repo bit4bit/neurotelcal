@@ -41,11 +41,13 @@ module Service
     def docall(message, client)
       ncalls = Call.where(:message_id => message.id, :client_id => client.id).count
       if ncalls > 0
-        calls_faileds = Call.where('hangup_enumeration != ? AND message_id = ? AND client_id = ? AND terminate IS NOT NULL', 'NORMAL_CLEARING', message.id, client.id).count
-        return false if calls_faileds >= message.retries
-
+        calls_faileds = Call.where(:message_id => message.id, :client_id => client.id).where('hangup_enumeration != "NORMAL_CLEARING"').count
         #ya hay marcacion en camino
         return false if Call.where(:message_id => message.id, :client_id => client.id, :terminate => nil).exists?
+        return false if calls_faileds == 0
+        return false if calls_faileds >= message.retries
+
+
       end
       
 
