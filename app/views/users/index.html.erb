@@ -7,13 +7,11 @@
     <th><%= I18n.t('user.l.name')%></th>
     <th></th>
     <th></th>
-    <th></th>
   </tr>
 
 <% @users.each do |user| %>
   <tr>
     <td><%= user.name %></td>
-    <td><%= link_to I18n.t('show'), user %></td>
     <td><%= link_to I18n.t('edit'), edit_user_path(user) %></td>
     <td><%= link_to I18n.t('destroy'), user, confirm: I18n.t('are_you_sure'), method: :delete %></td>
   </tr>
