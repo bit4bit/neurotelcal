@@ -27,6 +27,7 @@ es:
         retries: 'Reintentos'
         repeat_interval: 'Intervalo de repetición'
         repeat_until: 'Repetir hasta'
+        hangup_on_ring: 'Cuelgue en timbre'
       client:
         fullname: 'Nombre Completo'
         phonenumbre: 'Número télefonico/sip'

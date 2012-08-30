@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120715041737) do
+ActiveRecord::Schema.define(:version => 20120830025706) do
 
   create_table "calendars", :force => true do |t|
     t.integer  "message_id"
@@ -79,9 +79,11 @@ ActiveRecord::Schema.define(:version => 20120715041737) do
     t.boolean  "processed"
     t.datetime "call"
     t.datetime "call_end"
-    t.boolean  "anonymous",   :default => false
-    t.datetime "created_at",                     :null => false
-    t.datetime "updated_at",                     :null => false
+    t.boolean  "anonymous",      :default => false
+    t.integer  "retries",        :default => 1
+    t.datetime "created_at",                        :null => false
+    t.datetime "updated_at",                        :null => false
+    t.integer  "hangup_on_ring", :default => 4
   end
 
   create_table "plivo_calls", :force => true do |t|
@@ -96,6 +98,7 @@ ActiveRecord::Schema.define(:version => 20120715041737) do
     t.boolean  "end",                :default => false
     t.datetime "created_at",                            :null => false
     t.datetime "updated_at",                            :null => false
+    t.integer  "ring_count",         :default => 0
   end
 
   create_table "plivos", :force => true do |t|

@@ -93,7 +93,8 @@ class Plivo < ActiveRecord::Base
       'ExtraDialString' => extra_dial_string,
       'AnswerUrl' => "%s/plivos/0/answer_client" % self.app_url,
       'HangupUrl' => "%s/plivos/0/hangup_client" % self.app_url,
-      'RingUrl' => "%s/plivos/0/ringing_client" % self.app_url
+      'RingUrl' => "%s/plivos/0/ringing_client" % self.app_url,
+      'HangupOnRing' => message.hangup_on_ring
     }
     logger.debug(call_params)      
     

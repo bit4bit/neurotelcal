@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 class Message < ActiveRecord::Base
-  attr_accessible :group_id, :description, :name, :processed, :call, :entered, :listened, :anonymous, :call_end, :retries
+  attr_accessible :group_id, :description, :name, :processed, :call, :entered, :listened, :anonymous, :call_end, :retries, :hangup_on_ring
   validates :name, :description, :call, :presence => true
   validates :name, :uniqueness => true
 
