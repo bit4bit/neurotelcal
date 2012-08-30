@@ -82,7 +82,7 @@ class Plivo < ActiveRecord::Base
     raise PlivoChannelFull, "No hay canales disponibles" unless can_call?
 
     #http://wiki.freeswitch.org/wiki/Channel_Variables#monitor_early_media_ring
-    extra_dial_string = "leg_delay_start=1,bridge_early_media=true,hangup_after_bridge=true,leg_timeout=%d" % message.hangup_on_ring
+    extra_dial_string = "leg_delay_start=1,bridge_early_media=true,hangup_after_bridge=true,leg_timeout=%d"  % message.hangup_on_ring
     
     call_params = {
       'From' => self.caller_name,

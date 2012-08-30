@@ -83,7 +83,7 @@ ActiveRecord::Schema.define(:version => 20120830031407) do
     t.integer  "retries",        :default => 1
     t.datetime "created_at",                        :null => false
     t.datetime "updated_at",                        :null => false
-    t.integer  "hangup_on_ring", :default => 4
+    t.integer  "hangup_on_ring", :default => 20
     t.integer  "time_limit",     :default => 0
   end
 
