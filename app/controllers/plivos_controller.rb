@@ -242,7 +242,7 @@ class PlivosController < ApplicationController
     @campaign = Campaign.find(session[:campaign_id])
     @client = Client.find(params[:id])
     params[:message][:id] = nil
-    params[:message][:name] = I18n.t('defaults.direct_message') + UUIDTools::UUID.random_create
+    params[:message][:name] = I18n.t('defaults.direct_message') + @client.object_id.to_s
     params[:message][:call] = Time.now
     params[:message][:call_end] = Time.now
     params[:message][:anonymous] = true

@@ -77,7 +77,7 @@ class MessageCalendarsController < ApplicationController
     @message_calendar.destroy
 
     respond_to do |format|
-      format.html { redirect_to message_calendars_url }
+      format.html { redirect_to :action => :index, :message_id => @message_calendar.message }
       format.json { head :no_content }
     end
   end

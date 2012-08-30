@@ -7,7 +7,7 @@ class Message < ActiveRecord::Base
   validate :validate_description_call_language
 
   belongs_to :group
-  has_many :message_calendar
+  has_many :message_calendar, :dependent => :destroy
 
   #Validación del lenguaje para llamadas
   #es muy sencillo se tiene los 2 verbos: Reproducir, Decir
