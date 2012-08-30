@@ -75,15 +75,15 @@ class Campaign < ActiveRecord::Base
         group.client.find_each do |client|
           logger.debug("Campaign#Process: Para cliente %s en grupo %s" % [client.fullname, group.name])
           
-          #si no hay calendario se realiza marcacion directa
-          unless message.message_calendar.exists?
+          #si no hay calendario se realiza marcacion directa y es anonima
+          if not message.message_calendar.exists? and message.anonymous
             next call_client(client, message) 
           end
           
 
           #se busca el calendario para iniciar marcacion
           logger.debug("Campaign#Process: Se busca en calendario")
-          message.message_calendar.find_each do |message_calendar|
+          message.message_calendar.all.each do |message_calendar|
             if Time.now >= Time.parse(message_calendar.start.to_s) and  Time.now <= Time.parse(message_calendar.stop.to_s)
               call_client(client, message)
             end
