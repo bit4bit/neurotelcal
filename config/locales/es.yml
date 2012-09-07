@@ -1,8 +1,10 @@
+# -*- coding: utf-8 -*-
 es:
   appname: 'NeuroTelCal'
   appdescription: 'Automarcador'
   activerecord:
     models:
+      entity: 'Entidad'
       campaign: 'Campaña'
       resource: 'Recurso'
       message: 'Mensaje'
@@ -10,6 +12,13 @@ es:
       group: 'Grupo'
       message_calendar: 'Calendario de Mensaje'
     attributes:
+      entity:
+        name: 'Nombre'
+        slogan: 'Lema'
+        phone: 'Telefono'
+        direction: 'Direccion'
+        leader: 'Encargado/a'
+        description: 'Descripcion'
       group:
         name: 'Nombre'
       campaign:
@@ -41,6 +50,7 @@ es:
   destroy: 'Eliminar'
   are_you_sure: 'Esta usted seguro/a?'
   menu:
+    entity: 'Entidades'
     campaigns: 'Campañas'
     plivos: 'Plivo Servidores'
     reports: 'Reportes'
@@ -198,3 +208,20 @@ es:
     l:
       start: 'Inicia'
       stop: 'Termina'
+  entity:
+    are_you_sure: 'Esta uste seguro/a de eliminara esta entidad? esto eliminar todas las campanas de la entidad'
+    l:
+      name: 'Nombre'
+      slogan: 'Lema'
+      phone: 'Telefono'
+      direction: 'Direccion'
+      leader: 'Encargado/a'
+      description: 'Descripcion'
+    index:
+      title: 'Listado de Entidades'
+    edit:
+      title: 'Editando Entidad'
+    new:
+      title: 'Nueva Entidad'
+    show:
+      title: 'Mostrando Entidad'

@@ -17,6 +17,7 @@
       <span id="app"><%= t('appname')%>. <%= t('appdescription')%>
 	</span>
       <ul>
+	<li><%= link_to I18n.t('menu.entity'), entities_path%></li>
 	<li><%= link_to I18n.t('menu.campaigns'), campaigns_path%></li>
 	<li><%= link_to I18n.t('menu.plivos'), plivos_path %></li>
 	<li><%= link_to I18n.t('menu.reports'), reports_index_path %></li>

@@ -1,3 +1,7 @@
+<%= link_to I18n.t('back'), entities_path, :class => "button negative" %>
+<%= link_to I18n.t('edit'), edit_entity_path(@entity), :class => "button" %>
+
+
 <p id="notice"><%= notice %></p>
 
 <p>
@@ -31,5 +35,3 @@
 </p>
 
 
-<%= link_to 'Edit', edit_entity_path(@entity) %> |
-<%= link_to 'Back', entities_path %>

@@ -2,12 +2,34 @@
   <%= f.error_notification %>
 
   <div class="form-inputs">
-    <%= f.input :name %>
-    <%= f.input :slogan %>
-    <%= f.input :phone %>
-    <%= f.input :direction %>
-    <%= f.input :leader %>
-    <%= f.input :description %>
+    <div class="field">
+    <%= f.label :name %><br />
+    <%= f.text_field :name %>
+    </div>
+    <div class="field">
+    <%= f.label :slogan %><br />
+    <%= f.text_area :slogan %>
+    </div>
+    
+    <div class="field">
+      <%= f.label :phone %><br />
+      <%= f.text_field :phone %>
+    </div>
+    
+    <div class="field">
+      <%= f.label :direction %><br />
+      <%= f.text_field :direction %>
+    </div>
+
+    <div class="field">
+      <%= f.label :leader %><br />
+      <%= f.text_field :leader %>
+    </div>
+
+    <div class="field">
+      <%= f.label :description %><br />
+      <%= f.text_area :description %>
+    </div>
   </div>
 
   <div class="form-actions">

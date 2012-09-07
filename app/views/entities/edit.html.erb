@@ -1,6 +1,8 @@
-<h1>Editing entity</h1>
+<%= link_to I18n.t('back'), entities_path, :class => "button negative" %>
+<%= link_to I18n.t('show'), @entity, :class => "button" %> |
+
+<h1><%= I18n.t('entity.edit.title')%></h1>
 
 <%= render 'form' %>
 
-<%= link_to 'Show', @entity %> |
-<%= link_to 'Back', entities_path %>
+
