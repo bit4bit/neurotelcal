@@ -22,7 +22,8 @@ Rails.logger = Logger.new(Rails.root.join('log', 'neurotelcalservice.log'), 3, 5
 
 #Realiza llamadas respectivas de una campana
 module ServiceNeurotelcal
-  
+  @@running = true
+
   class CampaignCall
     #Se espera que la campana si exista
     def initialize(name)
@@ -45,11 +46,20 @@ module ServiceNeurotelcal
   end
 
   def self.start
+    pid_file = File.join(Dir.tmpdir,'neurotelcalservice.pid')
+    if File.exists?(pid_file)
+      STDERR.puts "YA HAY UN SERVICIO INICIADO"
+      exit(1)
+    end
+
+    Signal.trap('INT') { ServiceNeurotelcal.stop}
+    Signal.trap('TERM') { ServiceNeurotelcal.stop}
     #Run services
     print "Servicio de automarcador iniciado " + Time.now.to_s + "\n"
     #a demonio
     Process.daemon
     
+   
     fpid = File.open(File.join(Dir.tmpdir, 'neurotelcalservice.pid'), 'w')
     fpid.write(Process.pid)
     fpid.close
@@ -58,16 +68,7 @@ module ServiceNeurotelcal
     $threads_campaigns = []
     
     
-    Signal.trap('SIGHUP') do
-      Rails.logger.debug('Forzando salida...espere.. ' + Time.now.to_s)
-      print 'Forzando salida...espere..' + "\n"
-      $running = false
-      #@todo COMO GARANTIZO QUE SI TERMINO LA ULTIMA LLAMADA
-      $threads_campaigns.each { |thread| thread.join}
-    end
-    
-    
-    while($running) do
+    while(@@running) do
       
       Campaign.all.each do |campaign|
 
@@ -82,17 +83,29 @@ module ServiceNeurotelcal
       
       $threads_campaigns.each { |thread| thread.join}
       $threads_campaigns.clear
+      sleep 1
     end
     
     Rails.logger.debug('--ENDED ' + Time.now.to_s)
-    print "Servicio de automarcador terminado " + Time.now.to_s + "\n"
   end
-
+  
   def self.stop
+    @@running = false
+    File.delete(File.join(Dir.tmpdir, 'neurotelcalservice.pid'))
+  end
+  
+  def self.force_stop
     fpid = File.open(File.join(Dir.tmpdir, 'neurotelcalservice.pid'), 'r')
     pid = fpid.read
     fpid.close
-    Process.kill('HUP', pid.to_i)
+    begin
+      Process.kill('TERM', pid.to_i)
+      Rails.logger.debug "Deteniendo servicio"
+      print "Deteniendo...servicio\n"
+      sleep 10
+    rescue
+    
+    end
   end
 end
 

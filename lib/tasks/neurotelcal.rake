@@ -17,6 +17,6 @@ namespace :neurotelcal do
   end
 
   task :service_stop => :environment do
-    ServiceNeurotelcal::stop
+    ServiceNeurotelcal::force_stop
   end
 end
