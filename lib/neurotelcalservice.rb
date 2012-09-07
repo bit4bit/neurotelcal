@@ -40,7 +40,17 @@ module ServiceNeurotelcal
 
     #Procesa mensaje y realiza las llamadas indicadas
     def process_queue
-      @campaign.process
+      begin
+        @campaign.process
+      rescue PlivoNotFound => e
+        Rails.logger.error("NO HAY SERVIDOR PLIVO PARA LLAMAR")
+      rescue PlivoCannotCall => e
+        Rails.logger.error("NO SE PUDO REALIZAR LA LLAMADA")
+      rescue Errno::ECONNREFUSED => e
+        Rails.logger.error("CONEXION RECHAZADA SERVIDOR PLIVO:" + e.message)
+      rescue Exception => e
+        Rails.logger.error("EXCEPTION:" + e.message)
+      end
     end
 
   end
@@ -95,10 +105,11 @@ module ServiceNeurotelcal
   end
   
   def self.force_stop
-    fpid = File.open(File.join(Dir.tmpdir, 'neurotelcalservice.pid'), 'r')
-    pid = fpid.read
-    fpid.close
     begin
+      fpid = File.open(File.join(Dir.tmpdir, 'neurotelcalservice.pid'), 'r')
+      pid = fpid.read
+      fpid.close
+
       Process.kill('TERM', pid.to_i)
       Rails.logger.debug "Deteniendo servicio"
       print "Deteniendo...servicio\n"
