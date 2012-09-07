@@ -8,17 +8,24 @@
       <dd>Reproducir archivo desde servidor de la ruta indicada.</dd>
       <dt>Registrar digitos</dt>
       <dd>
-	Almacena digitos de la llamada.. algunas configuraciones son
-	duracion=<int> tiempo para expirar antes de salir<br />
-	cantidad=<int> cantidad de digitos a guardar<br />
-	digitosValidos=<string> digitos a esperar<br />
-	intentos=<int> intentos antes de expirar<br />
+	Almacena digitos de la llamada.. algunas configuraciones son:<br />
+	audio=&lt;str&gt; ruta de archivo a reproducir<br />
+	duracion=&lt;int&gt; tiempo para expirar antes de salir<br />
+	cantidad=&lt;int&gt; cantidad de digitos a guardar<br />
+	digitosValidos=&lt;str&gt; digitos a esperar<br />
+	intentos=&lt;int&gt; intentos antes de expirar<br />
       </dd>
       <dt>Decir &lt;...mensaje...&gt;</dt>
       <dd>Dice lo indicado en mensaje, además se puede incluir código entre &lt;%= .. %&gt;.<br />
 	Variables: <br />
 	<b>!client_id</b> ID cliente
-	</dd>
+      </dd>
+      <dt>SI = &lt;valor&gt; (&lt;si&gt;) (&lt;no&gt;)</dt>
+      <dd>Ejecuta en base a ultimo resultado<br />
+	valor=&lt;str&gt; lo que se compara<br />
+	  si=exp lo que se ejecuta cuando cumple<br />
+	  no=exp lo que se ejecuta cuando no cumple<br />
+	
     </dl>
   </span>
 </a>
