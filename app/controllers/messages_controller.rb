@@ -35,7 +35,7 @@ class MessagesController < ApplicationController
 
     @group = Group.find(group_id)
     @campaign = Campaign.find(@campaign_id)
-    @messages = Message.where('group_id' => group_id, :anonymous => false).paginate :page => params[:page]
+    @messages = Message.where('group_id' => group_id, :anonymous => false).paginate :page => params[:page], :order => 'created_at desc'
 
 
     respond_to do |format|

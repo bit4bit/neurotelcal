@@ -31,9 +31,10 @@ class Campaign < ActiveRecord::Base
     ncalls = Call.where(:message_id => message.id, :client_id => client.id).count
     #@todo agregar exepction
     if ncalls > 0
-      calls_faileds = Call.where(:message_id => message.id, :client_id => client.id).where('hangup_enumeration != "NORMAL_CLEARING"').count
+      considera_contestada = ["NORMAL_CLEARING", "ALLOTED_TIMEOUT"]
+      calls_faileds = Call.where(:message_id => message.id, :client_id => client.id).where("hangup_enumeration NOT IN (%s)" % considera_contestada.map {|v| "'%s'" % v}.join(',')).count
       #ya se marco
-      return false if Call.where(:message_id => message.id, :client_id => client.id).where(:hangup_enumeration => :NORMAL_CLEARING).count > 0
+      return false if Call.where(:message_id => message.id, :client_id => client.id).where("hangup_enumeration IN (%s)" % considera_contestada.map {|v| "'%s'" % v}.join(',')).count > 0
       #ya hay marcacion en camino
       return false if Call.where(:message_id => message.id, :client_id => client.id, :terminate => nil).exists?
       #ya se realizaron todos los intentos

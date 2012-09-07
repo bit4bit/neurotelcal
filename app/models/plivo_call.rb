@@ -15,6 +15,7 @@ class PlivoCall < ActiveRecord::Base
   end
 
   def answered?
+    answer_list = ['NORMAL_CLEARING', 'ALLOTED_TIMEOUT']
     return self.hangup_enumeration == 'NORMAL_CLEARING'
   end
   
