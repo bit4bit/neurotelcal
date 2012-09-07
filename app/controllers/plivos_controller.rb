@@ -231,8 +231,6 @@ class PlivosController < ApplicationController
     call.status = plivocall.status
     call.save
 
-
-
     respond_to do |format|
       format.xml
     end
