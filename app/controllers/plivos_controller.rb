@@ -181,7 +181,7 @@ class PlivosController < ApplicationController
     plivocall.hangup_enumeration = params["HangupCause"] if params["HangupCause"]
     plivocall.end = true
     plivocall.save
-
+    logger.debug(params)
     
     case params["CallStatus"]
     when 'completed'

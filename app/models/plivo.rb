@@ -118,7 +118,6 @@ class Plivo < ActiveRecord::Base
     call.save
 
     sequence = message.description_to_call_sequence('!client_fullname' => client.fullname, '!client_id' => client.id)
-
     #Se registra la llamada iniciada de plivo
     plivocall = PlivoCall.new
     plivocall.number = client.phonenumber
