@@ -12,6 +12,11 @@
   <% end %>
 
   <div class="field">
+    <%= I18n.t('defaults.entity')%><br />
+    <%= f.select :entity_id, options_for_select(@entities) %>
+  </div>
+
+  <div class="field">
     <%= f.label :name %><br />
     <%= f.text_field :name %>
   </div>

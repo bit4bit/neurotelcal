@@ -2,14 +2,15 @@
 class Campaign < ActiveRecord::Base
   STATUS = { 'START' => 0, 'PAUSE' => 1, 'END' => 2}
 
-  attr_accessible :description, :name, :status
+  attr_accessible :description, :name, :status, :entity_id
   
   validates :name, :presence => true, :uniqueness => true
+  validates :entity_id, :presence => true
   has_many :resource
   has_many :client
   has_many :plivo
   has_many :group
-
+  belongs_to :entity
   def pause?
     return STATUS['PAUSE'] == status
   end

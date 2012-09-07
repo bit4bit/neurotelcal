@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120907163406) do
+ActiveRecord::Schema.define(:version => 20120907165435) do
 
   create_table "calendars", :force => true do |t|
     t.integer  "message_id"
@@ -46,6 +46,7 @@ ActiveRecord::Schema.define(:version => 20120907163406) do
     t.datetime "stop"
     t.datetime "created_at",  :null => false
     t.datetime "updated_at",  :null => false
+    t.integer  "entity_id"
   end
 
   create_table "clients", :force => true do |t|
@@ -110,7 +111,6 @@ ActiveRecord::Schema.define(:version => 20120907163406) do
     t.boolean  "end",                :default => false
     t.datetime "created_at",                            :null => false
     t.datetime "updated_at",                            :null => false
-    t.integer  "ring_count",         :default => 0
   end
 
   create_table "plivos", :force => true do |t|

@@ -43,7 +43,7 @@ class CampaignsController < ApplicationController
   # GET /campaigns/new.json
   def new
     @campaign = Campaign.new
-
+    @entities = Entity.all.map { |u| [u.name, u.id]}
     respond_to do |format|
       format.html # new.html.erb
       format.json { render :json => @campaign }
@@ -53,13 +53,14 @@ class CampaignsController < ApplicationController
   # GET /campaigns/1/edit
   def edit
     @campaign = Campaign.find(params[:id])
+    @entities = Entity.all.map { |u| [u.name, u.id]}
   end
 
   # POST /campaigns
   # POST /campaigns.json
   def create
     @campaign = Campaign.new(params[:campaign])
-
+    @entities = Entity.all.map { |u| [u.name, u.id]}
     respond_to do |format|
       if @campaign.save
         format.html { redirect_to @campaign, :notice => 'Campaign was successfully created.' }

@@ -3,6 +3,7 @@
 <%= link_to I18n.t('report.export_csv'), reports_export_csv_index_path%>
 <table>
   <tr>
+    <th><%= I18n.t('defaults.entity')%></th>
     <th><%= I18n.t('defaults.campaign')%></th>
     <th><%= I18n.t('defaults.message')%></th>
     <th><%= I18n.t('message.l.call')%></th>
@@ -16,6 +17,7 @@
   </tr>
   <% @calls.each do |call| %>
   <tr>
+    <td><%= call.client.campaign.entity.name%></td>
     <td><%= call.client.campaign.name %></td>
     <% if call.message.nil? %>
     <td><%= I18n.t('defaults.direct_message')%></td> 

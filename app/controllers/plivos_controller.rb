@@ -24,9 +24,8 @@ class PlivosController < ApplicationController
   # GET /plivos.json
   def index
     @plivos = Plivo.all
-    
     @campaigns = Campaign.all.map {|u| [u.name, u.id] }
-
+    print @campaigns
     respond_to do |format|
       format.html # index.html.erb
       format.json { render :json => @plivos }
