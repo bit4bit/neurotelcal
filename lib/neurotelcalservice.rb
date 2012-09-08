@@ -50,6 +50,7 @@ module ServiceNeurotelcal
         Rails.logger.error("CONEXION RECHAZADA SERVIDOR PLIVO:" + e.message)
       rescue Exception => e
         Rails.logger.error("EXCEPTION:" + e.message)
+        e.backtrace.each { |line| Rails.logger.error line}
       end
     end
 
