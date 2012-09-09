@@ -184,6 +184,8 @@ class Message < ActiveRecord::Base
               options[:validDigits] = option[1].to_s
             when 'audio'
               options[:audio] = option[1].to_s
+            when 'decir'
+              options[:decir] = option[1]
             end
           end
           

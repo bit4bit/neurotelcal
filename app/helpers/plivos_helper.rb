@@ -61,6 +61,9 @@ module PlivosHelper
           if step[:options][:audio]
             xml.Play step[:options][:audio]
           end
+          if step[:options][:decir]
+            xml.Speak step[:options][:decir]
+          end
         end
       end
       return false

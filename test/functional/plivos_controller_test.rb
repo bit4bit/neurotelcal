@@ -161,20 +161,4 @@ class PlivosControllerTest < ActionController::TestCase
 
   end
   
-  test "answer client si anidado mas anidado" do
-    message = Message.new(:description => "Registrar digitos cantidad=1\nSi = 3 / Decir give me another number > Registrar digitos cantidad=1 > Si = 2 / Decir you choose two | Decir upssss | Decir wrong")
-    call = Call.new(:client_id => Client.all.first)
-    assert call.save()
-    
-    sq = message.description_to_call_sequence({})
-    sq[0][:result] = 3
-    plvc = PlivoCall.new(:uuid => 'testeo',  :step => 1, :data => sq.to_yaml, :plivo_id => Plivo.all.first, :call_id => call)
-    assert plvc.save()
-    post :answer_client, {:format => :xml, :ALegRequestUUID => 'testeo'}
-
-    plvc = PlivoCall.where(:uuid => 'testeo').first
-    print plvc.call_sequence
-    print @response.body
-
-  end
 end
