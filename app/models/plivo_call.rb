@@ -9,6 +9,16 @@ class PlivoCall < ActiveRecord::Base
     return YAML::load(data)
   end
   
+  def update_call_sequence(seq)
+    self.data = seq.to_yaml
+    self.save()
+  end
+  
+  def reset_step
+    self.step = 0
+    self.save()
+  end
+
   def next_step
     self.step += 1
     self.save()

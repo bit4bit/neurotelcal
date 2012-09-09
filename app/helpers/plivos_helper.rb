@@ -5,7 +5,7 @@ module PlivosHelper
       vr = false
       last_step = {}
       @call_sequence.reverse.each do |call_step|
-        print call_step
+        #print call_step
         if call_step[:result]
           last_step = call_step
           break
@@ -18,10 +18,28 @@ module PlivosHelper
         end
       rescue
       end
+
+      #se elimina la secuencia {:si..} y se reemplaza por su continuacion
+      #quedando al final una sola sequencia [...]
       if vr == true
-        return process_call_step(xml, step[:sicontinuar].first) unless step[:sicontinuar].empty?
+        cu = @call_sequence
+        cu.slice!(cu.size - 1, 1)
+        step[:sicontinuar].each { |v| cu << v}
+        @plivocall.update_call_sequence(cu)
+        #return process_call_step(xml, step[:sicontinuar].first)
+        step[:sicontinuar].each { |v| 
+          process_call_step(xml, v) if v[:si].nil? or v[:colgar] or v[:register]
+        }
       else
-        return process_call_step(xml, step[:nocontinuar].first) unless step[:nocontinuar].empty?
+        cu = @call_sequence
+        cu.slice!(cu.size - 1, 1)
+        step[:nocontinuar].each { |v| cu << v}
+        @plivocall.update_call_sequence(cu)
+        #return process_call_step(xml, step[:nocontinuar].first)
+        step[:nocontinuar].each { |v| 
+          process_call_step(xml, v) if v[:si].nil? or v[:colgar] or v[:register]
+        }
+        #step[:nocontinuar].each { |v| process_call_step(xml, v)} unless step[:nocontinuar].empty?
       end
     elsif step[:colgar]
       if step[:segundos] > 0

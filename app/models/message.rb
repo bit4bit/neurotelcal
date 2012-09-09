@@ -44,19 +44,41 @@ class Message < ActiveRecord::Base
       elsif register == 'voz'
       end
     when 'Si'
-      condiciones = ["=", ">=", "<="]
+
       begin
-        arg.strip.scan(/ *([^a-zA-Z0-9 ]+) *([^\(]+) *\(([^\)]+)\) *\(([^\)]*)\)/) do |condicion, valor, sicontinuar, nocontinuar|
-          errors.add(:description, 'Condicion invalida solo = >= <=' ) unless condiciones.include?(condicion)
-          sicontinuar.split('>').each do |linesi|
-            validate_description_line(linesi)
-          end
-          nocontinuar.split('>').each do |lineno|
-            validate_description_line(lineno)
+        def validar_si_exp(exp)
+          condiciones = ["=", ">=", "<="]
+          exp.strip.scan(/ *(=) *([^\/]+)(.+)$/) do |condicion, valor, subexp|
+            subexp[0]  = ''; subexp.strip!; 
+
+            errors.add(:description, 'Condicion invalida solo =' ) unless condiciones.include?(condicion)
+            errors.add(:description, 'Invalida sub expresion de Si') if subexp.empty?
+            
+            errors.add(:description, 'Falta separador de si y no |') unless subexp.include? '|'
+            subsexp = subexp.split('|')
+            noexp = subexp.slice(subexp.length - subexp.reverse.index('|'), subexp.length)
+            siexp = subexp.slice(0, subexp.length - subexp.reverse.index('|') -1)
+
+            siexp.split('>').each do |sexp|
+              if sexp.include?('Si')
+                validar_si_exp(sexp)
+              else
+                validate_description_line(sexp)
+              end
+            end
+            #SI
+            noexp.split('>').each do |sexp|
+              if sexp.include?('Si')
+                validar_si_exp(sexp)
+              else
+                validate_description_line(sexp)
+              end
+            end
           end
         end
-      rescue
-        errors.add(:description, 'Expresion invalida')
+        validar_si_exp(arg)
+      rescue Exception => e
+        errors.add(:description, e.message)
       end
     end
   end
@@ -84,70 +106,92 @@ class Message < ActiveRecord::Base
 
 
   def description_line_to_call_sequence(line, replaces)
-    words = line.split
+    words = line.gsub(/ +/," ").split
     verb = words[0]
     arg = words[1..-1].join(' ')
     
     case verb
     when 'Si'
-      arg.strip.scan(/ *([^a-zA-Z0-9 ]+) *([^\(]+) *\(([^\)]+)\) *\(([^\)]*)\)/) do |condicion, valor, sicontinuar, nocontinuar|
-        sicontinuar.strip!
-        nocontinuar.strip!
+      def evaluar_si_exp(exp, replaces)
+        condiciones = ["=", ">=", "<="]
+        sequencesi = {}
+        exp.strip.scan(/ *(=) *([^\/]+)(.+)$/) do |condicion, valor, subexp|
+          subexp[0]  = ''; subexp.strip!; 
+          sequencesi[:si] = {:condicion => condicion, :valor => valor.strip!}
+          sequencesi[:sicontinuar] = [] unless sequencesi[:sicontinuar].is_a? Array
+          sequencesi[:nocontinuar] = [] unless sequencesi[:nocontinuar].is_a? Array
+          subsexp = subexp.split('|')
+          noexp = subexp.slice(subexp.length - subexp.reverse.index('|'), subexp.length); noexp.strip!
+          siexp = subexp.slice(0, subexp.length - subexp.reverse.index('|')); siexp.slice!(siexp.length-1,1); siexp.strip!
 
-        sicontinuar_sequence = []
-        nocontinuar_sequence = []
-        sicontinuar.split('>').each do |siexp|
-          sicontinuar_sequence << description_line_to_call_sequence(siexp, replaces)
-        end
+          siexp.split('>').each do |sexp|
+            
+            if sexp.include?('Si')
+              sequencesi[:sicontinuar] << evaluar_si_exp(sexp,  replaces)
+            else
+              print sexp
+              sequencesi[:sicontinuar] << description_line_to_call_sequence(sexp, replaces)
+            end
+          end
 
-        nocontinuar.split('>').each do |noexp|
-          nocontinuar_sequence << description_line_to_call_sequence(noexp, replaces)
-        end
-
-        return {:si => {:condicion => condicion, :valor => valor.strip}, :sicontinuar => sicontinuar_sequence, :nocontinuar => nocontinuar_sequence}
-      end
-    when 'Colgar'
-      return {:colgar => true, :segundos => 0}
-    when 'ReproducirLocal'
-      return {:audio_local => arg}
-    when 'Reproducir'
-      resource = Resource.where(:campaign_id => group.campaign.id, :type_file => 'audio', :name => arg).first
-      return {:audio => resource.file}
-    when 'Decir'
-      replaces.each do |key, value|
-        arg = arg.gsub(key.to_s, value.to_s)
-      end
-      erb = ERB.new(arg)
-      decir_str = erb.result
-      logger.debug(decir_str)
-      return {:decir => decir_str }
-    when 'Registrar'
-      register = arg.split[0]
-      case register
-      when 'digitos'
-        options = {:retries => 1, :timeout => 5, :numDigits => 99, :validDigits => '0123456789*#'}
-        words.each do |word|
-          if option = word.to_s.match(/([0-9a-zA-Z\-_\/\\\.ñÑáéíóúÁÉÍÓÚ]+)=([0-9a-zA-Z\-_\/\\\.ñÑáéíóúÁÉÍÓÚ]+)/)
-            case option[1]
-            when 'intentos'
-              options[:retries] = option[2].to_i
-            when 'duracion'
-              options[:timeout] = option[2].to_i
-            when 'cantidad'
-              options[:numDigits] = option[2].to_i
-            when 'digitosValidos'
-              options[:validDigits] = option[2].to_s
-            when 'audio'
-              options[:audio] = option[2].to_s
+          #SI
+          noexp.split('>').each do |sexp|
+            if sexp.include?('Si')
+              sequencesi[:nocontinuar] << evaluar_si_exp(sexp,  replaces)
+            else
+              sequencesi[:nocontinuar] << description_line_to_call_sequence(sexp, replaces)
             end
           end
         end
-        
-        logger.debug("Options for get digits " + options.to_s)
-        
-        return {:register => :digits, :options => options}
+        return sequencesi
       end
-    end
+      sequencesi = {}
+      return evaluar_si_exp(arg, replaces)
+      when 'Colgar'
+        return {:colgar => true, :segundos => 0}
+      when 'ReproducirLocal'
+        return {:audio_local => arg}
+      when 'Reproducir'
+        resource = Resource.where(:campaign_id => group.campaign.id, :type_file => 'audio', :name => arg).first
+        return {:audio => resource.file}
+      when 'Decir'
+        replaces.each do |key, value|
+          arg = arg.gsub(key.to_s, value.to_s)
+        end
+        erb = ERB.new(arg)
+        decir_str = erb.result
+        logger.debug(decir_str)
+        return {:decir => decir_str }
+      when 'Registrar'
+        register = arg.split[0]
+        case register
+        when 'digitos'
+          options = {:retries => 1, :timeout => 5, :numDigits => 99, :validDigits => '0123456789*#'}
+          words = arg.scan(/([0-9a-zA-Z\-_\/\\\.ñÑáéíóúÁÉÍÓÚ]+)=([0-9a-zA-Z\-_\/\\\.ñÑáéíóúÁÉÍÓÚ]+|\'[^\']+)/)
+          words.each do |word|
+            option = word
+            option[1][0] = ""if option[1][0] == "'"
+            option[1].strip!
+            option[0].strip!
+            case option[0]
+            when 'intentos'
+              options[:retries] = option[1].to_i
+            when 'duracion'
+              options[:timeout] = option[1].to_i
+            when 'cantidad'
+              options[:numDigits] = option[1].to_i
+            when 'digitosValidos'
+              options[:validDigits] = option[1].to_s
+            when 'audio'
+              options[:audio] = option[1].to_s
+            end
+          end
+          
+          logger.debug("Options for get digits " + options.to_s)
+          
+          return {:register => :digits, :options => options}
+        end
+      end
   end
   #Parsea :description y retorna arreglo con la secuencia indicada
   #Se tiene las siguientes acciones:

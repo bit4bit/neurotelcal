@@ -14,7 +14,7 @@ class Plivo < ActiveRecord::Base
   belongs_to :campaign
   has_many :plivo_call
 
-  validates :app_url, :api_url, :sid, :auth_token, :campaign, :gateways, :gateway_timeouts, :gateway_retries, :caller_name, :presence => true
+  validates :app_url, :api_url, :sid, :auth_token, :campaign_id, :gateways, :gateway_timeouts, :gateway_retries, :caller_name, :presence => true
   validates :channels, :numericality => true
   validates :gateway_retries, :gateway_timeouts, :numericality => true
 

@@ -24,7 +24,7 @@ class ApplicationController < ActionController::Base
   
 
   def authorize
-    if request.remote_ip == '127.0.0.1'
+    if request.remote_ip == '127.0.0.1' or request.remote_ip == '0.0.0.0'
       logger.debug("Direct access to 127.0.0.1")
       return
     end

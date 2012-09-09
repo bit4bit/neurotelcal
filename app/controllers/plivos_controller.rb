@@ -164,6 +164,7 @@ class PlivosController < ApplicationController
       call.status = @plivocall.status
       call.save
     end
+
     logger.debug('Trying first plivo from campaign to url ' + @plivo.app_url)
     respond_to do |format|
       format.xml
