@@ -14,17 +14,18 @@
 	cantidad=&lt;int&gt; cantidad de digitos a guardar<br />
 	digitosValidos=&lt;str&gt; digitos a esperar<br />
 	intentos=&lt;int&gt; intentos antes de expirar<br />
+	decir='...' decir algo<br />
       </dd>
       <dt>Decir &lt;...mensaje...&gt;</dt>
       <dd>Dice lo indicado en mensaje, además se puede incluir código entre &lt;%= .. %&gt;.<br />
 	Variables: <br />
 	<b>!client_id</b> ID cliente
       </dd>
-      <dt>SI = &lt;valor&gt; (&lt;si&gt;) (&lt;no&gt;)</dt>
+      <dt>SI = &lt;valor&gt; / (&lt;si&gt;) | (&lt;no&gt;)</dt>
       <dd>Ejecuta en base a ultimo resultado<br />
 	valor=&lt;str&gt; lo que se compara<br />
-	  si=exp lo que se ejecuta cuando cumple<br />
-	  no=exp lo que se ejecuta cuando no cumple<br />
+	  si=exp lo que se ejecuta cuando cumple, para multiples separar por &gt; <br />
+	  no=exp lo que se ejecuta cuando no cumple, para multiples separar por &gt; <br />
       </dd>
       <dt>Colgar</dt>
       <dd>Cuelga la llamada</dd>
