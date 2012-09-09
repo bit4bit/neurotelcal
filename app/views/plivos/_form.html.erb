@@ -15,6 +15,9 @@
     <%= f.input :caller_name%>
   </div>
   <div class="field">
+    <%= f.input :phonenumber, :input_html => { :size => 10, :maxlength => 15}%>
+  </div>
+  <div class="field">
     <%= f.input :app_url, :input_html => { :size => 30 }%>
   </div>
   <div class="field">

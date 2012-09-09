@@ -10,7 +10,7 @@ class PlivoNotFound < Exception
 end
 
 class Plivo < ActiveRecord::Base
-  attr_accessible :app_url, :api_url, :auth_token, :campaign_id, :sid, :status, :gateways, :caller_name, :gateway_timeouts, :gateway_retries, :gateway_codecs, :channels
+  attr_accessible :app_url, :api_url, :auth_token, :campaign_id, :sid, :status, :gateways, :caller_name, :gateway_timeouts, :gateway_retries, :gateway_codecs, :channels, :phonenumber
   belongs_to :campaign
   has_many :plivo_call
 
@@ -83,9 +83,9 @@ class Plivo < ActiveRecord::Base
 
     #http://wiki.freeswitch.org/wiki/Channel_Variables#monitor_early_media_ring
     extra_dial_string = "leg_delay_start=1,hangup_after_bridge=true,leg_timeout=%d" % message.hangup_on_ring
-    
     call_params = {
-      'From' => self.caller_name,
+      'From' => self.phonenumber,
+      'CallerName' => self.caller_name,
       'To' => client.phonenumber,
       'Gateways' => self.gateways,
       'GatewayCodecs' => self.gateway_codecs_quote,
@@ -105,6 +105,8 @@ class Plivo < ActiveRecord::Base
       #NO FUNCIONA
       #call_params['HangupOnRing'] = message.hangup_on_ring
     end
+
+    
 
     logger.debug(call_params)      
     
