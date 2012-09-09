@@ -186,6 +186,12 @@ class Message < ActiveRecord::Base
               options[:audio] = option[1].to_s
             when 'decir'
               options[:decir] = option[1]
+            else
+              #se permite almacenar variables para despues
+              begin
+                options[option[0].to_s] = option[1]
+              rescue
+              end
             end
           end
           
