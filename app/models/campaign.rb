@@ -28,15 +28,31 @@ class Campaign < ActiveRecord::Base
   #Campaign llama cliente, buscando un espacio disponible entre sus servidores plivos
   def call_client(client, message)
     called = false
-    ncalls = Call.where(:message_id => message.id, :client_id => client.id).count
+    if client.group.messages_share_clients
+      ncalls = Call.where(:message_id => client.group.id_messages_share_clients, :client_id => client.id).count
+    else
+      ncalls = Call.where(:message_id => message.id, :client_id => client.id).count
+    end
     #@todo agregar exepction
     if ncalls > 0
       considera_contestada = ["NORMAL_CLEARING", "ALLOTED_TIMEOUT"]
-      calls_faileds = Call.where(:message_id => message.id, :client_id => client.id).where("hangup_enumeration NOT IN (%s)" % considera_contestada.map {|v| "'%s'" % v}.join(',')).count
-      #ya se marco
-      return false if Call.where(:message_id => message.id, :client_id => client.id).where("hangup_enumeration IN (%s)" % considera_contestada.map {|v| "'%s'" % v}.join(',')).count > 0
-      #ya hay marcacion en camino
-      return false if Call.where(:message_id => message.id, :client_id => client.id, :terminate => nil).exists?
+    
+      #logger.debug("Grupo comparte mensajes?" + client.group.messages_share_clients.to_s )
+      
+      if client.group.messages_share_clients
+
+        calls_faileds = Call.where(:message_id => client.group.id_messages_share_clients, :client_id => client.id).where("hangup_enumeration NOT IN (%s)" % considera_contestada.map {|v| "'%s'" % v}.join(',')).count
+        #ya se marco
+        return false if Call.where(:message_id => client.group.id_messages_share_clients, :client_id => client.id).where("hangup_enumeration IN (%s)" % considera_contestada.map {|v| "'%s'" % v}.join(',')).count > 0
+        #ya hay marcacion en camino
+        return false if Call.where(:message_id => client.group.id_messages_share_clients, :client_id => client.id, :terminate => nil).exists?
+      else
+        calls_faileds = Call.where(:message_id => message.id, :client_id => client.id).where("hangup_enumeration NOT IN (%s)" % considera_contestada.map {|v| "'%s'" % v}.join(',')).count
+        #ya se marco
+        return false if Call.where(:message_id => message.id, :client_id => client.id).where("hangup_enumeration IN (%s)" % considera_contestada.map {|v| "'%s'" % v}.join(',')).count > 0
+        return false if Call.where(:message_id => message.id, :client_id => client.id, :terminate => nil).exists?
+      end
+      
       #ya se realizaron todos los intentos
       return false if calls_faileds > message.retries
     end

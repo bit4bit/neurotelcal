@@ -4,4 +4,8 @@ class Group < ActiveRecord::Base
   has_many :client, :order => 'priority DESC'
   has_many :message, :order => 'priority DESC'
   belongs_to :campaign
+
+  def id_messages_share_clients
+    message.all.map {|m| m.id }
+  end
 end
