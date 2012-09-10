@@ -21,6 +21,7 @@ es:
         description: 'Descripcion'
       group:
         name: 'Nombre'
+        messages_share_clients: 'Mensajes se comparten clientes?'
       campaign:
         name: 'Nombre'
         description: 'Descripción'
@@ -90,6 +91,9 @@ es:
     show:
       title: 'Mostrando Campaña'
   group:
+    l:
+      name: 'Nombre'
+      messages_share_clients: 'Mensajes se comparten clientes?'
     index:
       title: 'Listando Grupos'
     edit:
