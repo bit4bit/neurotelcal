@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120909235853) do
+ActiveRecord::Schema.define(:version => 20120910000728) do
 
   create_table "calendars", :force => true do |t|
     t.integer  "message_id"
@@ -54,8 +54,9 @@ ActiveRecord::Schema.define(:version => 20120909235853) do
     t.string   "phonenumber"
     t.integer  "campaign_id"
     t.integer  "group_id"
-    t.datetime "created_at",  :null => false
-    t.datetime "updated_at",  :null => false
+    t.datetime "created_at",                 :null => false
+    t.datetime "updated_at",                 :null => false
+    t.integer  "priority",    :default => 0
   end
 
   create_table "entities", :force => true do |t|

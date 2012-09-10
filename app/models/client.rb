@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 class Client < ActiveRecord::Base
   attr_accessible :campaign_id, :fullname, :group_id, :phonenumber
+  attr_accessible :priority #campo de su interno
   belongs_to :campaign
   belongs_to :group
   
