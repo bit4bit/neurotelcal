@@ -37,6 +37,7 @@ es:
         repeat_interval: 'Intervalo de repetición'
         repeat_until: 'Repetir hasta'
         hangup_on_ring: 'Cuelgue en timbre'
+        priority: 'Prioridad'
       client:
         fullname: 'Nombre Completo'
         phonenumbre: 'Número télefonico/sip'
@@ -119,6 +120,7 @@ es:
       repeat_until: 'Repetir Hasta'
       call_end: 'Hasta'
       retries: 'Reintentos'
+      priority: 'Prioridad'
     index:
       title: 'Listando Mensajes'
     edit:
