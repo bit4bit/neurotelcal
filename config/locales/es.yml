@@ -199,6 +199,7 @@ es:
       call_rejected: 'LLAMADA RECHAZADA'
       normal_clearing: 'COLGADO NORMAL'
       no_answer: 'SIN RESPUESTA'
+      unallocated_number: 'NUMERO NO UBICABLE'
   message_calendar:
     index:
       title: 'Listando Calendario de Mensaje'

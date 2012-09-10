@@ -17,6 +17,8 @@ class Call < ActiveRecord::Base
       return I18n.t('call.hangup_status.normal_clearing')
     when 'NO_ANSWER'
       return I18n.t('call.hangup_status.no_answer')
+    when 'UNALLOCATED_NUMBER'
+      return I18n.t('call.hangup_status.unallocated_number')
     else
       return self.hangup_enumeration
     end
