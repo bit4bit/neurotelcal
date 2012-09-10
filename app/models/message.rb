@@ -10,6 +10,12 @@ class Message < ActiveRecord::Base
   belongs_to :group
   has_many :message_calendar, :dependent => :destroy
 
+  #?Ya se realizaron las llamadas a todos los clientes?
+  def done_calls_clients?
+    ncalls = Call.where(:message_id => self.id, :hangup_enumeration => PlivoCall::ANSWER_ENUMERATION).count
+    logger.debug("N %d done calls for message %d for max clients %d cumple %s" % [ncalls, self.id, self.max_clients, (ncalls >= self.max_clients).to_s])
+    return ncalls >= self.max_clients
+  end
 
   def validate_description_line(line)
     verbs = ['Reproducir', 

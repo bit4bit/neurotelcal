@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 class PlivoCannotCall < Exception
 end
 
@@ -8,6 +7,7 @@ end
 
 class PlivoNotFound < Exception
 end
+
 
 class Plivo < ActiveRecord::Base
   attr_accessible :app_url, :api_url, :auth_token, :campaign_id, :sid, :status, :gateways, :caller_name, :gateway_timeouts, :gateway_retries, :gateway_codecs, :channels, :phonenumber
@@ -124,7 +124,7 @@ class Plivo < ActiveRecord::Base
     call.terminate = nil
     call.enter_listen = nil
     call.terminate_listen = nil
-    call.status = nil
+    call.status = 'calling'
     call.hangup_enumeration = nil
     call.save
 

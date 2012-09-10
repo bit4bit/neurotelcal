@@ -18,7 +18,7 @@ require 'tmpdir'
 
 $running = true
 Rails.logger = Logger.new(Rails.root.join('log', 'neurotelcalservice.log'), 3, 5*1024*1024)
-
+require Rails.root.join('app', 'models', 'plivo.rb')
 
 #Realiza llamadas respectivas de una campana
 module ServiceNeurotelcal

@@ -47,17 +47,17 @@ class Campaign < ActiveRecord::Base
 
       #no hay que botar escape ni modo de ubicar el numero
       return false if Call.where(:client_id => client.id).where("hangup_enumeration IN (%s)" % PlivoCall::REJECTED_ENUMERATION.map {|v| "'%s'" % v}.join(',')).count > 0
-      #calls_faileds = Call.where(:message_id => message_id, :client_id => client.id).where("hangup_enumeration NOT IN (%s)" % considera_contestada.map {|v| "'%s'" % v}.join(',')).count
       #ya se marco
-      return false if Call.where(:message_id => message_id, :client_id => client.id).where("hangup_enumeration IN (%s)" % considera_contestada.map {|v| "'%s'" % v}.join(',')).count > 0
-      return false if Call.where(:message_id => message_id, :client_id => client.id, :terminate => nil).exists?
+      return false if Call.where(:message_id => message_id, :client_id => client.id).where(:hangup_enumeration => PlivoCall::ANSWER_ENUMERATION).count > 0
+      return false if Call.in_process_for_message_client?(message_id, client.id).exists?
 
       #se vuelve a marcar desde la ultima marcacion
       begin
-        calls_faileds = Call.where(:message_id => message_id, :client_id => client.id).where("hangup_enumeration NOT IN (%s)" % considera_contestada.map {|v| "'%s'" % v}.join(',')).count
+        calls_faileds = Call.where(:message_id => message_id, :client_id => client.id).where("hangup_enumeration NOT IN (%s)" % PlivoCall::ANSWER_ENUMERATION.map {|v| "'%s'" % v}.join(',')).count
+        logger.debug('calls faileds %d for client %d' % [calls_faileds, client.id])
         if calls_faileds >= message.retries
-          call_failed = Call.where(:message_id => message_id, :client_id => client.id).where("hangup_enumeration NOT IN (%s)" % considera_contestada.map {|v| "'%s'" % v}.join(',')).last
-        
+          call_failed = Call.where(:message_id => message_id, :client_id => client.id).where("hangup_enumeration NOT IN (%s)" % PlivoCall::ANSWER_ENUMERATION.map {|v| "'%s'" % v}.join(',')).last
+          logger.debug('client %d priority to seconds %d' % [client.id, client.priority_to_seconds_wait])
           if not (Time.now >= Time.parse(call_failed.terminate.to_s) + client.priority_to_seconds_wait)
             return false
           else
@@ -66,9 +66,10 @@ class Campaign < ActiveRecord::Base
           end
          
         end
-      rescue
+      rescue Exception => e
+        logger.error('Error seen calls faildes. %s' % e.message)
       end
-      #return false if calls_faileds > message.retries
+
     end
 
 
@@ -86,38 +87,77 @@ class Campaign < ActiveRecord::Base
     }
 
     raise PlivoCannotCall, "cant find plivo to call" unless called
+    return true
   end
   
   
   #Procesa mensaje y realiza las llamadas indicadas
+  #@todo cachear consultas ya que se realizan muchas
   def process
-    self.group.find_each do |group|
+    self.group.all.each do |group|
 
       #si esta pausado no se realiza las llamadas
       next if pause?
       
-      group.message.find_each do |message|
+      group.message.all.each do |message|
         #se termina en caso de forzado, y espera la ultima llamada
         return false if end?
-        
+        #si ya se marcaron todos los clientes posibles se salta
+        if message.done_calls_clients? and not message.anonymous
+          logger.debug("Mensaje %d done calls jumping" % message.id)
+          next
+        else
+          logger.debug("Mensaje %d not have done calls yet " % [message.id])
+        end
         #se omite mensaje que no esta en fecha de verificacion
         next if Time.now < Time.parse(message.call.to_s) or Time.now > Time.parse(message.call_end.to_s) 
         logger.debug("Campaign#Process: Revisando mensaje %s inicia %s y termina %s" % [message.name, message.call.to_s, message.call_end.to_s])
 
-        group.client.find_each do |client|
+        count_calls = 0
+        group.client.all.each do |client|
           logger.debug("Campaign#Process: Para cliente %s en grupo %s" % [client.fullname, group.name])
+        
+
           
-          #si no hay calendario se realiza marcacion directa y es anonima
-          if not message.message_calendar.exists? and message.anonymous
+          #si es marcacion directa anonima
+          if message.anonymous
             next call_client(client, message) 
           end
           
+          #se espera que la ultima llamada se ade este mensaje
+          #sino se omite cliente y se deja para que lo preceso el mensaje
+          #al que corresponde
+          if Call.where(:client_id => client.id).exists?
+            unless Call.where(:message_id => message.id, :client_id => client.id).exists?
+              next
+            end
+          end
 
+          if client.group.messages_share_clients
+            message_id = client.group.id_messages_share_clients
+          else
+            message_id = message.id
+          end
+
+          #se salta si ya esta en proceso
+          if Call.in_process_for_message_client?(message_id, client.id).exists?
+            count_calls += 1
+            next
+          end
+         
+
+          if message.done_calls_clients?
+            break 
+          elsif message.max_clients > 0 and count_calls >= message.max_clients
+            break
+          end
+          
+          logger.debug('Count trying done calls %d for message %d max clients %d' % [count_calls, message.id, message.max_clients])
           #se busca el calendario para iniciar marcacion
           logger.debug("Campaign#Process: Se busca en calendario")
           message.message_calendar.all.each do |message_calendar|
             if Time.now >= Time.parse(message_calendar.start.to_s) and  Time.now <= Time.parse(message_calendar.stop.to_s)
-              call_client(client, message, message_calendar)
+              count_calls += 1 if call_client(client, message, message_calendar)
             end
           end
           
