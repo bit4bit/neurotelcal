@@ -19,4 +19,10 @@ namespace :neurotelcal do
   task :service_stop => :environment do
     ServiceNeurotelcal::force_stop
   end
+
+  task :service_restart => :environment do
+    ServiceNeurotelcal::force_stop
+    ServiceNeurotelcal::start 
+  end
+
 end

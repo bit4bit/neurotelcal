@@ -192,7 +192,7 @@ class PlivosController < ApplicationController
     if call
       call.terminate = Time.now
       call.completed_p = true
-
+      
       if plivocall.answered?
         call.terminate_listen = Time.now
       else
@@ -201,13 +201,15 @@ class PlivosController < ApplicationController
 
       call.status = plivocall.status
       call.hangup_enumeration = plivocall.hangup_enumeration
-
+      
       if call.terminate_listen and call.enter_listen
         call.length = call.terminate_listen - call.enter_listen
       else
         call.length = 0
       end
       call.save
+
+      
     end
 
 

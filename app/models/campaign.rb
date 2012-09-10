@@ -44,13 +44,31 @@ class Campaign < ActiveRecord::Base
       else
         message_id = message.id
       end
-      
-      calls_faileds = Call.where(:message_id => message_id, :client_id => client.id).where("hangup_enumeration NOT IN (%s)" % considera_contestada.map {|v| "'%s'" % v}.join(',')).count
+
+      #no hay que botar escape ni modo de ubicar el numero
+      return false if Call.where(:client_id => client.id).where("hangup_enumeration IN (%s)" % PlivoCall::REJECTED_ENUMERATION.map {|v| "'%s'" % v}.join(',')).count > 0
+      #calls_faileds = Call.where(:message_id => message_id, :client_id => client.id).where("hangup_enumeration NOT IN (%s)" % considera_contestada.map {|v| "'%s'" % v}.join(',')).count
       #ya se marco
       return false if Call.where(:message_id => message_id, :client_id => client.id).where("hangup_enumeration IN (%s)" % considera_contestada.map {|v| "'%s'" % v}.join(',')).count > 0
       return false if Call.where(:message_id => message_id, :client_id => client.id, :terminate => nil).exists?
-      #ya se realizaron todos los intentos
-      return false if calls_faileds > message.retries
+
+      #se vuelve a marcar desde la ultima marcacion
+      begin
+        calls_faileds = Call.where(:message_id => message_id, :client_id => client.id).where("hangup_enumeration NOT IN (%s)" % considera_contestada.map {|v| "'%s'" % v}.join(',')).count
+        if calls_faileds >= message.retries
+          call_failed = Call.where(:message_id => message_id, :client_id => client.id).where("hangup_enumeration NOT IN (%s)" % considera_contestada.map {|v| "'%s'" % v}.join(',')).last
+        
+          if not (Time.now >= Time.parse(call_failed.terminate.to_s) + client.priority_to_seconds_wait)
+            return false
+          else
+            #se actualiza prioridad a cliente para marcacion
+            client.update_priority_by_hangup_cause(call_failed.hangup_enumeration)
+          end
+         
+        end
+      rescue
+      end
+      #return false if calls_faileds > message.retries
     end
 
 
