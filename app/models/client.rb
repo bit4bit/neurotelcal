@@ -34,4 +34,6 @@ class Client < ActiveRecord::Base
     end
 
     self.save()
+  end
+  
 end
