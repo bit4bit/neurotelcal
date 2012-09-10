@@ -36,23 +36,19 @@ class Campaign < ActiveRecord::Base
     #@todo agregar exepction
     if ncalls > 0
       considera_contestada = PlivoCall::ANSWER_ENUMERATION
-    
+      
       #logger.debug("Grupo comparte mensajes?" + client.group.messages_share_clients.to_s )
       
       if client.group.messages_share_clients and not message.anonymous
-
-        calls_faileds = Call.where(:message_id => client.group.id_messages_share_clients, :client_id => client.id).where("hangup_enumeration NOT IN (%s)" % considera_contestada.map {|v| "'%s'" % v}.join(',')).count
-        #ya se marco
-        return false if Call.where(:message_id => client.group.id_messages_share_clients, :client_id => client.id).where("hangup_enumeration IN (%s)" % considera_contestada.map {|v| "'%s'" % v}.join(',')).count > 0
-        #ya hay marcacion en camino
-        return false if Call.where(:message_id => client.group.id_messages_share_clients, :client_id => client.id, :terminate => nil).exists?
+        message_id = client.group.id_messages_share_clients
       else
-        calls_faileds = Call.where(:message_id => message.id, :client_id => client.id).where("hangup_enumeration NOT IN (%s)" % considera_contestada.map {|v| "'%s'" % v}.join(',')).count
-        #ya se marco
-        return false if Call.where(:message_id => message.id, :client_id => client.id).where("hangup_enumeration IN (%s)" % considera_contestada.map {|v| "'%s'" % v}.join(',')).count > 0
-        return false if Call.where(:message_id => message.id, :client_id => client.id, :terminate => nil).exists?
+        message_id = message.id
       end
       
+      calls_faileds = Call.where(:message_id => message_id, :client_id => client.id).where("hangup_enumeration NOT IN (%s)" % considera_contestada.map {|v| "'%s'" % v}.join(',')).count
+      #ya se marco
+      return false if Call.where(:message_id => message_id, :client_id => client.id).where("hangup_enumeration IN (%s)" % considera_contestada.map {|v| "'%s'" % v}.join(',')).count > 0
+      return false if Call.where(:message_id => message_id, :client_id => client.id, :terminate => nil).exists?
       #ya se realizaron todos los intentos
       return false if calls_faileds > message.retries
     end
