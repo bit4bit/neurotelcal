@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120910003527) do
+ActiveRecord::Schema.define(:version => 20120910150920) do
 
   create_table "calendars", :force => true do |t|
     t.integer  "message_id"
@@ -36,6 +36,8 @@ ActiveRecord::Schema.define(:version => 20120910003527) do
     t.datetime "created_at",                            :null => false
     t.datetime "updated_at",                            :null => false
   end
+
+  add_index "calls", ["message_id", "client_id"], :name => "index_calls_on_message_id_and_client_id"
 
   create_table "campaigns", :force => true do |t|
     t.string   "name"
@@ -78,6 +80,8 @@ ActiveRecord::Schema.define(:version => 20120910003527) do
     t.boolean  "messages_share_clients", :default => true
   end
 
+  add_index "groups", ["campaign_id"], :name => "index_groups_on_campaign_id"
+
   create_table "message_calendars", :force => true do |t|
     t.integer  "message_id"
     t.datetime "start"
@@ -102,6 +106,8 @@ ActiveRecord::Schema.define(:version => 20120910003527) do
     t.integer  "priority",       :default => 0
   end
 
+  add_index "messages", ["group_id"], :name => "index_messages_on_group_id"
+
   create_table "plivo_calls", :force => true do |t|
     t.integer  "plivo_id"
     t.string   "number"
@@ -115,6 +121,8 @@ ActiveRecord::Schema.define(:version => 20120910003527) do
     t.datetime "created_at",                            :null => false
     t.datetime "updated_at",                            :null => false
   end
+
+  add_index "plivo_calls", ["uuid"], :name => "index_plivo_calls_on_uuid"
 
   create_table "plivos", :force => true do |t|
     t.string   "app_url",          :default => "http://localhost:3000"
