@@ -26,20 +26,20 @@ class Campaign < ActiveRecord::Base
 
 
   #Campaign llama cliente, buscando un espacio disponible entre sus servidores plivos
-  def call_client(client, message)
+  def call_client(client, message, message_calendar = nil)
     called = false
-    if client.group.messages_share_clients
+    if client.group.messages_share_clients and not message.anonymous
       ncalls = Call.where(:message_id => client.group.id_messages_share_clients, :client_id => client.id).count
     else
       ncalls = Call.where(:message_id => message.id, :client_id => client.id).count
     end
     #@todo agregar exepction
     if ncalls > 0
-      considera_contestada = ["NORMAL_CLEARING", "ALLOTED_TIMEOUT"]
+      considera_contestada = PlivoCall::ANSWER_ENUMERATION
     
       #logger.debug("Grupo comparte mensajes?" + client.group.messages_share_clients.to_s )
       
-      if client.group.messages_share_clients
+      if client.group.messages_share_clients and not message.anonymous
 
         calls_faileds = Call.where(:message_id => client.group.id_messages_share_clients, :client_id => client.id).where("hangup_enumeration NOT IN (%s)" % considera_contestada.map {|v| "'%s'" % v}.join(',')).count
         #ya se marco
@@ -103,7 +103,7 @@ class Campaign < ActiveRecord::Base
           logger.debug("Campaign#Process: Se busca en calendario")
           message.message_calendar.all.each do |message_calendar|
             if Time.now >= Time.parse(message_calendar.start.to_s) and  Time.now <= Time.parse(message_calendar.stop.to_s)
-              call_client(client, message)
+              call_client(client, message, message_calendar)
             end
           end
           

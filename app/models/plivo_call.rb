@@ -1,5 +1,8 @@
 class PlivoCall < ActiveRecord::Base
+  ANSWER_ENUMERATION = ['NORMAL_CLEARING', 'ALLOTED_TIMEOUT']
+
   attr_accessible :data, :uuid, :status, :hangup_enumeration, :call_id, :created_at, :plivo_id, :step, :number
+
 
   belongs_to :client
   belongs_to :call
@@ -25,8 +28,12 @@ class PlivoCall < ActiveRecord::Base
   end
 
   def answered?
-    answer_list = ['NORMAL_CLEARING', 'ALLOTED_TIMEOUT']
-    return self.hangup_enumeration == 'NORMAL_CLEARING'
+    answer_list = PlivoCall::ANSWER_ENUMERATION
+    return answer_list.include?(self.hangup_enumeration)
   end
   
+  def self.answered?(cause)
+    answer_list = PlivoCall::ANSWER_ENUMERATION
+    return answer_list.include?(cause)
+  end
 end
