@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120910150920) do
+ActiveRecord::Schema.define(:version => 20120910152029) do
 
   create_table "calendars", :force => true do |t|
     t.integer  "message_id"
@@ -104,6 +104,7 @@ ActiveRecord::Schema.define(:version => 20120910150920) do
     t.integer  "hangup_on_ring", :default => 0
     t.integer  "time_limit",     :default => 0
     t.integer  "priority",       :default => 0
+    t.integer  "max_clients",    :default => 0
   end
 
   add_index "messages", ["group_id"], :name => "index_messages_on_group_id"

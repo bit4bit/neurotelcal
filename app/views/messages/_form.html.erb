@@ -43,6 +43,10 @@
   <div class="field">
     <%= f.input :priority, :input_html => {:maxlength =>3, :size => 3}%>
   </div>
+  <div class="field">
+    <%= f.input :max_clients, :input_html => {:max_length => 6, :size => 4}%>
+  </div>
+    
   <div class="actions">
     <%= f.submit %>
   </div>
