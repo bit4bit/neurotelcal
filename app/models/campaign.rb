@@ -134,6 +134,8 @@ class Campaign < ActiveRecord::Base
               end
             end
             
+            
+            
             if client.group.messages_share_clients
               message_id = client.group.id_messages_share_clients
             else
@@ -157,6 +159,11 @@ class Campaign < ActiveRecord::Base
             #se busca el calendario para iniciar marcacion
             logger.debug("Campaign#Process: Se busca en calendario")
             message.message_calendar.all.each do |message_calendar|
+              #se detiene marcacion si ya se realizaron todas las llamadas contestadas
+              if Call.where(:message_calendar_id => message_calendar.id, :hangup_enumeration => PlivoCall::ANSWER_ENUMERATION).count >= message_calendar.max_clients
+                break
+              end
+
               if Time.now >= Time.parse(message_calendar.start.to_s) and  Time.now <= Time.parse(message_calendar.stop.to_s)
                 count_calls += 1 if call_client(client, message, message_calendar)
               end

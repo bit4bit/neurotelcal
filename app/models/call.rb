@@ -1,6 +1,6 @@
 class Call < ActiveRecord::Base
   attr_accessible :client_id, :completed_p, :length, :message_id, :enter, :terminate, :hangup_enumeration, :status, :enter_listen, :terminate_listen
-
+  attr_accessible :message_calendar_id
   belongs_to :message
   belongs_to :client
   scope :in_process_for_message_client?, lambda {|message_id, client_id| where(:message_id => message_id, :client_id => client_id, :terminate => nil)}

@@ -46,7 +46,8 @@ es:
         group: 'Grupo'
       message_calendar:
         start: 'Inicia'
-        stop: 'Termina'
+        stop: 'Terminae'
+        max_clients: 'Maximo clientes'
   back: 'Atrás'	
   edit: 'Editar'
   show: 'Mostrar'
@@ -218,6 +219,7 @@ es:
     l:
       start: 'Inicia'
       stop: 'Termina'
+      max_clients: 'Maximo clientes'
   entity:
     are_you_sure: 'Esta uste seguro/a de eliminara esta entidad? esto eliminar todas las campanas de la entidad'
     l:

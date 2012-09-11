@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120910152029) do
+ActiveRecord::Schema.define(:version => 20120911033644) do
 
   create_table "calendars", :force => true do |t|
     t.integer  "message_id"
@@ -25,7 +25,7 @@ ActiveRecord::Schema.define(:version => 20120910152029) do
     t.integer  "message_id"
     t.integer  "client_id"
     t.integer  "length"
-    t.boolean  "completed_p",        :default => false
+    t.boolean  "completed_p",         :default => false
     t.datetime "enter"
     t.datetime "terminate"
     t.datetime "enter_listen"
@@ -33,8 +33,9 @@ ActiveRecord::Schema.define(:version => 20120910152029) do
     t.string   "digits"
     t.string   "status"
     t.string   "hangup_enumeration"
-    t.datetime "created_at",                            :null => false
-    t.datetime "updated_at",                            :null => false
+    t.datetime "created_at",                             :null => false
+    t.datetime "updated_at",                             :null => false
+    t.integer  "message_calendar_id", :default => 0
   end
 
   add_index "calls", ["message_id", "client_id"], :name => "index_calls_on_message_id_and_client_id"
@@ -86,8 +87,9 @@ ActiveRecord::Schema.define(:version => 20120910152029) do
     t.integer  "message_id"
     t.datetime "start"
     t.datetime "stop"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.datetime "created_at",                 :null => false
+    t.datetime "updated_at",                 :null => false
+    t.integer  "max_clients", :default => 0
   end
 
   create_table "messages", :force => true do |t|
