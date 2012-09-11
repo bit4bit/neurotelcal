@@ -4,8 +4,9 @@ class Call < ActiveRecord::Base
   belongs_to :message
   belongs_to :client
   scope :in_process_for_message_client?, lambda {|message_id, client_id| where(:message_id => message_id, :client_id => client_id, :terminate => nil)}
+  scope :done_calls_message_client?, lambda {|message_id, client_id| where(:message_id => message_id, :client_id => client_id, :hangup_enumeration => PlivoCall::ANSWER_ENUMERATION)}
   scope :in_process_for_client?, lambda {|client_id| where(:client_id => client_id, :terminate => nil)}
-  scope :answered_for_client?, lambda{|client_id| where(:client_id => client_id).where("hangup_enumeration IN (%s)" % PlivoCall::ANSWER_ENUMERATION.map {|v| "'%s'" % v}.join(','))}
+  scope :answered_for_client?, lambda{|client_id| where(:client_id => client_id).where(:hangup_enumeration => PlivoCall::ANSWER_ENUMERATION)}
 
   #Retorna estado de c
   def hangup_status

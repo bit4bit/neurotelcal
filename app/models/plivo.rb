@@ -78,7 +78,7 @@ class Plivo < ActiveRecord::Base
 
   #LLamar con el mensaje al cliente
   #@throw PlivoCannotCall
-  def call_client(client, message)
+  def call_client(client, message, message_calendar = nil)
     raise PlivoChannelFull, "No hay canales disponibles" unless can_call?
 
     #http://wiki.freeswitch.org/wiki/Channel_Variables#monitor_early_media_ring
@@ -126,6 +126,7 @@ class Plivo < ActiveRecord::Base
     call.terminate_listen = nil
     call.status = 'calling'
     call.hangup_enumeration = nil
+    call.message_calendar_id = message_calendar.id unless message_calendar.nil?
     call.save
 
     sequence = message.description_to_call_sequence('!client_fullname' => client.fullname, '!client_id' => client.id)
