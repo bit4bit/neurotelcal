@@ -1,6 +1,6 @@
 class PlivoCall < ActiveRecord::Base
   ANSWER_ENUMERATION = ['NORMAL_CLEARING'] #lo que se considera respuesta
-  REJECTED_ENUMERATION = ['UNALLOCATED_NUMBER', 'CHAN_NOT_IMPLEMENTED', 'INCOMPATIBLE_DESTINATION'] #ni modo de llamar
+  REJECTED_ENUMERATION = ['UNALLOCATED_NUMBER', 'INVALID_NUMBER_FORMAT', 'CHAN_NOT_IMPLEMENTED', 'INCOMPATIBLE_DESTINATION'] #ni modo de llamar
   attr_accessible :data, :uuid, :status, :hangup_enumeration, :call_id, :created_at, :plivo_id, :step, :number
 
 
