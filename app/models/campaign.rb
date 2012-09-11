@@ -143,13 +143,13 @@ class Campaign < ActiveRecord::Base
           
           #se salta si ya esta en proceso
           if Call.in_process_for_message_client?(message_id, client.id).exists?
-            count_calls += 1
+            count_calls += Call.in_process_for_message_client?(message_id, client.id).count
             next
           end
           
           
           #if message.done_calls_clients?
-          if Call.done_calls_message_client?(message.id, client.id).count + count_calls >= message.max_clients
+          if Call.done_calls_message(message.id).count + count_calls >= message.max_clients
             break
           elsif message.max_clients > 0 and count_calls >= message.max_clients
             break
