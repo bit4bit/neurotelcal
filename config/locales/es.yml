@@ -151,6 +151,8 @@ es:
       title: 'Editando Cliente'
     show:
       title: 'Mostrando Cliente'
+    upload_massive:
+      title: 'Importar clientes'
   plivo:
     l:
       caller_name: 'Nombre del llamador'

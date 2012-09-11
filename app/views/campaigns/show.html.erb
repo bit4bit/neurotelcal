@@ -19,12 +19,8 @@
   <tr>
     <th><%= I18n.t('defaults.clients')%></th>
   </tr>
-<% @campaign.client.all.each do |c| %>
   <tr>
-    <td>
-      <%= c.fullname %><br />
-    </td>
+    <td><%= @campaign.client.all.count%></td>
   </tr>
-<% end %>
 </table>
 

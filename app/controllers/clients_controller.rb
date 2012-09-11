@@ -118,4 +118,51 @@ class ClientsController < ApplicationController
       format.json { head :no_content }
     end
   end
+
+  def new_upload_massive
+    @groups = Group.where(:campaign_id => session[:campaign_id])
+    
+    respond_to do |format|
+      format.html 
+    end
+  end
+  
+  def create_upload_massive
+    @groups = Group.where(:campaign_id => session[:campaign_id])
+
+    total_uploaded = 0
+    total_readed = 0
+    total_wrong = 0
+    errors = []
+    flash[:notice] = session[:campaign_id]
+    count = 0
+    begin
+      tinit = Time.now
+      CSV.parse(params[:list_clients].tempfile) do |row|
+        total_readed += 1
+        data = {:fullname => row[0], :phonenumber => row[1], :campaign_id => session[:campaign_id], :group_id => params[:group_id]}
+        next if Client.where(data).exists? #si existe se omite
+        client = Client.new(data)
+        if client.save
+          total_uploaded += 1
+        else
+          errors << client.errors.full_message
+          total_wrong += 1
+        end
+      end
+      tend = Time.now
+      flash[:notice] = 'Uploaded %d and wrongs %d clients with total %d readed in %d seconds ' % [total_uploaded, total_wrong,  total_readed, (tend - tinit)]
+    rescue Exception => e
+      flash[:error] = e.message
+    end
+
+    unless errors.empty?
+      flash[:error] = errors.join('<br />')
+    end
+
+    respond_to do |format|
+      format.html { render :action => 'new_upload_massive'}
+    end
+  end
+  
 end

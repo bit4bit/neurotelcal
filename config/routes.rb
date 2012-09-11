@@ -30,7 +30,10 @@ Neurotelcal::Application.routes.draw do
 
   resources :groups
 
-  resources :clients
+  resources :clients do
+    get 'new_upload_massive', :on => :collection
+    post 'create_upload_massive', :on => :collection
+  end
 
   resources :messages
 
