@@ -16,6 +16,7 @@
     <th><%= I18n.t('report.l.status')%></th>
   </tr>
   <% @calls.each do |call| %>
+  <% begin %>
   <tr>
     <td><%= call.client.campaign.entity.name%></td>
     <td><%= call.client.campaign.name %></td>
@@ -38,6 +39,8 @@
     <td><%= call.status%></td>
     <% end %>
   </tr>
+  <% rescue %>
+  <% end %>
   <% end %>
   
 </table>

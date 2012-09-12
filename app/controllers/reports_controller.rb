@@ -14,8 +14,11 @@ class ReportsController < ApplicationController
         next if call.message.nil?
 
         
+        begin
+          csv << [call.message.group.campaign.entity.name, call.message.group.campaign.name, call.client.fullname, call.message.name, call.message.call, call.enter, call.terminate, call.enter_listen, call.terminate_listen, call.length,  call.hangup_status]
+        rescue
+        end
         
-        csv << [call.message.group.campaign.entity.name, call.message.group.campaign.name, call.client.fullname, call.message.name, call.message.call, call.enter, call.terminate, call.enter_listen, call.terminate_listen, call.length,  call.hangup_status]
       end
 
     end
