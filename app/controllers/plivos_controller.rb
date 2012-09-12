@@ -113,7 +113,8 @@ class PlivosController < ApplicationController
     logger.debug('get_digits')
     logger.debug(params)
     salir = false
-    @plivocall = PlivoCall.where(:uuid => params["id"]).first
+    #@plivocall = PlivoCall.where(:uuid => params["id"]).first
+    @plivocall = PlivoCall.where(:id => params["AccountSID"]).first
     @call_sequence = @plivocall.call_sequence
     
     @plivocall.status = params['CallStatus']
@@ -150,9 +151,11 @@ class PlivosController < ApplicationController
     logger.debug('answer')
     logger.debug(params)
     salir = false
-    @plivocall = PlivoCall.where(:uuid => params["ALegRequestUUID"]).first
+    #@plivocall = PlivoCall.where(:uuid => params["ALegRequestUUID"]).first
+    @plivocall = PlivoCall.where(:id => params["AccountSID"]).first
     @call_sequence = @plivocall.call_sequence
     #actualiza estado
+    @plivocall.uuid = params["ALegRequestUUID"]
     @plivocall.status = "answered"
     @plivocall.save
 
