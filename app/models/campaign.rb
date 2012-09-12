@@ -104,7 +104,6 @@ class Campaign < ActiveRecord::Base
         return false if end?
        
         fibers << Fiber.new { 
-          #ActiveRecord::Base.connection_pool.with_connection {
             #si ya se marcaron todos los clientes posibles se salta
             if message.done_calls_clients? and not message.anonymous
               #logger.debug("Mensaje %d done calls jumping" % message.id)
@@ -177,11 +176,9 @@ class Campaign < ActiveRecord::Base
                 end
               end
             end
-          #}
         }
       end
       fibers.each(&:resume)
-      ActiveRecord::Base.clear_active_connections!
     end
     
   end

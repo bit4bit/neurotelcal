@@ -89,6 +89,8 @@ module ServiceNeurotelcal
             srv.process_queue
             ActiveRecord::Base.connection.close 
           }
+          
+
         end
       end
       

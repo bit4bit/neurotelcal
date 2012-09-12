@@ -69,7 +69,7 @@ class Plivo < ActiveRecord::Base
   #en caso de estar todas los canales ocupados se retorna no
   def can_call?
     using_channels = PlivoCall.where(:end => false).count()
-    logger.debug("Channels %d for plivo %s and now using %s" % [channels, caller_name, using_channels])
+    #logger.debug("Channels %d for plivo %s and now using %s" % [channels, caller_name, using_channels])
     return false if using_channels >= channels
     return true
   end
@@ -79,8 +79,9 @@ class Plivo < ActiveRecord::Base
   #LLamar con el mensaje al cliente
   #@throw PlivoCannotCall
   def call_client(client, message, message_calendar = nil)
+    return false if PlivoCall.where(:number => client.phonenumber, :hangup_enumeration => nil).exists?
     raise PlivoChannelFull, "No hay canales disponibles" unless can_call?
-
+   
     #http://wiki.freeswitch.org/wiki/Channel_Variables#monitor_early_media_ring
     extra_dial_string = "leg_delay_start=1,hangup_after_bridge=true,leg_timeout=%d" % message.hangup_on_ring
     call_params = {
@@ -94,7 +95,7 @@ class Plivo < ActiveRecord::Base
       'ExtraDialString' => extra_dial_string,
       'AnswerUrl' => "%s/plivos/0/answer_client" % self.app_url,
       'HangupUrl' => "%s/plivos/0/hangup_client" % self.app_url,
-      'RingUrl' => "%s/plivos/0/ringing_client" % self.app_url,
+      #'RingUrl' => "%s/plivos/0/ringing_client" % self.app_url,
     }
 
     if message.time_limit > 0

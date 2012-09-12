@@ -30,3 +30,7 @@ Run "rake doc:app" to generate API documentation for your models, controllers, h
 
 ==PRESENTE
  * Cuando se realize pruebas de llamadas directamente de la interfaz web, crear un grupo de prueba, ya que cada vez que se realiza la llamada esta crea un mensaje para el grupo.
+
+
+==INCONVENIIENTES
+ * He tenido mucho problema con la generacion de llamada y procesamiento por los hilos, al usar fiber la cosa se torno mas estable pero haun
