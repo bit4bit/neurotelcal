@@ -134,14 +134,17 @@ class ClientsController < ApplicationController
     total_readed = 0
     total_wrong = 0
     errors = []
-    flash[:notice] = session[:campaign_id]
     count = 0
+    override = params[:override] || false
     begin
       tinit = Time.now
       ::CSV.parse(params[:list_clients].tempfile) do |row|
         total_readed += 1
         data = {:fullname => row[0], :phonenumber => row[1], :campaign_id => session[:campaign_id], :group_id => params[:group_id]}
-        next if Client.where(data).exists? #si existe se omite
+        if override
+          next if Client.where(data).exists? #si existe se omite
+        end
+        
         client = Client.new(data)
         if client.save
           total_uploaded += 1
@@ -153,7 +156,13 @@ class ClientsController < ApplicationController
       tend = Time.now
       flash[:notice] = 'Uploaded %d and wrongs %d clients with total %d readed in %d seconds ' % [total_uploaded, total_wrong,  total_readed, (tend - tinit)]
     rescue Exception => e
-      flash[:error] = e.message
+      if params[:list_clients].nil?
+        flash[:error] = I18n.t('not_uploaded_file')
+      else
+        flash[:error] = e.message
+      end
+      
+
     end
 
     unless errors.empty?

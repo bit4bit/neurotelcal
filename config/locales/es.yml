@@ -53,6 +53,7 @@ es:
   show: 'Mostrar'
   destroy: 'Eliminar'
   are_you_sure: 'Esta usted seguro/a?'
+  not_uploaded_file: 'No se ha subido algun archivo'
   menu:
     entity: 'Entidades'
     campaigns: 'Campañas'
