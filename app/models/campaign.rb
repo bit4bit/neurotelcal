@@ -6,10 +6,10 @@ class Campaign < ActiveRecord::Base
   
   validates :name, :presence => true, :uniqueness => true
   validates :entity_id, :presence => true
-  has_many :resource
-  has_many :client
-  has_many :plivo
-  has_many :group
+  has_many :resource, :dependent => :delete_all
+  has_many :client, :dependent => :delete_all
+  has_many :plivo, :dependent => :delete_all
+  has_many :group, :dependent => :delete_all
   belongs_to :entity
   def pause?
     return STATUS['PAUSE'] == status
