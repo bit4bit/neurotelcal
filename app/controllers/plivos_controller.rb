@@ -174,7 +174,7 @@ class PlivosController < ApplicationController
   def hangup_client
     logger.debug('hangup')
     #logger.debug('hangup')
-    plivocall = PlivoCall.where(:uuid => params["RequestUUID"]).first
+    plivocall = PlivoCall.where(:uuid => params["RequestUUID"]).first_or_create
     plivocall.status = params["CallStatus"]
 
     #@todo mejorar esto un campo y listo
@@ -188,8 +188,9 @@ class PlivosController < ApplicationController
     end
 
     #se notifica que porfin se contesto
-    call = Call.find(plivocall.call_id)
-    if call
+
+    if Call.where(:id => plivocall.call_id).exists?
+      call = Call.find(plivocall.call_id)
       call.terminate = Time.now
       call.completed_p = true
       
@@ -208,10 +209,7 @@ class PlivosController < ApplicationController
         call.length = 0
       end
       call.save
-
-      
     end
-
 
 
 
@@ -224,7 +222,7 @@ class PlivosController < ApplicationController
     logger.debug('ringing')
     logger.debug(params)
 
-    plivocall = PlivoCall.where(:uuid => params["RequestUUID"]).first
+    plivocall = PlivoCall.where(:uuid => params["RequestUUID"]).first_or_create
     plivocall.status = params["CallStatus"]
     plivocall.save
 

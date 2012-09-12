@@ -79,7 +79,6 @@ class Plivo < ActiveRecord::Base
   #LLamar con el mensaje al cliente
   #@throw PlivoCannotCall
   def call_client(client, message, message_calendar = nil)
-    return false if PlivoCall.where(:number => client.phonenumber, :hangup_enumeration => nil).exists?
     raise PlivoChannelFull, "No hay canales disponibles" unless can_call?
    
     #http://wiki.freeswitch.org/wiki/Channel_Variables#monitor_early_media_ring
@@ -95,7 +94,7 @@ class Plivo < ActiveRecord::Base
       'ExtraDialString' => extra_dial_string,
       'AnswerUrl' => "%s/plivos/0/answer_client" % self.app_url,
       'HangupUrl' => "%s/plivos/0/hangup_client" % self.app_url,
-      #'RingUrl' => "%s/plivos/0/ringing_client" % self.app_url,
+      'RingUrl' => "%s/plivos/0/ringing_client" % self.app_url,
     }
 
     if message.time_limit > 0
@@ -132,7 +131,7 @@ class Plivo < ActiveRecord::Base
 
     sequence = message.description_to_call_sequence('!client_fullname' => client.fullname, '!client_id' => client.id)
     #Se registra la llamada iniciada de plivo
-    plivocall = PlivoCall.new
+    plivocall = PlivoCall.where(:uuid => result['RequestUUId']).first_or_initialize
     plivocall.number = client.phonenumber
     plivocall.plivo_id = id
     plivocall.uuid = result["RequestUUID"]

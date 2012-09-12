@@ -45,6 +45,7 @@ module ServiceNeurotelcal
       rescue PlivoNotFound => e
         Rails.logger.error("NO HAY SERVIDOR PLIVO PARA LLAMAR")
       rescue PlivoCannotCall => e
+        PlivoCall.where(:end => 0, :hangup_enumeration => nil, :status => 'calling').delete_all #se limpian las mal realizadas
         Rails.logger.error("NO SE PUDO REALIZAR LA LLAMADA")
       rescue Errno::ECONNREFUSED => e
         Rails.logger.error("CONEXION RECHAZADA SERVIDOR PLIVO:" + e.message)
