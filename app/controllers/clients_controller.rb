@@ -14,7 +14,7 @@
 #
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
+require 'csv'
 
 class ClientsController < ApplicationController
   # GET /clients
@@ -138,7 +138,7 @@ class ClientsController < ApplicationController
     count = 0
     begin
       tinit = Time.now
-      CSV.parse(params[:list_clients].tempfile) do |row|
+      ::CSV.parse(params[:list_clients].tempfile) do |row|
         total_readed += 1
         data = {:fullname => row[0], :phonenumber => row[1], :campaign_id => session[:campaign_id], :group_id => params[:group_id]}
         next if Client.where(data).exists? #si existe se omite

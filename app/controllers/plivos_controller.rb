@@ -112,7 +112,7 @@ class PlivosController < ApplicationController
   def get_digits_client
     logger.debug('get_digits')
     logger.debug(params)
-
+    salir = false
     @plivocall = PlivoCall.where(:uuid => params["id"]).first
     @call_sequence = @plivocall.call_sequence
     
@@ -149,7 +149,7 @@ class PlivosController < ApplicationController
   def answer_client
     logger.debug('answer')
     logger.debug(params)
-    
+    salir = false
     @plivocall = PlivoCall.where(:uuid => params["ALegRequestUUID"]).first
     @call_sequence = @plivocall.call_sequence
     #actualiza estado
@@ -174,7 +174,8 @@ class PlivosController < ApplicationController
   def hangup_client
     logger.debug('hangup')
     #logger.debug('hangup')
-    plivocall = PlivoCall.where(:uuid => params["RequestUUID"]).first_or_create
+    plivocall = PlivoCall.where(:id => params["AccountSID"]).first
+    plivocall.uuid = params["RequestUUID"]
     plivocall.status = params["CallStatus"]
 
     #@todo mejorar esto un campo y listo
@@ -221,8 +222,17 @@ class PlivosController < ApplicationController
   def ringing_client
     logger.debug('ringing')
     logger.debug(params)
-
-    plivocall = PlivoCall.where(:uuid => params["RequestUUID"]).first_or_create
+    #ESTO NO SERVIE
+    #salir = false
+    #while(not salir) #esperea hasta que este en BD
+    #  if PlivoCall.where(:uuid => params[:RequestUUID]).exists?
+    #    salir = true
+    #  end
+   # end
+      
+    
+    plivocall = PlivoCall.where(:id => params["AccountSID"]).first
+    plivocall.uuid = params["RequestUUID"]
     plivocall.status = params["CallStatus"]
     plivocall.save
 
