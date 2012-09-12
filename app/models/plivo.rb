@@ -81,12 +81,10 @@ class Plivo < ActiveRecord::Base
   #@throw PlivoCannotCall
   def call_client(client, message, message_calendar = nil)
     raise PlivoChannelFull, "No hay canales disponibles" unless can_call?
-   
+
     #http://wiki.freeswitch.org/wiki/Channel_Variables#monitor_early_media_ring
     extra_dial_string = "leg_delay_start=1,bridge_early_media=true,hangup_after_bridge=true" 
-    if message.hangup_on_ring > 0
-      extra_dial_string += 'leg_timeout=%d' % message.hangup_on_ring
-    end
+
     
     call_params = {
       'From' => self.phonenumber,
@@ -103,6 +101,10 @@ class Plivo < ActiveRecord::Base
       
     }
 
+    if message.retries > 0
+      call_params['GatewayRetries'] = message.retries
+    end
+
     if message.time_limit > 0
       call_params['TimeLimit'] = message.time_limit.to_i
     end
@@ -110,6 +112,7 @@ class Plivo < ActiveRecord::Base
     if message.hangup_on_ring > 0
       #NO FUNCIONA
       #call_params['HangupOnRing'] = message.hangup_on_ring
+      call_params['GatewayTimeouts'] = message.hangup_on_ring
     end
 
     call = Call.new
