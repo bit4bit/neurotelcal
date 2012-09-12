@@ -58,16 +58,17 @@ class Campaign < ActiveRecord::Base
         calls_faileds = Call.where(:message_id => message_id, :client_id => client.id).where("hangup_enumeration NOT IN (%s)" % PlivoCall::ANSWER_ENUMERATION.map {|v| "'%s'" % v}.join(',')).count
         #logger.debug('calls faileds %d for client %d' % [calls_faileds, client.id])
         call_failed = Call.where(:message_id => message_id, :client_id => client.id).where("hangup_enumeration NOT IN (%s)" % PlivoCall::ANSWER_ENUMERATION.map {|v| "'%s'" % v}.join(',')).order('terminate').reverse_order.first if calls_faileds > 0
-        #se le da diez segundos para volver a marcar
-        return false if calls_faileds > message.retries and not Time.now >= Time.parse(call_failed.terminate.to_s) + 10
-        
-        #logger.debug('client %d priority to seconds %d' % [client.id, client.priority_to_seconds_wait])
-        if not (Time.now >= Time.parse(call_failed.terminate.to_s) + client.priority_to_seconds_wait)
-          return false
-        else
-          #se actualiza prioridad a cliente para marcacion
-          client.update_priority_by_hangup_cause(call_failed.hangup_enumeration)
+
+        if calls_faileds >= message.retries
+          #logger.debug('client %d priority to seconds %d' % [client.id, client.priority_to_seconds_wait])
+          if not (Time.now >= Time.parse(call_failed.terminate.to_s) + client.priority_to_seconds_wait)
+            return false
+          else
+            #se actualiza prioridad a cliente para marcacion
+            client.update_priority_by_hangup_cause(call_failed.hangup_enumeration)
+          end
         end
+        
       rescue Exception => e
         logger.error('Error seen calls faileds. %s' % e.message)
       end

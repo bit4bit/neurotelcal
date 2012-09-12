@@ -136,7 +136,6 @@ class Message < ActiveRecord::Base
             if sexp.include?('Si')
               sequencesi[:sicontinuar] << evaluar_si_exp(sexp,  replaces)
             else
-              print sexp
               sequencesi[:sicontinuar] << description_line_to_call_sequence(sexp, replaces)
             end
           end
