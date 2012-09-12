@@ -6,6 +6,7 @@
   <tr>
     <th><%= I18n.t('message_calendar.l.start')%></th>
     <th><%= I18n.t('message_calendar.l.stop')%></th>
+    <th><%= I18n.t('message_calendar.l.max_clients')%></th>
     <th></th>
     <th></th>
     <th></th>
@@ -15,6 +16,7 @@
   <tr>
     <td><%= message_calendar.start %></td>
     <td><%= message_calendar.stop %></td>
+    <td><%= message_calendar.max_clients%></td>
     <td><%= link_to I18n.t('show'), message_calendar %></td>
     <td><%= link_to I18n.t('edit'), edit_message_calendar_path(message_calendar) %></td>
     <td><%= link_to I18n.t('destroy'), message_calendar, :confirm => I18n.t('are_you_sure'), :method => :delete %></td>
