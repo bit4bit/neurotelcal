@@ -3,12 +3,14 @@ class Call < ActiveRecord::Base
   attr_accessible :message_calendar_id
   belongs_to :message
   belongs_to :client
-  scope :in_process_for_message_client?, lambda {|message_id, client_id| where(:message_id => message_id, :client_id => client_id, :terminate => nil)}
+  scope :done_calls_message, lambda {|message_id| where(:message_id => message_id, :hangup_enumeration => PlivoCall::ANSWER_ENUMERATION)}
   scope :done_calls_message_client?, lambda {|message_id, client_id| where(:message_id => message_id, :client_id => client_id, :hangup_enumeration => PlivoCall::ANSWER_ENUMERATION)}
   scope :not_answered_for_message_client, lambda{|message_id, client_id| where(:message_id => message_id, :client_id => client_id).where("hangup_enumeration NOT IN(?)", PlivoCall::ANSWER_ENUMERATION)}
- scope :done_calls_message, lambda {|message_id| where(:message_id => message_id, :hangup_enumeration => PlivoCall::ANSWER_ENUMERATION)}
   scope :in_process_for_client?, lambda {|client_id| where(:client_id => client_id, :terminate => nil)}
+  scope :in_process_for_message_client?, lambda {|message_id, client_id| where(:message_id => message_id, :client_id => client_id, :terminate => nil)}
+  scope :in_process_for_message, lambda {|message_id| where(:message_id => message_id, :terminate => nil)}
   scope :answered_for_client?, lambda{|client_id| where(:client_id => client_id).where(:hangup_enumeration => PlivoCall::ANSWER_ENUMERATION)}
+  scope :answered_for_message, lambda{|message_id| where(:message_id => message_id, :hangup_enumeration => PlivoCall::ANSWER_ENUMERATION)}
 
   #Retorna estado de c
   def hangup_status

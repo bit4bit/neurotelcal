@@ -159,16 +159,21 @@ class Campaign < ActiveRecord::Base
           if message.done_calls_clients? and not message.anonymous
             #logger.debug("Mensaje %d done calls jumping" % message.id)
             next
-            #break
-          else
-            #logger.debug("Mensaje %d not have done calls yet " % [message.id])
           end
+          
+
           #logger.debug("Time ahora (%s) message_call (%s) message_end (%s)" % [Time.now.to_s, Time.zone.parse(message.call.to_s), Time.parse(message.call_end.to_s)])
           #se omite mensaje que no esta en fecha de verificacion
-          next if Time.now < Time.parse(message.call.to_s) or Time.now > Time.parse(message.call_end.to_s) 
+          next if Time.now < message.call or Time.now > message.call_end
+
+          #canales extras para cumplir con los calendarios que se activen
+          use_extra_channels =  extra_channels(message)
+          
           #logger.debug("Campaign#Process: Revisando mensaje %s inicia %s y termina %s" % [message.name, message.call.to_s, message.call_end.to_s])
           
+          #cantidad de llamadas iniciadas
           count_calls = 0
+
           #Se llama a los clientes hasta que se cumpla el limite de canales simultaneos o
           #se termina los clientes esperados
           group.client.all.each do |client|
@@ -202,7 +207,7 @@ class Campaign < ActiveRecord::Base
             end
             
             #se termina este mensaje si ya se hicieron todas las esperadas
-            if Call.done_calls_message(message.id).count + count_calls >= message.max_clients
+            if Call.done_calls_message(message.id).count + count_calls >=  message.max_clients
               break
             elsif message.max_clients > 0 and count_calls >= message.max_clients
               break
@@ -213,11 +218,20 @@ class Campaign < ActiveRecord::Base
             #logger.debug("Campaign#Process: Se busca en calendario")
             message.message_calendar.all.each do |message_calendar|
               #se detiene marcacion si ya se realizaron todas las llamadas contestadas
-              if Time.now >= Time.parse(message_calendar.start.to_s) and  Time.now <= Time.parse(message_calendar.stop.to_s)
+              if Time.now >= message_calendar.start and  Time.now <= message_calendar.stop
                 if message_calendar.max_clients > 0 and (Call.where(:message_calendar_id => message_calendar.id, :hangup_enumeration => PlivoCall::ANSWER_ENUMERATION).count + Call.where(:message_calendar_id => message_calendar.id, :terminate => nil).count) >= message_calendar.max_clients 
                   count_calls += message.max_clients #se saca a la fuerza
                 else
-                  if count_calls >= message_calendar.channels #se limita los canales por calendario
+                  limit_of_channels = 0
+                  #si se pone canales a cero los canales se asignan
+                  #automaticamente segun los disponibles
+                  if message_calendar.channels == 0
+                    limit_of_channels = use_extra_channels
+                  else
+                    limit_of_channels = message_calendar.channels
+                  end
+                  
+                  if count_calls >= limit_of_channels #se limita los canales por calendario
                     count_calls += message.max_clients
                   else
                     if can_call_client?(client, message, message_calendar)
@@ -236,4 +250,67 @@ class Campaign < ActiveRecord::Base
     
   end
 
+  private
+
+  #Esto selecciona automaticamente los canales ha usar en el mensaje
+  #en base a la cantidad de llamadas esperadas, logradas y faltantes
+  #Osea en caso de faltar poco tiempo para terminar y hay canales disponibles
+  #y hay muchas llamadas se utilizan los canales en proporcion a lo necesario para
+  #cumplir con el max_clients del calendario.
+  #::return:: int cantidad a ampliar para llamar
+  def extra_channels(message)
+    message_calendar_total_channels = 0
+    #conteo de los cupos asignados para no usarlos
+    Group.where(:campaign_id => id).each do |group|
+      group.message.each do |message|
+        message.message_calendar.each {|ms| message_calendar_total_channels += ms.channels }
+      end
+    end
+    
+    #cantidad de canales necesarios
+    need_channels = 0
+    message.message_calendar.each do |message_calendar|
+      next if Time.now < message_calendar.start or Time.now > message_calendar.stop
+      next unless message_calendar.time_expected_for_call > 0
+      #llamadas contestadas
+      calls_answered = Call.answered_for_message(message.id).count
+      logger.debug('extra_channels: calls_answered %d' % calls_answered)
+
+      #llamadas esperedas o bien los clientes que debe hacer el calendario
+      calls_expected = message_calendar.max_clients
+      logger.debug('extra_channels: calls_expected %d' % calls_expected)
+
+      #llamadas permitias desde plivo
+      plivo_total_channels = plivo.all.size > 1 ? plivo.all.inject{|s,v| s.channels + v.channels} : plivo.first.channels
+      plivo_using_channels = plivo.all.size > 1 ? plivo.all.inject{|s,v| s.using_channels + v.using_channels} : plivo.first.using_channels
+      logger.debug('extra_channels: plivo_total_channels %d , plivo_using_channels %d' % [plivo_total_channels, plivo_using_channels])
+
+      #cantidad de canales disponibles despues de los ya usados y los separados
+      channels_availables = plivo_total_channels - (plivo_using_channels + message_calendar_total_channels)
+      logger.debug('extra_channels: channels_availables %d' % channels_availables)
+
+      #llamada restantes para limite
+      calls_to_complete = calls_expected - calls_answered
+      logger.debug('extra_channels: calls_to_complete %d' % calls_to_complete)
+
+      #tiempo restante para limite
+      seconds_to_complete = message_calendar.stop - Time.now
+      logger.debug('extra_channels: seconds_to_complete %d' % seconds_to_complete)
+
+      #canales para completar
+      begin
+        channels_to_complete = calls_to_complete / (seconds_to_complete / message_calendar.time_expected_for_call)
+        logger.debug('extra_channels: channels_to_complete %d' % channels_to_complete)
+        nchannels = channels_availables - channels_to_complete.floor
+        need_channels += channels_availables > channels_to_complete ? channels_to_complete : channels_availables
+      rescue ZeroDivisionError => e
+        #e.backtrace.each { |line| logger.error line}
+      rescue Exception => e
+        e.backtrace.each { |line| logger.error line}
+      end
+    end
+    logger.debug('extra_channels:Needing extra channels %d' % need_channels)
+    return need_channels
+  end
+  
 end

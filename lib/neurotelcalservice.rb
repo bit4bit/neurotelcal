@@ -94,6 +94,7 @@ module ServiceNeurotelcal
     while(@@running) do
       Campaign.all.each do |campaign|
         if campaign.end? == false
+          #Hilo por campana para acelerar un poco la cosa
           $threads_campaigns << Thread.new(campaign) { |doCampaign|
             srv = ServiceNeurotelcal::CampaignCall.new(doCampaign)
             srv.process_queue

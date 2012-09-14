@@ -49,6 +49,8 @@ es:
         stop: 'Terminae'
         max_clients: 'Maximo clientes'
         channels: 'Canales'
+        time_expected_for_call: 'Tiempo estimado por llamada'
+        use_available_channels: 'Usar canales disponibles?'
   back: 'Atrás'	
   edit: 'Editar'
   show: 'Mostrar'
@@ -225,6 +227,8 @@ es:
       stop: 'Termina'
       max_clients: 'Maximo clientes'
       channels: 'Canales'
+      time_expected_for_call: 'Tiempo estimado por llamada'
+      use_available_channels: 'Usar canales disponibles?'
   entity:
     are_you_sure: 'Esta uste seguro/a de eliminara esta entidad? esto eliminar todas las campanas de la entidad'
     l:

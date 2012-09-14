@@ -66,12 +66,17 @@ class Plivo < ActiveRecord::Base
     return verificar_conexion ? "Conectado" : "Desconectado"
   end
 
+  #Canales en uso
+  def using_channels
+    PlivoCall.where(:end => false).count()
+  end
+  
   #pregunta si puede llamara
   #en caso de estar todas los canales ocupados se retorna no
   def can_call?
-    using_channels = PlivoCall.where(:end => false).count()
+    uchannels = using_channels
     #logger.debug("Channels %d for plivo %s and now using %s" % [channels, caller_name, using_channels])
-    return false if using_channels >= channels
+    return false if uchannels >= channels
     return true
   end
   

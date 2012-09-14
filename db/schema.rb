@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120914014035) do
+ActiveRecord::Schema.define(:version => 20120914201503) do
 
   create_table "calendars", :force => true do |t|
     t.integer  "message_id"
@@ -87,10 +87,12 @@ ActiveRecord::Schema.define(:version => 20120914014035) do
     t.integer  "message_id"
     t.datetime "start"
     t.datetime "stop"
-    t.datetime "created_at",                 :null => false
-    t.datetime "updated_at",                 :null => false
-    t.integer  "max_clients", :default => 0
-    t.integer  "channels",    :default => 1
+    t.datetime "created_at",                                :null => false
+    t.datetime "updated_at",                                :null => false
+    t.integer  "max_clients",            :default => 0
+    t.integer  "channels",               :default => 1
+    t.integer  "time_expected_for_call", :default => 0
+    t.boolean  "use_available_channels", :default => false
   end
 
   create_table "messages", :force => true do |t|

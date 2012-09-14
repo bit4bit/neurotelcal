@@ -1,10 +1,29 @@
 # -*- coding: utf-8 -*-
 class MessageCalendar < ActiveRecord::Base
-  attr_accessible :start, :stop, :message_id, :max_clients
-  attr_accessible :channels
+  attr_accessible :start, :stop, :message_id, :max_clients, :time_expected_for_call
+  attr_accessible :channels, :use_available_channels
   belongs_to :message
 
+  validates :max_clients, :numericality => { :greater_than_or_equal_to => 0 }
+  validates :time_expected_for_call, :numericality => { :greater_than_or_equal_to => 0 }
+  validates :channels, :numericality => { :greater_than_or_equal_to => 0 }
+
   validate :channels_cannot_be_greater_than_plivo_channels
+  validate :time_expected_for_call_if_use_available_channels
+  validate :channels_be_greater_than_zero_if_not_use_avaible_channels
+
+
+  def channels_be_greater_than_zero_if_not_use_avaible_channels
+    errors.add(:channels, 'Campo obligatorio o seleccion "usar canales disponibles"') if channels < 1 and not use_available_channels
+  end
+  
+
+  def time_expected_for_call_if_use_available_channels
+    if use_available_channels == true
+      errors.add(:time_expected_for_call, 'Debe indicar este valor si activa "usar canales disponibles"') if time_expected_for_call < 1
+    end
+    
+  end
   
   def channels_cannot_be_greater_than_plivo_channels
     if message
