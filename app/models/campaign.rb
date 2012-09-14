@@ -153,7 +153,7 @@ class Campaign < ActiveRecord::Base
             #se espera que la ultima llamada se ade este mensaje
             #sino se omite cliente y se deja para que lo preceso el mensaje
             #al que corresponde
-            if Call.where(:client_id => client.id).exists?
+            if Call.where(:client_id => client.id).exists? and client.group.messages_share_clients
               if not Call.where(:message_id => message.id, :client_id => client.id).exists? 
                 next
               elsif (Call.where(:message_id => message.id, :client_id => client.id).count - Call.not_answered_for_message_client(message.id, client.id).count) >= message.max_clients

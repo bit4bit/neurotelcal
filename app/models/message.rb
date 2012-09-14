@@ -38,6 +38,8 @@ class Message < ActiveRecord::Base
       #Si se indica reproducir se verifica
       #que si exista un recurso audio con el nombre
       #indicado.
+    when 'Colgar'
+      
     when 'Reproducir'
       resource = Resource.where(:campaign_id => group.campaign.id, :type_file => 'audio', :name => arg).first
       if resource.nil?
@@ -60,23 +62,31 @@ class Message < ActiveRecord::Base
 
             errors.add(:description, 'Condicion invalida solo =' ) unless condiciones.include?(condicion)
             errors.add(:description, 'Invalida sub expresion de Si') if subexp.empty?
-            
+            if not subexp.include? '|'
+              errors.add(:description, subexp.to_s)
+            end            
             errors.add(:description, 'Falta separador de si y no |') unless subexp.include? '|'
             subsexp = subexp.split('|')
             noexp = subexp.slice(subexp.length - subexp.reverse.index('|'), subexp.length)
             siexp = subexp.slice(0, subexp.length - subexp.reverse.index('|') -1)
 
-            siexp.split('>').each do |sexp|
+
+              
+            siexp.split('>').each_index do |isexp|
+              sexp = siexp.split('>')[isexp]
               if sexp.include?('Si')
-                validar_si_exp(sexp)
+                validar_si_exp(siexp.split('>')[isexp..-1].join('>'))
+                break
               else
                 validate_description_line(sexp)
               end
             end
             #SI
-            noexp.split('>').each do |sexp|
+            noexp.split('>').each_index do |isexp|
+              sexp = noexp.split('>')[isexp]
               if sexp.include?('Si')
-                validar_si_exp(sexp)
+                validar_si_exp(noexp.split('>')[isexp..-1].join('>'))
+                break
               else
                 validate_description_line(sexp)
               end
@@ -122,7 +132,7 @@ class Message < ActiveRecord::Base
       def evaluar_si_exp(exp, replaces)
         condiciones = ["=", ">=", "<="]
         sequencesi = {}
-        exp.strip.scan(/ *(=) *([^\/]+)(.+)$/) do |condicion, valor, subexp|
+        exp.strip.scan(/ *Si *(=) *([^\/]+)(.+)$/) do |condicion, valor, subexp|
           subexp[0]  = ''; subexp.strip!; 
           sequencesi[:si] = {:condicion => condicion, :valor => valor.strip!}
           sequencesi[:sicontinuar] = [] unless sequencesi[:sicontinuar].is_a? Array
@@ -131,19 +141,24 @@ class Message < ActiveRecord::Base
           noexp = subexp.slice(subexp.length - subexp.reverse.index('|'), subexp.length); noexp.strip!
           siexp = subexp.slice(0, subexp.length - subexp.reverse.index('|')); siexp.slice!(siexp.length-1,1); siexp.strip!
 
-          siexp.split('>').each do |sexp|
-            
+          siexp.split('>').each_index do |isexp|
+            sexp = siexp.split('>')[isexp]
             if sexp.include?('Si')
+              sexp = siexp.split('>')[isexp..-1].join('>')
               sequencesi[:sicontinuar] << evaluar_si_exp(sexp,  replaces)
+              break
             else
               sequencesi[:sicontinuar] << description_line_to_call_sequence(sexp, replaces)
             end
           end
 
           #SI
-          noexp.split('>').each do |sexp|
+          noexp.split('>').each_index do |isexp|
+            sexp = noexp.split('>')[isexp]
             if sexp.include?('Si')
+              sexp = noexp.split('>')[isexp..-1].join('>')
               sequencesi[:nocontinuar] << evaluar_si_exp(sexp,  replaces)
+              break
             else
               sequencesi[:nocontinuar] << description_line_to_call_sequence(sexp, replaces)
             end
@@ -152,9 +167,23 @@ class Message < ActiveRecord::Base
         return sequencesi
       end
       sequencesi = {}
-      return evaluar_si_exp(arg, replaces)
+      return evaluar_si_exp('Si ' + arg.to_s, replaces)
       when 'Colgar'
-        return {:colgar => true, :segundos => 0}
+      options = {:colgar => true, :razon => '', :segundos => 0}
+      words = arg.scan(/([0-9a-zA-Z\-_\/\\\.ñÑáéíóúÁÉÍÓÚ]+)=([0-9a-zA-Z\-_\/\\\.ñÑáéíóúÁÉÍÓÚ]+|\'[^\']+)/)
+      words.each do |word|
+        option = word
+        option[1][0] = "" if option[1][0] == "'"
+        option[1].strip!
+        option[0].strip!
+        case option[0]
+          when 'segundos'
+          options[:segundos] = option[1].to_i
+          when 'razon'
+          options[:razon] = option[1].to_s
+        end
+      end
+      return options
       when 'ReproducirLocal'
         return {:audio_local => arg}
       when 'Reproducir'
@@ -176,7 +205,7 @@ class Message < ActiveRecord::Base
           words = arg.scan(/([0-9a-zA-Z\-_\/\\\.ñÑáéíóúÁÉÍÓÚ]+)=([0-9a-zA-Z\-_\/\\\.ñÑáéíóúÁÉÍÓÚ]+|\'[^\']+)/)
           words.each do |word|
             option = word
-            option[1][0] = ""if option[1][0] == "'"
+            option[1][0] = "" if option[1][0] == "'"
             option[1].strip!
             option[0].strip!
             case option[0]

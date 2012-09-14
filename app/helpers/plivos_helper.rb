@@ -43,9 +43,9 @@ module PlivosHelper
       end
     elsif step[:colgar]
       if step[:segundos] > 0
-        xml.Hangup :schedule => step[:segundos]
+        xml.Hangup :reason => step[:razon], :schedule => step[:segundos]
       else
-        xml.Hangup
+        xml.Hangup :reason => step[:razon]
       end
     elsif step[:audio]
       local_resource = Rails.root.join(step[:audio])
