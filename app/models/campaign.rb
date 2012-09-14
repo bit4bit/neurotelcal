@@ -1,4 +1,12 @@
 # -*- coding: utf-8 -*-
+#La campana representa un conjunto de clientes a llamar
+#y un grupo de mensajes a comunicarles.
+#La campana puede estar en los estados:
+# ::START:: la campana realiza llamadas
+# ::PAUSE:: se pausa en el ultimo cliente, pero el servicio haun esta activado
+# ::END:: se detiene por complete las llamadas
+#Mirar /lib/neurotelcalservice.rb para mas detalles, tambien pueden
+#mirar Campaign#process.
 class Campaign < ActiveRecord::Base
   STATUS = { 'START' => 0, 'PAUSE' => 1, 'END' => 2}
 
@@ -11,7 +19,9 @@ class Campaign < ActiveRecord::Base
   has_many :plivo, :dependent => :delete_all
   has_many :group, :dependent => :delete_all
   belongs_to :entity
+
   def pause?
+    #Se reconsulta para obtener ultimo estado
     r = Campaign.select('status').where(:id => self.id).first.status
     return STATUS['PAUSE'] == r
   end
@@ -27,7 +37,23 @@ class Campaign < ActiveRecord::Base
     return STATUS['START'] == r
   end
 
-
+  #Se verifica si se puede llamara a un cliente
+  #con un determinado mensaje y un calendario de mensaje.
+  #El objetivo primordial es llamar las veces que sea necesario
+  #el cliente hasta que se obtenga una respuesta de que contesto, por cada
+  #'falla' en la llamada al cliente ha este se le baja la prioridad mirar Client#update_priority_by_hangup_cause
+  #o bien se le aumente si contesto satisfactoriamente esta prioridad es acumulativa al cliente mirar atributo Client#prority
+  #Teniendo como logica de funcionamiento:
+  # * si es mensaje anonimo llamar de una
+  # * si es un cliente con un numero invalido no se llama
+  # * si ya se marco para el menasje no se llama
+  # * si ya se esta marcando no se llama
+  # * si ha fallado se reintenta las veces indicadas por mensaje
+  #
+  #::client:: cliente a llamar
+  #::message:: mensaje a ser comunicado
+  #::message_calendar:: calendario de mensaje usado en caso de haber
+  #::return:: boolean indicando si se pudo o no realizar la llamada
   def can_call_client?(client, message, message_calendar = nil)
     called = false
     if not message.anonymous and client.group.messages_share_clients
@@ -78,6 +104,8 @@ class Campaign < ActiveRecord::Base
     return true
   end
   
+  #Para mandar lotes de llamadas
+  #::deprecation:: acutalmente no esta confirmado su uso correcto
   def call_clients(clients, message)
     self.plivo.all.each { |plivo|
       begin
@@ -119,13 +147,11 @@ class Campaign < ActiveRecord::Base
       #si esta pausado no se realiza las llamadas
       next if pause?
       fibers = []
-     
-
+ 
       group.message.all.each do |message|
         #se termina en caso de forzado, y espera la ultima llamada
         return false if end?
       
-   
         fibers << Fiber.new {
           sleep 1 while pause? #si se pausa la campana se espera hasta que se despause
           

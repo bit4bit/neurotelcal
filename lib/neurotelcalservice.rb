@@ -37,14 +37,23 @@ module ServiceNeurotelcal
       Rails.logger.debug("Servicio de campaña %s at %s" % [@campaign.name, Time.now])
     end
 
-
+    #Espera hasta encontrar canal disponible
+    def esperar_canal
+      @campaign.plivo.all.each { |cp|
+          sleep 1 until cp.can_call?
+      }
+    end
+    
     #Procesa mensaje y realiza las llamadas indicadas
     def process_queue
       begin
+        esperar_canal
         @campaign.process
       rescue PlivoNotFound => e
         Rails.logger.error("NO HAY SERVIDOR PLIVO PARA LLAMAR")
       rescue PlivoCannotCall => e
+        #se espera un canal disponible
+        esperar_canal
         #PlivoCall.where(:end => 0, :hangup_enumeration => nil, :status => 'calling').delete_all #se limpian las mal realizadas
         Rails.logger.error("NO SE PUDO REALIZAR LA LLAMADA")
       rescue Errno::ECONNREFUSED => e
@@ -57,6 +66,8 @@ module ServiceNeurotelcal
 
   end
 
+  #Se inicia el demonio neurotelcal
+  #el cual revisa las campana, grupos, mensajes y realiza las llamadas
   def self.start
     pid_file = File.join(Dir.tmpdir,'neurotelcalservice.pid')
     if File.exists?(pid_file)
@@ -81,17 +92,13 @@ module ServiceNeurotelcal
     
     
     while(@@running) do
-      
       Campaign.all.each do |campaign|
-
         if campaign.end? == false
           $threads_campaigns << Thread.new(campaign) { |doCampaign|
             srv = ServiceNeurotelcal::CampaignCall.new(doCampaign)
             srv.process_queue
             ActiveRecord::Base.connection.close 
           }
-          
-
         end
       end
       
@@ -103,8 +110,12 @@ module ServiceNeurotelcal
     Rails.logger.debug('--ENDED ' + Time.now.to_s)
   end
   
+  #Se detiene despues de que se hayan terminado
+  #los clientes pendients
   def self.stop
     @@running = false
+    #se terminan todas las campanas, osea se paran completamente
+    Campaign.all.each {|cp| cp.update_column(:status, Campaign::STATUS['END'])}
     File.delete(File.join(Dir.tmpdir, 'neurotelcalservice.pid'))
   end
   
