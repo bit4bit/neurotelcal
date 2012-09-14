@@ -11,7 +11,7 @@ class Call < ActiveRecord::Base
   scope :in_process_for_message, lambda {|message_id| where(:message_id => message_id, :terminate => nil)}
   scope :answered_for_client?, lambda{|client_id| where(:client_id => client_id).where(:hangup_enumeration => PlivoCall::ANSWER_ENUMERATION)}
   scope :answered_for_message, lambda{|message_id| where(:message_id => message_id, :hangup_enumeration => PlivoCall::ANSWER_ENUMERATION)}
-
+  scope :answered_for_message_calendar, lambda{|message_calendar_id| where(:message_calendar_id => message_calendar_id, :hangup_enumeration => PlivoCall::ANSWER_ENUMERATION)}
   #Retorna estado de c
   def hangup_status
     case self.hangup_enumeration

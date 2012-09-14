@@ -10,6 +10,7 @@
     <th><%= I18n.t('message_calendar.l.channels')%></th>
     <th><%= I18n.t('message_calendar.l.use_available_channels')%></th>
     <th><%= I18n.t('message_calendar.l.time_expected_for_call')%></th>
+    <th><%= I18n.t('message_calendar.l.calls_completed')%></th>
     <th></th>
     <th></th>
     <th></th>
@@ -23,9 +24,11 @@
     <td><%= message_calendar.channels%></td>
     <th><%= message_calendar.use_available_channels%></td>
     <td><%= message_calendar.time_expected_for_call%></td>
-    <td><%= link_to I18n.t('show'), message_calendar %></td>
-    <td><%= link_to I18n.t('edit'), edit_message_calendar_path(message_calendar) %></td>
-    <td><%= link_to I18n.t('destroy'), message_calendar, :confirm => I18n.t('are_you_sure'), :method => :delete %></td>
+    <td><%= Call.answered_for_message_calendar(message_calendar).count%></td>
+    <td><%= link_to I18n.t('show'), message_calendar %><br />
+      <%= link_to I18n.t('edit'), edit_message_calendar_path(message_calendar) %><br />
+      <%= link_to I18n.t('destroy'), message_calendar, :confirm => I18n.t('are_you_sure'), :method => :delete %>
+    </td>
   </tr>
 <% end %>
 </table>

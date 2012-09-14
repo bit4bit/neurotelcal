@@ -1,6 +1,19 @@
-
+<%= stylesheet_link_tag params[:controller]%>
 <h1><%= I18n.t('report.index.title')%></h1>
-<h1>Estos tiempos son relativos al procesamiento de la llamada no son reales respecto a la duracion de la llamada</h1>
+<h3>General</h3>
+<div class="report-general">
+<table>
+  <tr><td cols="2" class="title">Por estado de cuelgue</td></tr>
+  <% @report[:general][:by_hangup_enumeration].each do |h,v|%>
+  <tr><td><%= h%></td><td><%= v%></td></tr>
+  <% end%>
+  <tr><td cols="2" class="title">Estadisticos</td></tr>
+  <tr><td>Dieron respuesta al IVR</td><td><%= @report[:general][:statistical][:response_ivr]%></td></tr>
+  <tr><td>Total llamadas realizadas</td><td><%= @report[:general][:statistical][:calls_completed]%></td></tr>
+</table>
+<hr/>
+<h3>Detallado</h3>
+<h5>Estos tiempos son relativos al procesamiento de la llamada no son reales respecto a la duracion de la llamada</h5>
 <%= link_to I18n.t('report.export_csv'), reports_export_csv_index_path%>
 <table>
   <tr>
