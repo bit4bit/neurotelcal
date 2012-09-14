@@ -175,7 +175,7 @@ class Campaign < ActiveRecord::Base
             end
             
             
-            #if message.done_calls_clients?
+            #se termina este mensaje si ya se hicieron todas las esperadas
             if Call.done_calls_message(message.id).count + count_calls >= message.max_clients
               break
             elsif message.max_clients > 0 and count_calls >= message.max_clients

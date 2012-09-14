@@ -1,7 +1,7 @@
 <%= link_to I18n.t('back'), messages_path(:group_id => @message.group.id), :class => 'button negative' %>
 <%= link_to I18n.t('message_calendar.new.title'), new_message_calendar_path(:message_id => @message), :class => 'button' %>
 <h1><%= I18n.t('message_calendar.index.title')%></h1>
-
+<h3>Para: <%= @message.name%></h3>
 <table>
   <tr>
     <th><%= I18n.t('message_calendar.l.start')%></th>

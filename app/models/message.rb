@@ -71,21 +71,22 @@ class Message < ActiveRecord::Base
             siexp = subexp.slice(0, subexp.length - subexp.reverse.index('|') -1)
 
 
-              
-            siexp.split('>').each_index do |isexp|
-              sexp = siexp.split('>')[isexp]
+            asiexp = siexp.split('>')
+            asiexp.each_index do |isexp|
+              sexp = asiexp[isexp]
               if sexp.include?('Si')
-                validar_si_exp(siexp.split('>')[isexp..-1].join('>'))
+                validar_si_exp(asiexp[isexp..-1].join('>'))
                 break
               else
                 validate_description_line(sexp)
               end
             end
-            #SI
-            noexp.split('>').each_index do |isexp|
-              sexp = noexp.split('>')[isexp]
+            
+            anoexp = noexp.split('>')
+            anoexp.each_index do |isexp|
+              sexp = anoexp[isexp]
               if sexp.include?('Si')
-                validar_si_exp(noexp.split('>')[isexp..-1].join('>'))
+                validar_si_exp(anoexp[isexp..-1].join('>'))
                 break
               else
                 validate_description_line(sexp)
@@ -108,16 +109,11 @@ class Message < ActiveRecord::Base
   # <%= %> para ejecutar ruby exp
   #@todo validar lo anterior
   def validate_description_call_language
-   
-
     if not description.nil?
-
       lines = description.split("\n")
-      
       lines.each do |line|
         validate_description_line(line)
       end
-
     end
   end
 
@@ -140,11 +136,11 @@ class Message < ActiveRecord::Base
           subsexp = subexp.split('|')
           noexp = subexp.slice(subexp.length - subexp.reverse.index('|'), subexp.length); noexp.strip!
           siexp = subexp.slice(0, subexp.length - subexp.reverse.index('|')); siexp.slice!(siexp.length-1,1); siexp.strip!
-
-          siexp.split('>').each_index do |isexp|
-            sexp = siexp.split('>')[isexp]
+          asiexp = siexp.split('>')
+          asiexp.each_index do |isexp|
+            sexp = asiexp[isexp]
             if sexp.include?('Si')
-              sexp = siexp.split('>')[isexp..-1].join('>')
+              sexp = asiexp[isexp..-1].join('>')
               sequencesi[:sicontinuar] << evaluar_si_exp(sexp,  replaces)
               break
             else
@@ -152,11 +148,11 @@ class Message < ActiveRecord::Base
             end
           end
 
-          #SI
-          noexp.split('>').each_index do |isexp|
-            sexp = noexp.split('>')[isexp]
+          anoexp = noexp.split('>')
+          anoexp.each_index do |isexp|
+            sexp = anoexp[isexp]
             if sexp.include?('Si')
-              sexp = noexp.split('>')[isexp..-1].join('>')
+              sexp = anoexp[isexp..-1].join('>')
               sequencesi[:nocontinuar] << evaluar_si_exp(sexp,  replaces)
               break
             else
