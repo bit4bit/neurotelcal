@@ -48,6 +48,7 @@ es:
         start: 'Inicia'
         stop: 'Terminae'
         max_clients: 'Maximo clientes'
+        channels: 'Canales'
   back: 'Atrás'	
   edit: 'Editar'
   show: 'Mostrar'
@@ -223,6 +224,7 @@ es:
       start: 'Inicia'
       stop: 'Termina'
       max_clients: 'Maximo clientes'
+      channels: 'Canales'
   entity:
     are_you_sure: 'Esta uste seguro/a de eliminara esta entidad? esto eliminar todas las campanas de la entidad'
     l:

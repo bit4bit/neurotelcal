@@ -125,9 +125,10 @@ class Campaign < ActiveRecord::Base
         #se termina en caso de forzado, y espera la ultima llamada
         return false if end?
       
-        
-
+   
         fibers << Fiber.new {
+          sleep 1 while pause? #si se pausa la campana se espera hasta que se despause
+          
           #si ya se marcaron todos los clientes posibles se salta
           if message.done_calls_clients? and not message.anonymous
             #logger.debug("Mensaje %d done calls jumping" % message.id)
@@ -142,13 +143,14 @@ class Campaign < ActiveRecord::Base
           #logger.debug("Campaign#Process: Revisando mensaje %s inicia %s y termina %s" % [message.name, message.call.to_s, message.call_end.to_s])
           
           count_calls = 0
+          #Se llama a los clientes hasta que se cumpla el limite de canales simultaneos o
+          #se termina los clientes esperados
           group.client.all.each do |client|
             #logger.debug("Campaign#Process: Para cliente %s en grupo %s" % [client.fullname, group.name])
             #si es marcacion directa anonima
             if message.anonymous
               next call_client(client, message) 
             end
-            
             
             #se espera que la ultima llamada se ade este mensaje
             #sino se omite cliente y se deja para que lo preceso el mensaje
@@ -160,7 +162,6 @@ class Campaign < ActiveRecord::Base
                 break
               end
             end
-            
             
             if client.group.messages_share_clients
               message_id = client.group.id_messages_share_clients
@@ -174,7 +175,6 @@ class Campaign < ActiveRecord::Base
               next
             end
             
-            
             #se termina este mensaje si ya se hicieron todas las esperadas
             if Call.done_calls_message(message.id).count + count_calls >= message.max_clients
               break
@@ -182,23 +182,22 @@ class Campaign < ActiveRecord::Base
               break
             end
             
-            
             #logger.debug('Count trying done calls %d for message %d max clients %d' % [count_calls, message.id, message.max_clients])
             #se busca el calendario para iniciar marcacion
             #logger.debug("Campaign#Process: Se busca en calendario")
             message.message_calendar.all.each do |message_calendar|
               #se detiene marcacion si ya se realizaron todas las llamadas contestadas
-              
-              
               if Time.now >= Time.parse(message_calendar.start.to_s) and  Time.now <= Time.parse(message_calendar.stop.to_s)
                 if message_calendar.max_clients > 0 and (Call.where(:message_calendar_id => message_calendar.id, :hangup_enumeration => PlivoCall::ANSWER_ENUMERATION).count + Call.where(:message_calendar_id => message_calendar.id, :terminate => nil).count) >= message_calendar.max_clients 
                   count_calls += message.max_clients #se saca a la fuerza
                 else
-              
-                  if can_call_client?(client, message, message_calendar)
-                    count_calls += 1 if call_client(client, message, message_calendar)
+                  if count_calls >= message_calendar.channels #se limita los canales por calendario
+                    count_calls += message.max_clients
+                  else
+                    if can_call_client?(client, message, message_calendar)
+                      count_calls += 1 if call_client(client, message, message_calendar)
+                    end
                   end
-                  
                 end
                 break
               end
