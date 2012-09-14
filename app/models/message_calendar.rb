@@ -17,7 +17,12 @@ class MessageCalendar < ActiveRecord::Base
         errors.add(:channels, 'No hay plivos configuarados')
       end
       
-      mcls = MessageCalendar.select('channels').where(:message_id => message.id).where('id != ?', id)
+      if message.group.messages_share_clients
+        mcls = MessageCalendar.select('channels').where(:message_id => message.group.id_messages_share_clients).where('id != ?', id)
+      else
+        mcls = MessageCalendar.select('channels').where(:message_id => message.id).where('id != ?', id)
+      end
+
       if mcls.all.size > 0
         total_channels_messages_calendars = mcls.all.size > 1 ? mcls.all.inject {|s,v| s.channels + v.channels } : mcls.first.channels
 
@@ -25,8 +30,7 @@ class MessageCalendar < ActiveRecord::Base
           errors.add(:channels, 'Ha superado por %d el limite de %d los plivos de la Campaña' % [channels + total_channels_messages_calendars, total_channels_plivos])
         end
       end
-      
-        
+
     end
   end
   
