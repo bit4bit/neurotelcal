@@ -43,7 +43,9 @@ class MessageCalendar < ActiveRecord::Base
       end
 
       if mcls.all.size > 0
-        total_channels_messages_calendars = mcls.all.size > 1 ? mcls.all.inject {|s,v| s.channels + v.channels } : mcls.first.channels
+        total_channels_messages_calendars = 0;
+        mcls.each {|mc| total_channels_messages_calendars += mc.channels}
+
 
         if channels + total_channels_messages_calendars > total_channels_plivos
           errors.add(:channels, 'Ha superado por %d el limite de %d los plivos de la Campaña' % [channels + total_channels_messages_calendars, total_channels_plivos])
