@@ -165,7 +165,20 @@ class Campaign < ActiveRecord::Base
           #logger.debug("Time ahora (%s) message_call (%s) message_end (%s)" % [Time.now.to_s, Time.zone.parse(message.call.to_s), Time.parse(message.call_end.to_s)])
           #se omite mensaje que no esta en fecha de verificacion
           next if Time.now < message.call or Time.now > message.call_end
-
+          
+          #antes de entrar a buscar por cliente
+          begin
+            is_necesary_do_the_calls_p = false
+            message.message_calendar.each {|mc|
+              if Time.now > mc.start and Time.now < mc.stop
+                is_necesary_do_the_calls_p = true
+                break
+              end
+            }
+            next unless is_necesary_do_the_calls_p
+          rescue 
+          end
+          
           #canales extras para cumplir con los calendarios que se activen
           use_extra_channels =  extra_channels(message)
           
