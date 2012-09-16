@@ -242,6 +242,7 @@ class Campaign < ActiveRecord::Base
                     limit_of_channels = use_extra_channels
                   else
                     limit_of_channels = message_calendar.channels
+                    limit_of_channels += use_extra_channels if message_calendar.use_available_channels
                   end
                   
                   if count_calls >= limit_of_channels #se limita los canales por calendario
