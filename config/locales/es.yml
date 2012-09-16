@@ -25,6 +25,7 @@ es:
       campaign:
         name: 'Nombre'
         description: 'Descripción'
+        notes: 'Anotaciones'
       resource:
         name: 'Nombre'
         type: 'Tipo'
@@ -40,6 +41,7 @@ es:
         hangup_on_ring: 'Cuelgue en timbre'
         priority: 'Prioridad'
         max_clients: 'Maximo clientes'
+        notes: 'Anotaciones'
       client:
         fullname: 'Nombre Completo'
         phonenumbre: 'Número télefonico/sip'
@@ -51,6 +53,7 @@ es:
         channels: 'Canales'
         time_expected_for_call: 'Tiempo estimado por llamada'
         use_available_channels: 'Usar canales disponibles?'
+        notes: 'Anotaciones'
   back: 'Atrás'	
   edit: 'Editar'
   show: 'Mostrar'
@@ -88,6 +91,7 @@ es:
      name: 'Nombre'
      description: 'Descripción'
      status: 'Estado'
+     notes: 'Anotaciones'
     index:
       title: 'Listando Campañas'
     edit:
@@ -132,6 +136,7 @@ es:
       retries: 'Reintentos'
       priority: 'Prioridad'
       max_clients: 'Maximo clientes'
+      notes: 'Anotaciones'
     index:
       title: 'Listando Mensajes'
     edit:
@@ -230,6 +235,7 @@ es:
       time_expected_for_call: 'Tiempo estimado por llamada'
       use_available_channels: 'Usar canales disponibles?'
       calls_completed: 'Llamadas contestadas'
+      notes: 'Anotaciones'
   entity:
     are_you_sure: 'Esta uste seguro/a de eliminara esta entidad? esto eliminar todas las campanas de la entidad'
     l:

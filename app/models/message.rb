@@ -2,6 +2,7 @@
 class Message < ActiveRecord::Base
   attr_accessible :group_id, :description, :name, :processed, :call, :entered, :listened, :anonymous, :call_end, :retries, :hangup_on_ring, :time_limit, :priority
   attr_accessible :max_clients
+  attr_accessible :notes
   validates :name, :description, :call, :presence => true
   validates :name, :uniqueness => true
   validates :max_clients, :numericality => { :greater_than_or_equal_to => 0 }

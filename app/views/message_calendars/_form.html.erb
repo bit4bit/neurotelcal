@@ -20,6 +20,11 @@
   <div class="field">
     <%= f.input :time_expected_for_call, :input_html => {:maxlength => 2, :size => 2, :title => 'Tiempo esperado por llamada esto es necesario si activa la opcion de usar canales disponibles'}%>
   </div>
+
+  <div class="field">
+    <%= f.input :notes%>
+  </div>
+
   <div class="form-actions">
     <%= f.button :submit %>
   </div>

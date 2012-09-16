@@ -12,9 +12,12 @@
 
 <p>
   <b><%= I18n.t('campaign.l.description')%>:</b>
-  <%= @campaign.description %>
+  <%= simple_format(@campaign.description) %>
 </p>
-
+<p>
+  <b><%= I18n.t('campaign.l.notes')%>:</b>
+  <%= simple_format(@campaign.notes)%>
+</p>
 <table>
   <tr>
     <th><%= I18n.t('defaults.clients')%></th>

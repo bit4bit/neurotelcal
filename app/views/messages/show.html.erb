@@ -51,5 +51,9 @@
   <b><%= I18n.t('defaults.group')%>:</b>
   <%= @message.group.name %>
 </p>
-
+<hr />
+<p>
+  <b><%= I18n.t('message.l.notes')%>:</b>
+  <%= simple_format(@message.notes)%>
+</p>
 

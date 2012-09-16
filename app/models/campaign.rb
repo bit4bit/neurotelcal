@@ -11,7 +11,7 @@ class Campaign < ActiveRecord::Base
   STATUS = { 'START' => 0, 'PAUSE' => 1, 'END' => 2}
 
   attr_accessible :description, :name, :status, :entity_id
-  
+  attr_accessible :notes
   validates :name, :presence => true, :uniqueness => true
   validates :entity_id, :presence => true
   has_many :resource, :dependent => :delete_all

@@ -2,6 +2,7 @@
 class MessageCalendar < ActiveRecord::Base
   attr_accessible :start, :stop, :message_id, :max_clients, :time_expected_for_call
   attr_accessible :channels, :use_available_channels
+  attr_accessible :notes
   belongs_to :message
 
   validates :max_clients, :numericality => { :greater_than_or_equal_to => 0 }

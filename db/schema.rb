@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120914201503) do
+ActiveRecord::Schema.define(:version => 20120916203152) do
 
   create_table "calendars", :force => true do |t|
     t.integer  "message_id"
@@ -50,6 +50,7 @@ ActiveRecord::Schema.define(:version => 20120914201503) do
     t.datetime "created_at",  :null => false
     t.datetime "updated_at",  :null => false
     t.integer  "entity_id"
+    t.text     "notes"
   end
 
   create_table "clients", :force => true do |t|
@@ -93,6 +94,7 @@ ActiveRecord::Schema.define(:version => 20120914201503) do
     t.integer  "channels",               :default => 1
     t.integer  "time_expected_for_call", :default => 0
     t.boolean  "use_available_channels", :default => false
+    t.text     "notes"
   end
 
   create_table "messages", :force => true do |t|
@@ -110,6 +112,7 @@ ActiveRecord::Schema.define(:version => 20120914201503) do
     t.integer  "time_limit",     :default => 0
     t.integer  "priority",       :default => 0
     t.integer  "max_clients",    :default => 0
+    t.text     "notes"
   end
 
   add_index "messages", ["group_id"], :name => "index_messages_on_group_id"

@@ -33,4 +33,8 @@
   <b><%= I18n.t('message_calendar.l.time_expected_for_call')%>:</b>
   <%= @message_calendar.time_expected_for_call%>
 </p>
-
+<hr />
+<p>
+  <b><%= I18n.t('message_calendar.l.notes')%>:</b>
+  <%= simple_format(@message_calendar.notes)%>
+</p>
