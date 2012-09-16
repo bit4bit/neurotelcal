@@ -30,6 +30,7 @@ class MessageCalendar < ActiveRecord::Base
     if message
       if message.group.campaign.plivo.all.size > 0
         total_channels_plivos = message.group.campaign.plivo.all.size > 1 ? message.group.campaign.plivo.all.inject {|s,v| s.channels.to_i + v.channels.to_i} : message.group.campaign.plivo.first.channels.to_i
+
         if channels > total_channels_plivos
           errors.add(:channels, 'Ha superado por %d el limite de canales del plivo o plivos de la Campaña %d' % [channels, total_channels_plivos])
         end
@@ -38,9 +39,9 @@ class MessageCalendar < ActiveRecord::Base
       end
       
       if message.group.messages_share_clients
-        mcls = MessageCalendar.select('channels').where(:message_id => message.group.id_messages_share_clients).where('id != ?', id)
+        mcls = MessageCalendar.select('channels').where(:message_id => message.group.id_messages_share_clients).where('id != ?', id).where('start >= ? AND stop <= ?', start, stop)
       else
-        mcls = MessageCalendar.select('channels').where(:message_id => message.id).where('id != ?', id)
+        mcls = MessageCalendar.select('channels').where(:message_id => message.id).where('id != ?', id).where('start >= ? AND stop <= ?', start, stop)
       end
 
       if mcls.all.size > 0
