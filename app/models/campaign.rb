@@ -220,7 +220,7 @@ class Campaign < ActiveRecord::Base
 
             #se comprueba que no haya sido rechazada la llamada sino se marca otro numero
             uuid_calls.each{|uuid_call|
-              if PlivoCall.where(:uuid => uuid_call, :hangup_enumeration => PlivoCall::REJECTED_ENUMERATION).exists? or PlivoCall.where(:uuid => uuid_call. :hangup_enumeration => %w(CALL_REJECTED))
+              if PlivoCall.where(:uuid => uuid_call, :hangup_enumeration => PlivoCall::REJECTED_ENUMERATION).exists? or PlivoCall.where(:uuid => uuid_call, :hangup_enumeration => %w(CALL_REJECTED))
                 logger.debug('Eliminado call por no cumplirse')
                 count_calls -= 1 if count_calls > 0
                 uuid_calls.delete(uuid_call)
