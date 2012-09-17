@@ -125,8 +125,7 @@ class Campaign < ActiveRecord::Base
     called = false
     self.plivo.all.each { |plivo|
       begin
-        plivo.call_client(client, message, message_calendar)
-        called = true
+        called = plivo.call_client(client, message, message_calendar)
         break
       rescue PlivoChannelFull => e
         logger.debug("Plivo id %d full trying next plivo" % plivo.id)
@@ -186,7 +185,7 @@ class Campaign < ActiveRecord::Base
           
           #cantidad de llamadas iniciadas
           count_calls = 0
-
+          uuid_calls = []
           #Se llama a los clientes hasta que se cumpla el limite de canales simultaneos o
           #se termina los clientes esperados
           group.client.all.each do |client|
@@ -212,7 +211,14 @@ class Campaign < ActiveRecord::Base
             else
               message_id = message.id
             end
-            
+
+            #se comprueba que no haya sido rechazada la llamada sino se marca otro numero
+            uuid_calls.each{|uuid_call|
+              if PlivoCall.where(:uuid => uuid_call, :hangup_enumeration => PlivoCall::REJECTED_ENUMERATION).exists?
+                count_calls -= 1 if count_calls > 0
+                uuid_calls.delete(uuid_call)
+              end
+            }
             #se salta si ya esta en proceso
             if Call.in_process_for_message_client?(message_id, client.id).exists?
               count_calls += Call.in_process_for_message_client?(message_id, client.id).count
@@ -249,7 +255,11 @@ class Campaign < ActiveRecord::Base
                     count_calls += message.max_clients
                   else
                     if can_call_client?(client, message, message_calendar)
-                      count_calls += 1 if call_client(client, message, message_calendar)
+                      r = call_client(client, message, message_calendar)
+                      if r.is_a?(String)
+                        count_calls += 1
+                        uuid_calls << r
+                      end
                     end
                   end
                 end

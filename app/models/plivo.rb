@@ -155,12 +155,13 @@ class Plivo < ActiveRecord::Base
     #PARA MANTENER NUESTRO PROPIO ID utilizamaos el parametro AccountSID de plivo
     plivor = PlivoHelper::Rest.new(self.api_url, self.sid, self.auth_token)
     result = ActiveSupport::JSON.decode(plivor.call(call_params).body)
-    logger.error(result)
+
     if result["Success"]
       plivocall.uuid = result["RequestUUID"]
       plivocall.save
-      return true
+      return result['RequestUUID']
     else
+      logger.error(result)
       plivocall.destroy
       return false
     end
