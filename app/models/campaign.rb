@@ -137,7 +137,6 @@ class Campaign < ActiveRecord::Base
     return called
   end
   
-  
   #Procesa mensaje y realiza las llamadas indicadas
   #@todo cachear consultas ya que se realizan muchas
   def process
@@ -150,143 +149,148 @@ class Campaign < ActiveRecord::Base
       group.message.all.each do |message|
         #se termina en caso de forzado, y espera la ultima llamada
         return false if end?
-      
-        fibers << Fiber.new {
-          sleep 1 while pause? #si se pausa la campana se espera hasta que se despause
-          
-          #si ya se marcaron todos los clientes posibles se salta
-          if message.done_calls_clients? and not message.anonymous
-            #logger.debug("Mensaje %d done calls jumping" % message.id)
-            next
-          end
-          
+        process_message(message)
 
-          #logger.debug("Time ahora (%s) message_call (%s) message_end (%s)" % [Time.now.to_s, Time.zone.parse(message.call.to_s), Time.parse(message.call_end.to_s)])
-          #se omite mensaje que no esta en fecha de verificacion
-          next if Time.now < message.call or Time.now > message.call_end
-          
-          #antes de entrar a buscar por cliente
-          begin
-            is_necesary_do_the_calls_p = false
-            message.message_calendar.each {|mc|
-              if Time.now > mc.start and Time.now < mc.stop
-                is_necesary_do_the_calls_p = true
-                break
-              end
-            }
-            next unless is_necesary_do_the_calls_p
-          rescue 
-          end
-          
-          #canales extras para cumplir con los calendarios que se activen
-          use_extra_channels =  extra_channels(message)
-          
-          #logger.debug("Campaign#Process: Revisando mensaje %s inicia %s y termina %s" % [message.name, message.call.to_s, message.call_end.to_s])
-          
-          #cantidad de llamadas iniciadas
-          count_calls = 0
-          uuid_calls = []
-
-          #reinicia conteo
-          if message.last_client_parse_id >= Client.select('id').order('id DESC').first.id
-            message.update_attribute(:last_client_parse_id, 0)
-          end
-          
-          #Se llama a los clientes hasta que se cumpla el limite de canales simultaneos o
-          #se termina los clientes esperados
-          Client.where('id >= ? AND campaign_id = ?', message.last_client_parse_id, self.id).order('priority DESC').limit(message.max_clients).all.each do |client|
-            #logger.debug("Campaign#Process: Para cliente %s en grupo %s" % [client.fullname, group.name])
-            #si es marcacion directa anonima
-            if message.anonymous
-              next call_client(client, message) 
-            end
-            
-            #se espera que la ultima llamada se ade este mensaje
-            #sino se omite cliente y se deja para que lo preceso el mensaje
-            #al que corresponde
-            if Call.where(:client_id => client.id).exists? and client.group.messages_share_clients
-              if not Call.where(:message_id => message.id, :client_id => client.id).exists? 
-                next
-                #si ya se llamaron todos los clientes
-              elsif Call.answered_for_message(message).count >= message.max_clients
-                break
-              end
-            end
-            
-            if client.group.messages_share_clients
-              message_id = client.group.id_messages_share_clients
-            else
-              message_id = message.id
-            end
-
-            #se comprueba que no haya sido rechazada la llamada sino se marca otro numero
-            #uuid_calls.each{|uuid_call|
-            #  if PlivoCall.where(:uuid => uuid_call, :hangup_enumeration => PlivoCall::REJECTED_ENUMERATION).exists? or PlivoCall.where(:uuid => uuid_call, :hangup_enumeration => %w(CALL_REJECTED))
-            #    logger.debug('Eliminado call por no cumplirse')
-            #    count_calls -= 1 if count_calls > 0
-            #    uuid_calls.delete(uuid_call)
-            #  end
-            #}
-            #se salta si ya esta en proceso por mensaje y cliente
-            if Call.in_process_for_message_client?(message_id, client.id).exists?
-              count_calls += Call.in_process_for_message_client?(message_id, client.id).count
-              next
-            elsif Call.in_process_for_message(message_id).exists?
-              count_calls += Call.in_process_for_message(message_id).count
-            end
-            
-            #se termina este mensaje si ya se hicieron todas las esperadas
-            if Call.done_calls_message(message.id).count + count_calls >=  message.max_clients
-              break
-            elsif message.max_clients > 0 and count_calls >= message.max_clients
-              break
-            end
-            
-            logger.debug('process:Count trying done calls %d for message %d max clients %d' % [count_calls, message.id, message.max_clients])
-            #se busca el calendario para iniciar marcacion
-            #logger.debug("Campaign#Process: Se busca en calendario")
-            message.message_calendar.all.each do |message_calendar|
-              #se detiene marcacion si ya se realizaron todas las llamadas contestadas
-              if Time.now >= message_calendar.start and  Time.now <= message_calendar.stop
-                if message_calendar.max_clients > 0 and (Call.where(:message_calendar_id => message_calendar.id, :hangup_enumeration => PlivoCall::ANSWER_ENUMERATION).count + Call.where(:message_calendar_id => message_calendar.id, :terminate => nil).count) >= message_calendar.max_clients 
-                  count_calls += message.max_clients #se saca a la fuerza
-                else
-                  limit_of_channels = 0
-                  #si se pone canales a cero los canales se asignan
-                  #automaticamente segun los disponibles
-                  if message_calendar.channels == 0
-                    limit_of_channels = use_extra_channels
-                  else
-                    limit_of_channels = message_calendar.channels
-                    limit_of_channels += use_extra_channels if message_calendar.use_available_channels
-                  end
-                  logger.debug('process: limit of channels %d, count channels %d' % [limit_of_channels, count_calls])
-                  if count_calls >= limit_of_channels #se limita los canales por calendario
-                    count_calls += message.max_clients
-                  else
-                    if can_call_client?(client, message, message_calendar)
-                      #se almacena desde el ultimo que se llamo
-                      message.update_attribute(:last_client_parse_id, client.id)
-                      r = call_client(client, message, message_calendar)
-                      if r.is_a?(String)
-                        count_calls += 1
-                        #uuid_calls << r
-                      end
-                    end
-                  end
-                end
-                break
-              end
-            end
-          end
-        }
       end #end group
-      fibers.each(&:resume)
+      #fibers.each(&:resume)
     end
     
   end
 
   private
+
+  def process_message(message)
+    sleep 1 while pause? #si se pausa la campana se espera hasta que se despause
+    
+    #si ya se marcaron todos los clientes posibles se salta
+    if message.done_calls_clients? and not message.anonymous
+      #logger.debug("Mensaje %d done calls jumping" % message.id)
+      return true
+    end
+    
+    
+    #logger.debug("Time ahora (%s) message_call (%s) message_end (%s)" % [Time.now.to_s, Time.zone.parse(message.call.to_s), Time.parse(message.call_end.to_s)])
+    #se omite mensaje que no esta en fecha de verificacion
+    return false if Time.now < message.call or Time.now > message.call_end
+    
+    #antes de entrar a buscar por cliente
+    begin
+      is_necesary_do_the_calls_p = false
+      message.message_calendar.each {|mc|
+        if Time.now > mc.start and Time.now < mc.stop
+          is_necesary_do_the_calls_p = true
+          break
+        end
+      }
+      return true unless is_necesary_do_the_calls_p
+    rescue 
+    end
+    
+    #canales extras para cumplir con los calendarios que se activen
+    use_extra_channels =  extra_channels(message)
+    
+    #logger.debug("Campaign#Process: Revisando mensaje %s inicia %s y termina %s" % [message.name, message.call.to_s, message.call_end.to_s])
+    
+    #cantidad de llamadas iniciadas
+    count_calls = 0
+    uuid_calls = []
+    
+    #reinicia conteo
+    if message.last_client_parse_id >= Client.select('id').order('id DESC').first.id
+      message.update_attribute(:last_client_parse_id, 0)
+    end
+    
+    #Se llama a los clientes hasta que se cumpla el limite de canales simultaneos o
+    #se termina los clientes esperados
+    Client.where('id >= ? AND campaign_id = ?', message.last_client_parse_id, self.id).order('priority DESC').limit(message.max_clients).all.each do |client|
+      #logger.debug("Campaign#Process: Para cliente %s en grupo %s" % [client.fullname, group.name])
+      #si es marcacion directa anonima
+      if message.anonymous
+        next call_client(client, message) 
+      end
+      
+      #se espera que la ultima llamada se ade este mensaje
+      #sino se omite cliente y se deja para que lo preceso el mensaje
+      #al que corresponde
+      if Call.where(:client_id => client.id).exists? and client.group.messages_share_clients
+        if not Call.where(:message_id => message.id, :client_id => client.id).exists? 
+          next
+          #si ya se llamaron todos los clientes
+        elsif Call.answered_for_message(message).count >= message.max_clients
+          break
+        end
+      end
+      
+      if client.group.messages_share_clients
+        message_id = client.group.id_messages_share_clients
+      else
+        message_id = message.id
+      end
+      
+      #se comprueba que no haya sido rechazada la llamada sino se marca otro numero
+      #uuid_calls.each{|uuid_call|
+      #  if PlivoCall.where(:uuid => uuid_call, :hangup_enumeration => PlivoCall::REJECTED_ENUMERATION).exists? or PlivoCall.where(:uuid => uuid_call, :hangup_enumeration => %w(CALL_REJECTED))
+      #    logger.debug('Eliminado call por no cumplirse')
+      #    count_calls -= 1 if count_calls > 0
+      #    uuid_calls.delete(uuid_call)
+      #  end
+      #}
+      #se salta si ya esta en proceso por mensaje y cliente
+      if Call.in_process_for_message_client?(message_id, client.id).exists?
+        count_calls += Call.in_process_for_message_client?(message_id, client.id).count
+        next
+      elsif Call.in_process_for_message(message_id).exists?
+        count_calls += Call.in_process_for_message(message_id).count
+      end
+      
+      #se termina este mensaje si ya se hicieron todas las esperadas
+      if Call.done_calls_message(message.id).count + count_calls >=  message.max_clients
+        break
+      elsif message.max_clients > 0 and count_calls >= message.max_clients
+        break
+      end
+      
+      logger.debug('process:Count trying done calls %d for message %d max clients %d' % [count_calls, message.id, message.max_clients])
+      #se busca el calendario para iniciar marcacion
+      #logger.debug("Campaign#Process: Se busca en calendario")
+      message.message_calendar.all.each do |message_calendar|
+        #se detiene marcacion si ya se realizaron todas las llamadas contestadas
+        if Time.now >= message_calendar.start and  Time.now <= message_calendar.stop
+          if message_calendar.max_clients > 0 and (Call.where(:message_calendar_id => message_calendar.id, :hangup_enumeration => PlivoCall::ANSWER_ENUMERATION).count + Call.where(:message_calendar_id => message_calendar.id, :terminate => nil).count) >= message_calendar.max_clients 
+            count_calls += message.max_clients #se saca a la fuerza
+          else
+            limit_of_channels = 0
+            #si se pone canales a cero los canales se asignan
+            #automaticamente segun los disponibles
+            if message_calendar.channels == 0
+              limit_of_channels = use_extra_channels
+            else
+              limit_of_channels = message_calendar.channels
+              limit_of_channels += use_extra_channels if message_calendar.use_available_channels
+            end
+            logger.debug('process: limit of channels %d, count channels %d' % [limit_of_channels, count_calls])
+            if count_calls >= limit_of_channels #se limita los canales por calendario
+              count_calls += message.max_clients
+            else
+              if can_call_client?(client, message, message_calendar)
+                logger.debug('process: count calls calling %d for message id %d' % [count_calls, message.id])
+                #se almacena desde el ultimo que se llamo
+                message.update_attribute(:last_client_parse_id, client.id)
+                r = call_client(client, message, message_calendar)
+                if r.is_a?(String)
+                  count_calls += 1
+                  #uuid_calls << r
+                end
+              end
+            end
+          end
+          break
+        end
+      end
+    end
+    return true
+  end
+  
 
   #Esto selecciona automaticamente los canales ha usar en el mensaje
   #en base a la cantidad de llamadas esperadas, logradas y faltantes
