@@ -220,13 +220,13 @@ class Campaign < ActiveRecord::Base
             end
 
             #se comprueba que no haya sido rechazada la llamada sino se marca otro numero
-            uuid_calls.each{|uuid_call|
-              if PlivoCall.where(:uuid => uuid_call, :hangup_enumeration => PlivoCall::REJECTED_ENUMERATION).exists? or PlivoCall.where(:uuid => uuid_call, :hangup_enumeration => %w(CALL_REJECTED))
-                logger.debug('Eliminado call por no cumplirse')
-                count_calls -= 1 if count_calls > 0
-                uuid_calls.delete(uuid_call)
-              end
-            }
+            #uuid_calls.each{|uuid_call|
+            #  if PlivoCall.where(:uuid => uuid_call, :hangup_enumeration => PlivoCall::REJECTED_ENUMERATION).exists? or PlivoCall.where(:uuid => uuid_call, :hangup_enumeration => %w(CALL_REJECTED))
+            #    logger.debug('Eliminado call por no cumplirse')
+            #    count_calls -= 1 if count_calls > 0
+            #    uuid_calls.delete(uuid_call)
+            #  end
+            #}
             #se salta si ya esta en proceso por mensaje y cliente
             if Call.in_process_for_message_client?(message_id, client.id).exists?
               count_calls += Call.in_process_for_message_client?(message_id, client.id).count
@@ -270,7 +270,7 @@ class Campaign < ActiveRecord::Base
                       r = call_client(client, message, message_calendar)
                       if r.is_a?(String)
                         count_calls += 1
-                        uuid_calls << r
+                        #uuid_calls << r
                       end
                     end
                   end
