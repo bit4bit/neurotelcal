@@ -207,7 +207,8 @@ class Campaign < ActiveRecord::Base
             if Call.where(:client_id => client.id).exists? and client.group.messages_share_clients
               if not Call.where(:message_id => message.id, :client_id => client.id).exists? 
                 next
-              elsif (Call.where(:message_id => message.id, :client_id => client.id).count - Call.not_answered_for_message_client(message.id, client.id).count) >= message.max_clients
+                #si ya se llamaron todos los clientes
+              elsif Call.answered_for_message(message).count >= message.max_clients
                 break
               end
             end
@@ -241,7 +242,7 @@ class Campaign < ActiveRecord::Base
               break
             end
             
-            #logger.debug('Count trying done calls %d for message %d max clients %d' % [count_calls, message.id, message.max_clients])
+            logger.debug('process:Count trying done calls %d for message %d max clients %d' % [count_calls, message.id, message.max_clients])
             #se busca el calendario para iniciar marcacion
             #logger.debug("Campaign#Process: Se busca en calendario")
             message.message_calendar.all.each do |message_calendar|
@@ -259,7 +260,7 @@ class Campaign < ActiveRecord::Base
                     limit_of_channels = message_calendar.channels
                     limit_of_channels += use_extra_channels if message_calendar.use_available_channels
                   end
-                  #logger.debug('process: limit of channels %d, count channels %d' % [limit_of_channels, count_calls])
+                  logger.debug('process: limit of channels %d, count channels %d' % [limit_of_channels, count_calls])
                   if count_calls >= limit_of_channels #se limita los canales por calendario
                     count_calls += message.max_clients
                   else
