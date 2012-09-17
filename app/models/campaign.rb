@@ -194,7 +194,7 @@ class Campaign < ActiveRecord::Base
           
           #Se llama a los clientes hasta que se cumpla el limite de canales simultaneos o
           #se termina los clientes esperados
-          Client.where('id >= ? AND campaign_id = ?', message.last_client_parse_id, self.id).all.each do |client|
+          Client.where('id >= ? AND campaign_id = ?', message.last_client_parse_id, self.id).order('priority DESC').limit(message.max_clients).all.each do |client|
             #logger.debug("Campaign#Process: Para cliente %s en grupo %s" % [client.fullname, group.name])
             #si es marcacion directa anonima
             if message.anonymous
@@ -220,7 +220,7 @@ class Campaign < ActiveRecord::Base
 
             #se comprueba que no haya sido rechazada la llamada sino se marca otro numero
             uuid_calls.each{|uuid_call|
-              if PlivoCall.where(:uuid => uuid_call, :hangup_enumeration => PlivoCall::REJECTED_ENUMERATION).exists?
+              if PlivoCall.where(:uuid => uuid_call, :hangup_enumeration => PlivoCall::REJECTED_ENUMERATION).exists? or PlivoCall.where(:uuid => uuid_call. :hangup_enumeration => %w(CALL_REJECTED))
                 logger.debug('Eliminado call por no cumplirse')
                 count_calls -= 1 if count_calls > 0
                 uuid_calls.delete(uuid_call)
