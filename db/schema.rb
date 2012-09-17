@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120916203152) do
+ActiveRecord::Schema.define(:version => 20120917163042) do
 
   create_table "calendars", :force => true do |t|
     t.integer  "message_id"
@@ -104,15 +104,16 @@ ActiveRecord::Schema.define(:version => 20120916203152) do
     t.boolean  "processed"
     t.datetime "call"
     t.datetime "call_end"
-    t.boolean  "anonymous",      :default => false
-    t.integer  "retries",        :default => 1
-    t.datetime "created_at",                        :null => false
-    t.datetime "updated_at",                        :null => false
-    t.integer  "hangup_on_ring", :default => 0
-    t.integer  "time_limit",     :default => 0
-    t.integer  "priority",       :default => 0
-    t.integer  "max_clients",    :default => 0
+    t.boolean  "anonymous",            :default => false
+    t.integer  "retries",              :default => 1
+    t.datetime "created_at",                              :null => false
+    t.datetime "updated_at",                              :null => false
+    t.integer  "hangup_on_ring",       :default => 0
+    t.integer  "time_limit",           :default => 0
+    t.integer  "priority",             :default => 0
+    t.integer  "max_clients",          :default => 0
     t.text     "notes"
+    t.integer  "last_client_parse_id", :default => 0
   end
 
   add_index "messages", ["group_id"], :name => "index_messages_on_group_id"
