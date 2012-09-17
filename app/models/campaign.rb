@@ -287,6 +287,7 @@ class Campaign < ActiveRecord::Base
     #conteo de los cupos asignados para no usarlos
     Group.where(:campaign_id => id).each do |group|
       group.message.each do |message|
+        next if Time.now < ms.start or Time.now > ms.stop
         message.message_calendar.each {|ms| message_calendar_total_channels += ms.channels }
       end
     end
@@ -310,7 +311,13 @@ class Campaign < ActiveRecord::Base
       logger.debug('extra_channels: plivo_total_channels %d , plivo_using_channels %d' % [plivo_total_channels, plivo_using_channels])
 
       #cantidad de canales disponibles despues de los ya usados y los separados
-      channels_availables = plivo_total_channels - (plivo_using_channels + message_calendar_total_channels)
+      diff_mc_and_plivo = message_calendar_total_channels - plivo_using_channels
+      if diff_mc_and_plivo <= 0
+        channels_availables = diff_mc_and_plivo + (plivo_total_channels - message_calendar_total_channels)
+      else
+        channels_availables = plivo_total_channels - using_channels
+      end
+
       logger.debug('extra_channels: channels_availables %d' % channels_availables)
 
       #llamada restantes para limite
@@ -334,6 +341,7 @@ class Campaign < ActiveRecord::Base
       end
     end
     logger.debug('extra_channels:Needing extra channels %d' % need_channels)
+    need_channels = 0 if need_channels < 0
     return need_channels
   end
   
