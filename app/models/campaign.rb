@@ -264,6 +264,8 @@ class Campaign < ActiveRecord::Base
                     count_calls += message.max_clients
                   else
                     if can_call_client?(client, message, message_calendar)
+                      #se almacena desde el ultimo que se llamo
+                      message.update_attribute(:last_client_parse_id, client.id)
                       r = call_client(client, message, message_calendar)
                       if r.is_a?(String)
                         count_calls += 1
@@ -275,8 +277,6 @@ class Campaign < ActiveRecord::Base
                 break
               end
             end
-            
-            message.update_attribute(:last_client_parse_id, client.id)
           end
         }
       end #end group
