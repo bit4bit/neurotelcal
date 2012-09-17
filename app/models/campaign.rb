@@ -328,7 +328,7 @@ class Campaign < ActiveRecord::Base
       if diff_mc_and_plivo <= 0
         channels_availables = diff_mc_and_plivo + (plivo_total_channels - message_calendar_total_channels)
       else
-        channels_availables = plivo_total_channels - using_channels
+        channels_availables = plivo_total_channels - plivo_using_channels
       end
 
       #logger.debug('extra_channels: channels_availables %d' % channels_availables)
