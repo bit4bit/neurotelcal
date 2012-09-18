@@ -137,7 +137,22 @@ class Campaign < ActiveRecord::Base
     return called
   end
   
+  def waiting_for_messages
+    total_messages_today = 0
+    while total_channels_today < 1
+      self.group.all.each do |group_processing|
+        group_processing.message.all.each do |message|
+          next if message.anonymous
+          next unless message.time_to_process_calendar?
+          total_messages_today += 1
+        end
+      end
+      sleep 1
+    end
+  end
+  
   def process(daemonize = false)
+    waiting_for_messages
     process_by_client(daemonize)
   end
   
