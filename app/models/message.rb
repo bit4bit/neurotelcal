@@ -18,7 +18,29 @@ class Message < ActiveRecord::Base
     #logger.debug("N %d done calls for message %d for max clients %d cumple %s" % [ncalls, self.id, self.max_clients, (ncalls >= self.max_clients).to_s])
     return ncalls >= self.max_clients
   end
+  
+  def time_to_process_calendar?
+    message_calendar.each{|mc| 
+      next unless Time.now >= mc.start and Time.now <= mc.stop
+      return true
+    }
+    return false
+  end
+  
+  def over_limit_process_channels?(extra_channels = 0)
+    return Call.in_process_for_message(id).count >= total_channels_today() + extra_channels
+  end
+  
+  def total_channels_today
+    total = 0
+    message_calendar.each{|mc| 
+      next unless Time.now >= mc.start and Time.now <= mc.stop
 
+      total += mc.channels
+    }
+    total
+  end
+  
   def validate_description_line(line)
     verbs = ['Reproducir', 
              'ReproducirLocal',
