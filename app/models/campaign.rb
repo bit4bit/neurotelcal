@@ -166,9 +166,11 @@ class Campaign < ActiveRecord::Base
           next if message.anonymous
           next unless message.time_to_process_calendar?
           total_messages_today += 1
+          logger.debug('process: today we need do the message %d %s' % [message.id, message.name])
           count_channels_messages[message.id] = 0
         end
       end
+      logger.debug('process: total messages today %d' % total_messages_today)
     end
     
     
