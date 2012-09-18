@@ -139,7 +139,7 @@ class Campaign < ActiveRecord::Base
   
   def waiting_for_messages
     total_messages_today = 0
-    while total_channels_today < 1
+    while total_messages_today < 1
       self.group.all.each do |group_processing|
         group_processing.message.all.each do |message|
           next if message.anonymous
@@ -152,7 +152,6 @@ class Campaign < ActiveRecord::Base
   end
   
   def process(daemonize = false)
-    waiting_for_messages
     process_by_client(daemonize)
   end
   

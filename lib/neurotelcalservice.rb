@@ -48,6 +48,7 @@ module ServiceNeurotelcal
     def process_queue
       begin
         esperar_canal
+        @campaign.waiting_for_messages
         @campaign.process(true)
       rescue PlivoNotFound => e
         Rails.logger.error("NO HAY SERVIDOR PLIVO PARA LLAMAR")
