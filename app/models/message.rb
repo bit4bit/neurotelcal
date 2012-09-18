@@ -26,6 +26,11 @@ class Message < ActiveRecord::Base
     }
     return false
   end
+
+  def time_to_process?
+    return true if Time.now >= call and Time.now <= call_end
+    return false
+  end
   
   def over_limit_process_channels?(extra_channels = 0)
     return Call.in_process_for_message(id).count >= total_channels_today() + extra_channels
@@ -35,10 +40,9 @@ class Message < ActiveRecord::Base
     total = 0
     message_calendar.each{|mc| 
       next unless Time.now >= mc.start and Time.now <= mc.stop
-
       total += mc.channels
     }
-    total
+    return total
   end
   
   def validate_description_line(line)

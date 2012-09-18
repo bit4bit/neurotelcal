@@ -133,7 +133,7 @@ class Campaign < ActiveRecord::Base
       end
     }
     
-    raise PlivoCannotCall, "cant find plivo to call" unless called
+    #raise PlivoCannotCall, "cant find plivo to call" unless called
     return called
   end
   
@@ -141,25 +141,42 @@ class Campaign < ActiveRecord::Base
     process_by_client(daemonize)
   end
   
-
+  #Se recorre cliente por cliente
+  #y se van asignando a un mensaje para ser llamadaos
   def process_by_client(daemonize)
-    Client.where('campaign_id = ?', self.id).order('priority DESC').all.each do |client_processing|
+    total_messages_today = 0
+    count_channels_messages = {}
+    if daemonize
+      self.group.all.each do |group_processing|
+        group_processing.message.all.each do |message|
+          next if message.anonymous
+          next unless message.time_to_process_calendar?
+          total_messages_today += 1
+          count_channels_messages[message.id] = 0
+        end
+      end
+    end
+    
+    
+    wait_messages = []
+    self.client.all.each do |client_processing|
       next if pause?
-      
+
       self.group.all.each do |group_processing|
         #si esta pausado no se realiza las llamadas
         next if pause? 
         
         group_processing.message.all.each do |message|
           #si es marcacion directa anonima
+          #se debio haber realizado con Plivo#call_client
           if message.anonymous
-            call_client(client_processing, message) 
+            #call_client(client_processing, message) 
             break
           end
          
           #se omite mensaje que no esta en fecha de verificacion
-          next if Time.now < message.call or Time.now > message.call_end
-          next unless message.time_to_process_calendar?
+          next unless message.time_to_process?
+          next unless message.time_to_process_calendar? #si no es tiempo para procesar se salta
          
           #se termina en caso de forzado, y espera la ultima llamada
           return false if end?
@@ -178,30 +195,32 @@ class Campaign < ActiveRecord::Base
           use_extra_channels = 0
           use_extra_channels = extra_channels(message)
           #si esta sobre el limite se omite mensaje
-          if message.over_limit_process_channels?(use_extra_channels)
+          if message.over_limit_process_channels?(use_extra_channels) or count_channels_messages[message.id] >= message.total_channels_today() + use_extra_channels
+            wait_messages << message
             next
           end
           
           #se llama
-          process_one_client(message, client_processing)
+          count_channels_messages[message.id] += 1 if process_one_client(message, client_processing)
         end
       
       end
 
-      #se espera gueco para llamara
-      if daemonize
-        self.group.all.each do |group_processing|
-          group_processing.message.all.each do |message|
-            next unless message.time_to_process_calendar?
-            while message.over_limit_process_channels?
-              logger.debug('process: waiting channel available for message %s' % message.name)
-              sleep 0.10
-            end
+      #Si se pide demonio
+      #entonces se espera hasta que esten disponibles mensajes para llamar
+      #ya que si no habria que empezar siempre la lista de lo clientes
+      if daemonize and wait_messages.size >= total_messages_today
+        wait_messages.each{|message|
+          while message.over_limit_process_channels?
+            #se termina en caso de forzado, y espera la ultima llamada
+            return false if end?
+            logger.debug('process: waiting channel available for message %s' % message.name)
+            sleep 0.10
           end
-        end
+          count_channels_messages[message.id] = 0
+          wait_messages.delete(message)
+       }
       end
-      
-      
     end
     
   end
@@ -240,6 +259,7 @@ class Campaign < ActiveRecord::Base
     #conteo de los cupos asignados para no usarlos
     Group.where(:campaign_id => id).each do |group|
       group.message.each do |message|
+        next if message.anonymous
         message.message_calendar.each {|ms|
           next if Time.now < ms.start or Time.now > ms.stop
           message_calendar_total_channels += ms.channels 
@@ -298,7 +318,7 @@ class Campaign < ActiveRecord::Base
     end
     logger.debug('extra_channels:Needing extra channels %d' % need_channels)
     need_channels = 0 if need_channels < 0
-    return need_channels
+    return need_channels.to_i
   end
   
 end
