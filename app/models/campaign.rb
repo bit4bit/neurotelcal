@@ -15,7 +15,7 @@ class Campaign < ActiveRecord::Base
   validates :name, :presence => true, :uniqueness => true
   validates :entity_id, :presence => true
   has_many :resource, :dependent => :delete_all
-  has_many :client, :dependent => :delete_all
+  has_many :client, :dependent => :delete_all, :order => 'priority DESC'
   has_many :plivo, :dependent => :delete_all
   has_many :group, :dependent => :delete_all
   belongs_to :entity
@@ -181,6 +181,8 @@ class Campaign < ActiveRecord::Base
         next if pause? 
         
         group_processing.message.all.each do |message|
+          count_channels_messages[message.id] = 0 if count_channels_messages[message.id].nil? #se inicializa
+          
           #si es marcacion directa anonima
           #se debio haber realizado con Plivo#call_client
           if message.anonymous
@@ -224,16 +226,18 @@ class Campaign < ActiveRecord::Base
       #entonces se espera hasta que esten disponibles mensajes para llamar
       #ya que si no habria que empezar siempre la lista de lo clientes
       if daemonize and wait_messages.size >= total_messages_today
-        wait_messages.each{|message|
-          while message.over_limit_process_channels?
-            #se termina en caso de forzado, y espera la ultima llamada
-            return false if end?
-            logger.debug('process: waiting channel available for message %s' % message.name)
-            sleep 0.10
+        wait_messages.cycle{|message|
+          #se termina en caso de forzado, y espera la ultima llamada
+          return false if end?
+          logger.debug('process: waiting channel available for message %s' % message.name)
+          sleep 0.10
+          unless message.over_limit_process_channels?
+            break #se salta este mensaje y se vuelve a buscar cliente
           end
-          count_channels_messages[message.id] = 0
-          wait_messages.delete(message)
-       }
+
+        }
+        count_channels_messages = {}
+        waiting_for_messages = []
       end
     end
     
