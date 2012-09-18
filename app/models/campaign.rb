@@ -214,7 +214,7 @@ class Campaign < ActiveRecord::Base
           use_extra_channels = extra_channels(message)
           #si esta sobre el limite se omite mensaje
           if message.over_limit_process_channels?(use_extra_channels) or count_channels_messages[message.id] >= message.total_channels_today() + use_extra_channels
-            wait_messages << message
+            wait_messages << message unless wait_messages.include?(message)
             next
           end
           
