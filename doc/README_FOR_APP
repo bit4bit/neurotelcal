@@ -1,18 +1,33 @@
 Use this README file to introduce your application and point to useful places in the API for learning more.
 Run "rake doc:app" to generate API documentation for your models, controllers, helpers, and libraries.
 
+=NEUROTELCAL
+Aplicativo de software para el despacho de llamadas programadas. Puede ser utilizado para recordacion de eventos, realizacion de publicidad....
 
-=REQUIRIMIENTOS
+=CARACTERISTICAS
+ * Multi-entidad
+ * Multi-campana
+ * Multi-subcampanas o grupos
+ * Clientes
+ * Multi-mensajes programables.
+ * Sencillo IVR en espanol, con almacenamiento de respuestas.
+ * Cuelgues programados.
+ * Llamadas simultaneas sin colision.
+ * Gestion automatica de canales para cumplir objetivos especificos; como por ejemplo alcanzar una cantidad de llamadas en un tiempo determinado.
+
+=REQUERIMIENTOS
 ==Plivo
-==Rails
- * Ruby 1.9
+==Ruby
+ * Rails >= 3.2.8
+ * Ruby >= 1.9
 
-==Bluebox
+==MySQL
+
 ==Freeswitch
  * mod_shout (mp3, para compilar necesita libmpg123-dev)
  * mod_esl
 
-===INSTALL
+===INSTALAR
  # cd /usr/local/src
  # wget --no-check-certificate https://github.com/plivo/plivo/raw/master/freeswitch/install.sh
  # bash install.sh
@@ -20,17 +35,17 @@ Run "rake doc:app" to generate API documentation for your models, controllers, h
 
 ==USO
  * iniciar demonio para manejo de mensajes programados:
-   $ rails runner app/scripts/docalls.rb
+   $ rake neurotelcal:service_start
+ * terminar demonio de despacho
+   $ rake neurotelcal:service_stop
  * iniciar servidor web:
   * Para servidor (Thin) recomendado:
    $ thin start
-  * Para serivod Webrick muy lento:
+  * Para servidor Webrick muy lento (no recomendado):
    $ rails server
 
-
 ==PRESENTE
- * Cuando se realize pruebas de llamadas directamente de la interfaz web, crear un grupo de prueba, ya que cada vez que se realiza la llamada esta crea un mensaje para el grupo.
+ * Cuando se realizen pruebas de llamadas directamente de la interfaz web, crear un grupo de prueba, ya que cada vez que se realiza la llamada esta crea un mensaje para el grupo y puede congestionar un poco la visualizacion de los reportes.
+ * Si se quiere mejor desempeno a la hora de procesar las llamadas, es subir otro servicio Thin y configurar los plivos de neurotelcal para que se conecten a este, y dejar un servicio aparte para la navegacion de la interfaz web.
 
 
-==INCONVENIIENTES
- * He tenido mucho problema con la generacion de llamada y procesamiento por los hilos, al usar fiber la cosa se torno mas estable pero haun
