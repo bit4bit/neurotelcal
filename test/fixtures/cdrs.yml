@@ -1,0 +1,31 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  caller_id_name: MyString
+  caller_id_number: MyString
+  destination_number: MyString
+  context: MyString
+  start_stamp: 2012-09-20 10:43:10
+  answer_stamp: 2012-09-20 10:43:10
+  end_stamp: 2012-09-20 10:43:10
+  duration: 1
+  billsec: 1
+  hangup_cause: MyString
+  uuid: MyString
+  bleg_uuid: MyString
+  account_code: MyString
+
+two:
+  caller_id_name: MyString
+  caller_id_number: MyString
+  destination_number: MyString
+  context: MyString
+  start_stamp: 2012-09-20 10:43:10
+  answer_stamp: 2012-09-20 10:43:10
+  end_stamp: 2012-09-20 10:43:10
+  duration: 1
+  billsec: 1
+  hangup_cause: MyString
+  uuid: MyString
+  bleg_uuid: MyString
+  account_code: MyString
