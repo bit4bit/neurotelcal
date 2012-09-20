@@ -19,6 +19,7 @@
 require 'plivohelper'
     
 class PlivosController < ApplicationController
+  skip_before_filter :verify_authenticity_token
 
   # GET /plivos
   # GET /plivos.json

@@ -168,7 +168,6 @@ ActiveRecord::Schema.define(:version => 20120920154310) do
     t.datetime "created_at",                                            :null => false
     t.datetime "updated_at",                                            :null => false
     t.string   "phonenumber",      :default => "0000000000"
-    t.boolean  "calling",          :default => false
   end
 
   create_table "resources", :force => true do |t|
