@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120917163042) do
+ActiveRecord::Schema.define(:version => 20120920154310) do
 
   create_table "calendars", :force => true do |t|
     t.integer  "message_id"
@@ -51,6 +51,24 @@ ActiveRecord::Schema.define(:version => 20120917163042) do
     t.datetime "updated_at",  :null => false
     t.integer  "entity_id"
     t.text     "notes"
+  end
+
+  create_table "cdrs", :force => true do |t|
+    t.string   "caller_id_name"
+    t.string   "caller_id_number"
+    t.string   "destination_number"
+    t.string   "context"
+    t.datetime "start_stamp"
+    t.datetime "answer_stamp"
+    t.datetime "end_stamp"
+    t.integer  "duration"
+    t.integer  "billsec"
+    t.string   "hangup_cause"
+    t.string   "uuid"
+    t.string   "bleg_uuid"
+    t.string   "account_code"
+    t.datetime "created_at",         :null => false
+    t.datetime "updated_at",         :null => false
   end
 
   create_table "clients", :force => true do |t|

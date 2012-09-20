@@ -66,6 +66,7 @@ es:
     plivos: 'Plivo Servidores'
     reports: 'Reportes'
     admin: 'Administración'
+    tools: 'Herramientas'
     about: 'Acerca de'
     quit: 'Salir'
   defaults:

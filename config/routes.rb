@@ -1,4 +1,9 @@
 Neurotelcal::Application.routes.draw do
+  resources :tools do 
+    get 'new_import_cdr', :on => :collection
+    post 'create_import_cdr', :on => :collection
+  end
+  
   resources :entities
 
   resources :message_calendars
