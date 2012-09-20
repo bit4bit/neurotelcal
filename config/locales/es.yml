@@ -254,3 +254,6 @@ es:
       title: 'Nueva Entidad'
     show:
       title: 'Mostrando Entidad'
+  tools:
+    new_import_cdr:
+      title: 'Importar CDRs FS'

@@ -21,6 +21,9 @@
 # * Importacion de CSV enviado
 class ToolsController < ApplicationController
 
+  def index
+  end
+  
   #GET#
   def new_import_cdr
     respond_to do |format|

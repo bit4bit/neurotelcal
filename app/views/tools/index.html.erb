@@ -15,23 +15,4 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 %>
-<h3>Importador de CDRs de Freeswitch.</h3>
-<% if flash[:notice] %>
- <p class="notice"><%= flash[:notice]%></p>
-<% end %>
-<% if flash[:error] %>
- <p class="error"><%= flash[:error]%></p>
-<% end %>
-
-
-<%= form_tag({:action => :create_import_cdr}, :multipart => true) do%>
-<div class="field">
-  <%= label_tag('Local CDR Sqlite')%><br />
-  <%= text_field_tag('path_cdr')%>
-</div>
-<div class="field">
-  <%= label_tag('CSV Master')%><br />
-  <%= file_field_tag('upload_cdr')%>
-</div>
-<%= submit_tag()%>
-<% end %>
+<%= link_to I18n.t('tools.new_import_cdr.title'), new_import_cdr_tools_path, :class => 'button'%>
