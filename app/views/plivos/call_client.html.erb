@@ -1,5 +1,8 @@
 <% if flash[:notice] %>
-<p style="color: green;"><%= flash[:notice]%></p>
+<p class="notice"><%= flash[:notice]%></p>
+<% end %>
+<% if flash[:error] %>
+<p class="error"><%= flash[:error]%></p>
 <% end %>
 
 <b>Client:</b><br />

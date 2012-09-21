@@ -151,7 +151,6 @@ class PlivosController < ApplicationController
     logger.debug('answer')
     logger.debug(params)
     salir = false
-    #@plivocall = PlivoCall.where(:uuid => params["ALegUUID"]).first
     @plivocall = PlivoCall.where(:id => params["AccountSID"]).first
     @call_sequence = @plivocall.call_sequence
     #actualiza estado
@@ -178,7 +177,7 @@ class PlivosController < ApplicationController
     logger.debug('hangup')
     #logger.debug('hangup')
     plivocall = PlivoCall.where(:id => params["AccountSID"]).first
-    plivocall.uuid = params["ALegUUID"]
+    plivocall.uuid = params["CallUUID"]
     plivocall.status = params["CallStatus"]
 
     #@todo mejorar esto un campo y listo
@@ -227,7 +226,7 @@ class PlivosController < ApplicationController
     logger.debug(params)
     
     plivocall = PlivoCall.where(:id => params["AccountSID"]).first
-    plivocall.uuid = params["ALegUUID"]
+    plivocall.uuid = params["CallUUID"]
     plivocall.status = params["CallStatus"]
     plivocall.save
 
@@ -261,7 +260,7 @@ class PlivosController < ApplicationController
     rescue PlivoCannotCall => e
       flash[:notice] = 'No hay canales disponibles'
     rescue Errno::ECONNREFUSED => e
-      flash[:notice] = 'No se pudo conectar a plivo en %s' % plivo.api_url
+      flash[:error] = 'No se pudo conectar al/los plivo de la campana'
     rescue Exception => e
       logger.debug(e)
       flash[:notice] = "error:" + e.class.to_s
