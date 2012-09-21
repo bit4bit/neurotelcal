@@ -154,7 +154,7 @@ class PlivosController < ApplicationController
     @plivocall = PlivoCall.where(:id => params["AccountSID"]).first
     @call_sequence = @plivocall.call_sequence
     #actualiza estado
-    @plivocall.uuid = params["ALegUUID"]
+    @plivocall.uuid = params["CallUUID"]
     @plivocall.status = "answered"
     @plivocall.save
 
