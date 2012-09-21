@@ -136,6 +136,13 @@ class Campaign < ActiveRecord::Base
     #raise PlivoCannotCall, "cant find plivo to call" unless called
     return called
   end
+
+  def call_client!(client, message, message_calendar = nil)
+    called = call_client(client, message, message_calendar)
+    raise PlivoCannotCall, "cant find plivo to call" unless called
+    return called
+  end
+  
   
   def waiting_for_messages
     total_messages_today = 0

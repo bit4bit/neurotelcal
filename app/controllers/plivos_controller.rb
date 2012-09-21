@@ -151,11 +151,11 @@ class PlivosController < ApplicationController
     logger.debug('answer')
     logger.debug(params)
     salir = false
-    @plivocall = PlivoCall.where(:uuid => params["ALegRequestUUID"]).first
-    #@plivocall = PlivoCall.where(:id => params["AccountSID"]).first
+    #@plivocall = PlivoCall.where(:uuid => params["ALegUUID"]).first
+    @plivocall = PlivoCall.where(:id => params["AccountSID"]).first
     @call_sequence = @plivocall.call_sequence
     #actualiza estado
-    @plivocall.uuid = params["ALegRequestUUID"]
+    @plivocall.uuid = params["ALegUUID"]
     @plivocall.status = "answered"
     @plivocall.save
 
@@ -178,7 +178,7 @@ class PlivosController < ApplicationController
     logger.debug('hangup')
     #logger.debug('hangup')
     plivocall = PlivoCall.where(:id => params["AccountSID"]).first
-    plivocall.uuid = params["RequestUUID"]
+    plivocall.uuid = params["ALegUUID"]
     plivocall.status = params["CallStatus"]
 
     #@todo mejorar esto un campo y listo
@@ -225,17 +225,9 @@ class PlivosController < ApplicationController
   def ringing_client
     logger.debug('ringing')
     logger.debug(params)
-    #ESTO NO SERVIE
-    #salir = false
-    #while(not salir) #esperea hasta que este en BD
-    #  if PlivoCall.where(:uuid => params[:RequestUUID]).exists?
-    #    salir = true
-    #  end
-   # end
-      
     
     plivocall = PlivoCall.where(:id => params["AccountSID"]).first
-    plivocall.uuid = params["RequestUUID"]
+    plivocall.uuid = params["ALegUUID"]
     plivocall.status = params["CallStatus"]
     plivocall.save
 
@@ -265,7 +257,7 @@ class PlivosController < ApplicationController
       @message.save
       
     begin
-      @campaign.call_client(@client, @message)
+      @campaign.call_client!(@client, @message)
     rescue PlivoCannotCall => e
       flash[:notice] = 'No hay canales disponibles'
     rescue Errno::ECONNREFUSED => e
@@ -274,11 +266,9 @@ class PlivosController < ApplicationController
       logger.debug(e)
       flash[:notice] = "error:" + e.class.to_s
     end
-     
       flash[:notice] = ''
-      
-      
     end
+
     respond_to do |format|
       format.html { render :action => 'call_client' }
     end
