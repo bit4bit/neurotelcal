@@ -38,7 +38,7 @@ class ToolsController < ApplicationController
 
     #@todo distinguir entre CSV y SQLITE
     if not params[:path_cdr].nil? and File.exists?(params[:path_cdr])
-      CdrSqlite.establish_connection(:adapter => 'sqlite3', :database => params[:path_cdr_sqlite])
+      CdrSqlite.establish_connection(:adapter => 'sqlite3', :database => params[:path_cdr])
       flash[:notice] = 'Find ' + CdrSqlite.all.count.to_s + ' registers on sqlite3 db'
       tinit = Time.now
       total_imported = 0
