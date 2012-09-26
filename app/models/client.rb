@@ -9,8 +9,8 @@ class Client < ActiveRecord::Base
 
   validates :fullname, :group_id, :presence => true
   #validates :phonenumber, :format => {
-  #  :with => /[0-9]+([ ][0-9]+)*/,
-  #  :message => "Solo número entre 7 y 10 digitos separados por espacio"
+  #  :with => /[0-9]+(,[0-9]+)*/,
+  #  :message => "Solo números y separados por coma para multiples numeros"
   #}
 
   #Segun la prioridad que lleve el cliente se va 

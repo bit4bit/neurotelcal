@@ -86,15 +86,37 @@ class Plivo < ActiveRecord::Base
   #@throw PlivoCannotCall
   def call_client(client, message, message_calendar = nil)
     raise PlivoChannelFull, "No hay canales disponibles" unless can_call?
-
+    
     #http://wiki.freeswitch.org/wiki/Channel_Variables#monitor_early_media_ring
     extra_dial_string = "leg_delay_start=1,bridge_early_media=true,hangup_after_bridge=true" 
-
+    
+    phonenumber_client = client.phonenumber
+    #el cliente tiene multiples numeros para ubicarle
+    if client.phonenumber.include?(',')
+      logger.debug('plivo: client have multiple phonenumbers')
+      phonenumbers = client.phonenumber.split(',')
+      
+      all_phonenumbers_calleds = true
+      #se busca un numero que no se alla llamado
+      phonenumbers.each{|phonenumber|
+        unless PlivoCall.where(:number => phonenumber).exists?
+          all_phonenumbers_calleds = false
+          phonenumber_client = phonenumber
+          break
+        end
+      }
+      logger.debug('plivo: phonenumber client %s' % phonenumber_client)
+      #se escoge uno aleatorio
+      if all_phonenumbers_calleds
+        phonenumber_client = phonenumbers[SecureRandom.random_number(phonenumbers.size)]
+        logger.debug('plivo: random picked %s' % phonenumber_client)
+      end
+    end
     
     call_params = {
       'From' => self.phonenumber,
       'CallerName' => self.caller_name,
-      'To' => client.phonenumber,
+      'To' => phonenumber_client,
       'Gateways' => self.gateways,
       'GatewayCodecs' => self.gateway_codecs_quote,
       'GatewayTimeouts' => self.gateway_timeouts,
@@ -105,21 +127,21 @@ class Plivo < ActiveRecord::Base
       'RingUrl' => "%s/plivos/0/ringing_client" % self.app_url,
       
     }
-
+    
     if message.retries > 0
       call_params['GatewayRetries'] = message.retries
     end
-
+    
     if message.time_limit > 0
       call_params['TimeLimit'] = message.time_limit.to_i
     end
-
+    
     if message.hangup_on_ring > 0
       #NO FUNCIONA
       #call_params['HangupOnRing'] = message.hangup_on_ring
       call_params['GatewayTimeouts'] = message.hangup_on_ring
     end
-
+    
     call = Call.new
     call.message_id = message.id
     call.client_id = client.id
@@ -133,11 +155,12 @@ class Plivo < ActiveRecord::Base
     call.hangup_enumeration = nil
     call.message_calendar_id = message_calendar.id unless message_calendar.nil?
     call.save
-
+    
     sequence = message.description_to_call_sequence('!client_fullname' => client.fullname, '!client_id' => client.id)
+    
     #Se registra la llamada iniciada de plivo
     plivocall = PlivoCall.new
-    plivocall.number = client.phonenumber
+    plivocall.number = phonenumber_client
     plivocall.plivo_id = id
     plivocall.uuid = ''
     plivocall.status = 'calling'
@@ -155,7 +178,7 @@ class Plivo < ActiveRecord::Base
     #PARA MANTENER NUESTRO PROPIO ID utilizamaos el parametro AccountSID de plivo
     plivor = PlivoHelper::Rest.new(self.api_url, self.sid, self.auth_token)
     result = ActiveSupport::JSON.decode(plivor.call(call_params).body)
-
+    
     if result["Success"]
       plivocall.uuid = result["RequestUUID"]
       plivocall.save
@@ -234,9 +257,34 @@ class Plivo < ActiveRecord::Base
       call.save
       
       sequence = message.description_to_call_sequence('!client_fullname' => client.fullname, '!client_id' => client.id)
+
+      phonenumber_client = client.phonenumber      
+      logger.debug('plivo: oooo')
+
+      #el cliente tiene multiples numeros para ubicarle
+      if client.phonenumber.include?(',')
+        logger.debug('plivo: client have multiple phonenumbers')
+        phonenumbers = client.phonenumber.split(',')
+
+        all_phonenumbers_calleds = true
+        #se busca un numero que no se alla llamado
+        phonenumbers.each{|phonenumber|
+          unless PlivoCall.where(:number => phonenumber).exists?
+            all_phonenumbers_calleds = false
+            phonenumber_client = phonenumber
+          end
+        }
+        logger.debug('plivo: phonenumber client %s' % phonenumber_client)
+        #se escoge uno aleatorio
+        if all_phonenumbers_calleds
+          srand(Time.now().to_i)
+          phonenumber_client = phonenumbers[rand(phonenumbers.size)]
+        end
+      end
+      
       #Se registra la llamada iniciada de plivo
       plivocall = PlivoCall.where(:uuid => uuid).first_or_initialize
-      plivocall.number = client.phonenumber
+      plivocall.number = phonenumber_client
       plivocall.plivo_id = id
       plivocall.uuid = uuid
       plivocall.status = 'calling'
