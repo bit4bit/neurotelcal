@@ -182,10 +182,11 @@ class Campaign < ActiveRecord::Base
     
     
     wait_messages = []
-    self.group.client.all.each do |client_processing|
+    client.all.each do |client_processing|
       next if pause?
 
       self.group.all.each do |group_processing|
+        next unless client_processing.group_id == group_processing.id
         #si esta pausado no se realiza las llamadas
         next if pause? 
         
