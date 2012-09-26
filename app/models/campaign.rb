@@ -182,7 +182,7 @@ class Campaign < ActiveRecord::Base
     
     
     wait_messages = []
-    self.client.all.each do |client_processing|
+    self.group.client.all.each do |client_processing|
       next if pause?
 
       self.group.all.each do |group_processing|
