@@ -121,7 +121,10 @@ class PlivosController < ApplicationController
     #almacena resultado de esta peticion
     @call_sequence[@plivocall.step-1][:result] = params['Digits']
     @plivocall.data = @call_sequence.to_yaml
-    @plivocall.save
+    unless @plivocall.save(:validate => false)
+      logger.error('plivos: fallo actualizar digitos de plivo call %d digito %s' % [@plivocall.id, params['Digits']])
+    end
+    
 
 
     @plivo = @plivocall.plivo
