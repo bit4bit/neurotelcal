@@ -193,6 +193,7 @@ class Campaign < ActiveRecord::Base
       self.group.all.each do |group_processing|
         #se omite grupo si no es de cliente
         next unless client_processing.group_id == group_processing.id
+        next unless group_processing.enable?
         #si esta pausado no se realiza las llamadas
         sleep 1 if pause? 
         

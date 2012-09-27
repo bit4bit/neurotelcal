@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120920154310) do
+ActiveRecord::Schema.define(:version => 20120927155023) do
 
   create_table "calendars", :force => true do |t|
     t.integer  "message_id"
@@ -98,6 +98,7 @@ ActiveRecord::Schema.define(:version => 20120920154310) do
     t.datetime "created_at",                               :null => false
     t.datetime "updated_at",                               :null => false
     t.boolean  "messages_share_clients", :default => true
+    t.boolean  "enable",                 :default => true
   end
 
   add_index "groups", ["campaign_id"], :name => "index_groups_on_campaign_id"
