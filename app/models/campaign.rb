@@ -171,6 +171,7 @@ class Campaign < ActiveRecord::Base
     count_channels_messages = {}
     if daemonize
       self.group.all.each do |group_processing|
+        next unless group_processing.enable?
         group_processing.message.all.each do |message|
           next if message.anonymous
           next unless message.time_to_process?

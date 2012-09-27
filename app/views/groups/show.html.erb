@@ -23,10 +23,8 @@
     <th><%= I18n.t 'clients.fullname'%></th>
   </tr>
 
-  <% @group.client.all.each do |client| %>
   <tr>
-    <td><%= client.fullname%></td>
+    <td><%= @group.client.size%></td>
   </tr>
-  <% end %>
 </table>
 
