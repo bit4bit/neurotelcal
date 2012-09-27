@@ -150,6 +150,8 @@ class Campaign < ActiveRecord::Base
       self.group.all.each do |group_processing|
         group_processing.message.all.each do |message|
           next if message.anonymous
+          next if message.done_calls_clients?
+          next unless message.time_to_process?
           next unless message.time_to_process_calendar?
           total_messages_today += 1
         end
@@ -171,7 +173,10 @@ class Campaign < ActiveRecord::Base
       self.group.all.each do |group_processing|
         group_processing.message.all.each do |message|
           next if message.anonymous
+          next unless message.time_to_process?
+          next if message.done_calls_clients?
           next unless message.time_to_process_calendar?
+          
           total_messages_today += 1
           logger.debug('process: today we need do the message %d %s' % [message.id, message.name])
           count_channels_messages[message.id] = 0
@@ -186,30 +191,28 @@ class Campaign < ActiveRecord::Base
       next if pause?
 
       self.group.all.each do |group_processing|
+        #se omite grupo si no es de cliente
         next unless client_processing.group_id == group_processing.id
         #si esta pausado no se realiza las llamadas
-        next if pause? 
+        sleep 1 if pause? 
         
         group_processing.message.all.each do |message|
-          count_channels_messages[message.id] = 0 if count_channels_messages[message.id].nil? #se inicializa
           
           #si es marcacion directa anonima
           #se debio haber realizado con Plivo#call_client
-          if message.anonymous
-            #call_client(client_processing, message) 
-            break
+          next if message.anonymous
+          #si no se pudo marcar el mensaje se elimina de la cola de espera
+          if not message.time_to_process? or not message.time_to_process_calendar? or message.done_calls_clients?
+            count_channels_messages.delete(message.id) unless count_channels_messages[message.id].nil?
+            next
+          else
+            count_channels_messages[message.id] = 0 if count_channels_messages[message.id].nil?
           end
-         
-          #se omite mensaje que no esta en fecha de verificacion
-          next unless message.time_to_process?
-          next unless message.time_to_process_calendar? #si no es tiempo para procesar se salta
-         
+          
           #se termina en caso de forzado, y espera la ultima llamada
           return false if end?
           sleep 1 while pause? #si se pausa la campana se espera hasta que se despause
 
-          #si ya se marcaron todos los clientes posibles se salta
-          next if message.done_calls_clients?
           
           #se espera que la ultima llamada se ade este mensaje
           #sino se omite cliente y se deja para que lo preceso el mensaje
@@ -227,15 +230,16 @@ class Campaign < ActiveRecord::Base
           end
           
           #se llama
-          count_channels_messages[message.id] += 1 if process_one_client(message, client_processing)
+          if process_one_client(message, client_processing)
+            count_channels_messages[message.id] += 1
+          end
         end
-      
       end
 
       #Si se pide demonio
       #entonces se espera hasta que esten disponibles mensajes para llamar
       #ya que si no habria que empezar siempre la lista de lo clientes
-      if daemonize and wait_messages.size >= total_messages_today
+      if daemonize and wait_messages.size >= count_channels_messages.size
         wait_messages.cycle{|message|
           #se termina en caso de forzado, y espera la ultima llamada
           return false if end?

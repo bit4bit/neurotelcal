@@ -22,6 +22,7 @@ class Message < ActiveRecord::Base
   def time_to_process_calendar?
     message_calendar.each{|mc| 
       next unless Time.now >= mc.start and Time.now <= mc.stop
+      next if self.max_clients > 0 and (Call.where(:message_calendar_id => self.id, :hangup_enumeration => PlivoCall::ANSWER_ENUMERATION).count + Call.where(:message_calendar_id => self.id, :terminate => nil).count) >= self.max_clients 
       return true
     }
     return false
