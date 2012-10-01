@@ -3,7 +3,7 @@ class MessageCalendarsController < ApplicationController
   # GET /message_calendars.json
   def index
     @message = Message.find(params[:message_id])
-    @message_calendars = MessageCalendar.where(:message_id => params[:message_id]).all
+    @message_calendars = MessageCalendar.where(:message_id => params[:message_id]).paginate(:page=>params[:page])
 
     respond_to do |format|
       format.html # index.html.erb
