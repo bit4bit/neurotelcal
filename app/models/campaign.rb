@@ -163,6 +163,12 @@ class Campaign < ActiveRecord::Base
   def process(daemonize = false)
     process_by_client(daemonize)
   end
+
+  #Verifica hay grupos por procesar
+  def need_process_groups?
+    self.group.each{|g| return true if g.need_process_messages?}
+    return false
+  end
   
   #Se recorre cliente por cliente
   #y se van asignando a un mensaje para ser llamadaos
@@ -189,9 +195,17 @@ class Campaign < ActiveRecord::Base
     
     wait_messages = []
     client.all.each do |client_processing|
-      next if pause?
+      #si no hay grupos para procesar se espera
+      #lo ideal es mantener cargada la cola de clientes procesados
+      until need_process_groups?
+        sleep 2
+      end
+
+
+      sleep 1 if pause?
 
       self.group.all.each do |group_processing|
+
         #se omite grupo si no es de cliente
         next unless client_processing.group_id == group_processing.id
         next unless group_processing.enable?
