@@ -15,7 +15,7 @@ class Campaign < ActiveRecord::Base
   validates :name, :presence => true, :uniqueness => true
   validates :entity_id, :presence => true
   has_many :resource, :dependent => :delete_all
-  has_many :client, :dependent => :delete_all, :order => 'priority DESC'
+  has_many :client, :dependent => :delete_all, :conditions => 'callable = 1', :order => 'priority DESC'
   has_many :plivo, :dependent => :delete_all
   has_many :group, :dependent => :delete_all
   belongs_to :entity
