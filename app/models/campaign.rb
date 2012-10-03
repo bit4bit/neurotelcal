@@ -194,7 +194,7 @@ class Campaign < ActiveRecord::Base
     
     
     wait_messages = []
-    client.find_each(:batch_size => 20000) do |client_processing|
+    client.all.each do |client_processing|
       #si no hay grupos para procesar se espera
       #lo ideal es mantener cargada la cola de clientes procesados
       until need_process_groups?
