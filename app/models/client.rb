@@ -36,6 +36,8 @@ class Client < ActiveRecord::Base
       self.priority -= 800
     when 'UNALLOCATED_NUMBER '
       self.priority -= 2000
+    when 'NORMAL_TEMPORARY_FAILURE'
+      self.priority -= 10
     else
       self.priority -= 500
     end
