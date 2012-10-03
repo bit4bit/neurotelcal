@@ -15,7 +15,7 @@ class Campaign < ActiveRecord::Base
   validates :name, :presence => true, :uniqueness => true
   validates :entity_id, :presence => true
   has_many :resource, :dependent => :delete_all
-  has_many :client, :dependent => :delete_all, :conditions => 'callable = 1', :order => 'priority DESC'
+  has_many :client, :dependent => :delete_all, :conditions => 'callable = 1', :order => 'priority DESC, callable DESC'
   has_many :plivo, :dependent => :delete_all
   has_many :group, :dependent => :delete_all
   belongs_to :entity
@@ -202,15 +202,17 @@ class Campaign < ActiveRecord::Base
       end
 
 
-      sleep 1 if pause?
+      sleep 1 while pause?
 
       self.group.all.each do |group_processing|
+        #se termina en caso de forzado, y espera la ultima llamada
+        return false if end?
 
         #se omite grupo si no es de cliente
         next unless client_processing.group_id == group_processing.id
         next unless group_processing.enable?
         #si esta pausado no se realiza las llamadas
-        sleep 1 if pause? 
+        sleep 1 while pause? 
         
         group_processing.message.all.each do |message|
           
@@ -226,16 +228,14 @@ class Campaign < ActiveRecord::Base
           end
           
           #se termina en caso de forzado, y espera la ultima llamada
-          return false if end?
+          break if end?
           sleep 1 while pause? #si se pausa la campana se espera hasta que se despause
 
           
           #se espera que la ultima llamada se ade este mensaje
           #sino se omite cliente y se deja para que lo preceso el mensaje
           #al que corresponde
-          if Call.where(:client_id => client_processing.id).exists? and client_processing.group.messages_share_clients
-            next unless Call.where(:message_id => message.id, :client_id => client_processing.id).exists? 
-          end
+          next if client_processing.group.messages_share_clients and Call.where(:client_id => client_processing.id).exists? and Call.where(:message_id => message.id, :client_id => client_processing.id).exists?
 
           use_extra_channels = 0
           use_extra_channels = extra_channels(message)
@@ -255,7 +255,8 @@ class Campaign < ActiveRecord::Base
       #Si se pide demonio
       #entonces se espera hasta que esten disponibles mensajes para llamar
       #ya que si no habria que empezar siempre la lista de lo clientes
-      if daemonize and wait_messages.size >= count_channels_messages.size
+      logger.debug('process: wait_messages size %d total to way %d' % [wait_messages.size, count_channels_messages.size])
+      if daemonize and wait_messages.size > 0 and wait_messages.size >= count_channels_messages.size
         wait_messages.cycle{|message|
           #se termina en caso de forzado, y espera la ultima llamada
           return false if end?
