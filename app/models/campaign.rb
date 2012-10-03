@@ -235,7 +235,8 @@ class Campaign < ActiveRecord::Base
           #se espera que la ultima llamada se ade este mensaje
           #sino se omite cliente y se deja para que lo preceso el mensaje
           #al que corresponde
-          next if client_processing.group.messages_share_clients and Call.where(:client_id => client_processing.id).exists? and Call.where(:message_id => message.id, :client_id => client_processing.id).exists?
+          #::deprecation:: can_call? verifica si estan compartidos los clientes y decide si llamar
+          #next if client_processing.group.messages_share_clients and Call.where(:client_id => client_processing.id).exists? and Call.where(:message_id => message.id, :client_id => client_processing.id).exists?
 
           use_extra_channels = 0
           use_extra_channels = extra_channels(message)
