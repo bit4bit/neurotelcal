@@ -86,6 +86,7 @@ es:
     message_calendar: 'Calendario de Mensaje'
     direct_message: 'MENSAJE DIRECTO'
     entity: 'Entidad'
+    generate: 'Generar'
   clients:
     fullname: 'Nombre completo'
   campaign:
@@ -188,8 +189,13 @@ es:
       status: 'Estado'
       enter_listen: 'Contesto ini.'
       terminate_listen: 'Contesto fin.'
+      start: 'Inicia'
+      end: 'Termina'
+      duration_expected: 'Duracion Espereda'
     index:
       title: 'Reportes'
+    export:
+      title: 'Exportador'
   user:
     l:
       name: 'Nombre'

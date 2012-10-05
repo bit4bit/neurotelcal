@@ -12,6 +12,8 @@ Neurotelcal::Application.routes.draw do
 
   get "reports/index"
   get "reports/export_csv_index"
+  post "reports/export_with_format"
+  get "reports/export"
 
   controller :sessions do
     get 'login' => :new
