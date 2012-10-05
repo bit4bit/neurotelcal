@@ -18,6 +18,7 @@ class ReportsController < ApplicationController
   end
   
   def export
+    @entities = Entity.all
   end
   
   def export_with_format
@@ -30,7 +31,7 @@ class ReportsController < ApplicationController
     @date_start = date_start
     @date_end = date_end
     @duration_expected = duration_expected
-    @entity = Entity.first #@todo esto es caspa
+    @entity = Entity.where(:id => params[:entity]).first #@todo esto es caspa
 
     @summary = {
       :answer_total => 0,
@@ -38,13 +39,13 @@ class ReportsController < ApplicationController
       :complete_duration_expected => 0,
       :not_complete_duration_expected => 0
     }
-    @summary[:answer_total] = Cdr.joins('left join plivo_calls on plivo_calls.uuid = cdrs.uuid left join calls on calls.id = plivo_calls.call_id left join messages on messages.id = calls.message_id').where('start_stamp >= ? and end_stamp <= ? and messages.anonymous = 0', date_start, date_end).count
+    @summary[:answer_total] = Cdr.joins('left join plivo_calls on plivo_calls.uuid = cdrs.uuid left join calls on calls.id = plivo_calls.call_id left join messages on messages.id = calls.message_id left join groups on groups.id = messages.group_id left join campaigns on campaigns.id = groups.campaign_id left join entities on entities.id = campaigns.entity_id').where('start_stamp >= ? and end_stamp <= ? and messages.anonymous = 0 and entities.id = ? ', date_start, date_end, @entity.id).count
     @summary[:ivr_total] = Cdr.joins('left join plivo_calls on plivo_calls.uuid = cdrs.uuid left join calls on calls.id = plivo_calls.call_id left join messages on messages.id = calls.message_id').where('data like "%%result%%" and start_stamp >= ? and end_stamp <= ? and messages.anonymous = 0', date_start, date_end).count
-    @summary[:complete_duration_expected] = Cdr.joins('left join plivo_calls on plivo_calls.uuid = cdrs.uuid left join calls on calls.id = plivo_calls.call_id left join messages on messages.id = calls.message_id').where('start_stamp >= ? and end_stamp <= ? and messages.anonymous = 0 and billsec >= ?', date_start, date_end, duration_expected).count
-    @summary[:not_complete_duration_expected] = Cdr.joins('left join plivo_calls on plivo_calls.uuid = cdrs.uuid left join calls on calls.id = plivo_calls.call_id left join messages on messages.id = calls.message_id').where('start_stamp >= ? and end_stamp <= ? and messages.anonymous = 0 and billsec <= ?', date_start, date_end, duration_expected).count
+    @summary[:complete_duration_expected] = Cdr.joins('left join plivo_calls on plivo_calls.uuid = cdrs.uuid left join calls on calls.id = plivo_calls.call_id left join messages on messages.id = calls.message_id left join groups on groups.id = messages.group_id left join campaigns on campaigns.id = groups.campaign_id left join entities on entities.id = campaigns.entity_id ').where('start_stamp >= ? and end_stamp <= ? and messages.anonymous = 0 and billsec >= ? and entities.id = ? ', date_start, date_end, duration_expected, @entity.id).count
+    @summary[:not_complete_duration_expected] = Cdr.joins('left join plivo_calls on plivo_calls.uuid = cdrs.uuid left join calls on calls.id = plivo_calls.call_id left join messages on messages.id = calls.message_id left join groups on groups.id = messages.group_id left join campaigns on campaigns.id = groups.campaign_id left join entities on entities.id = campaigns.entity_id').where('start_stamp >= ? and end_stamp <= ? and messages.anonymous = 0 and billsec <= ? and entities.id = ? ', date_start, date_end, duration_expected, @entity.id).count
     
     @summary_by_campaign = {}
-    Message.where('anonymous = 0').each do |message|
+    Message.joins('left join groups on groups.id = messages.group_id left join campaigns on campaigns.id = groups.campaign_id left join entities on entities.id = campaigns.entity_id').where('anonymous = 0 and entities.id = ? ', @entity.id).each do |message|
       msummary = {}
       msummary[:answer_total] = Cdr.joins('left join plivo_calls on plivo_calls.uuid = cdrs.uuid left join calls on calls.id = plivo_calls.call_id left join messages on messages.id = calls.message_id').where('start_stamp >= ? and end_stamp <= ? and messages.anonymous = 0 and messages.id = ? ', date_start, date_end, message.id).count
       msummary[:ivr_total] = Cdr.joins('left join plivo_calls on plivo_calls.uuid = cdrs.uuid left join calls on calls.id = plivo_calls.call_id left join messages on messages.id = calls.message_id').where('data like "%%result%%" and start_stamp >= ? and end_stamp <= ? and messages.anonymous = 0 and messages.id = ? ', date_start, date_end, message.id).count

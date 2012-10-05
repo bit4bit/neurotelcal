@@ -18,6 +18,9 @@
 
 <h1><%= I18n.t('report.export.title')%></h1>
 <%= form_tag('/reports/export_with_format.xml') do %>
+<%= label_tag(I18n.t('entity.index.title'))%>
+<%= select_tag('entity', options_from_collection_for_select(@entities, 'id', 'name'))%>
+<br />
 <%= label_tag(I18n.t('report.l.start'))%>
 <%= select_datetime(Time.now - 30.days, :prefix => 'start')%>
 <%= label_tag(I18n.t('report.l.end'))%>
