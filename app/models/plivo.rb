@@ -112,7 +112,10 @@ class Plivo < ActiveRecord::Base
         logger.debug('plivo: random picked %s' % phonenumber_client)
       end
     end
-    
+
+    #se agrega prefijo
+    phonenumber_client = message.prefix + phonenumber_client.to_s if message.prefix
+
     call_params = {
       'From' => self.phonenumber,
       'CallerName' => self.caller_name,

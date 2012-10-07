@@ -43,6 +43,7 @@ es:
         priority: 'Prioridad'
         max_clients: 'Maximo clientes'
         notes: 'Anotaciones'
+        prefix: 'Prefijo Adicional'
       client:
         fullname: 'Nombre Completo'
         phonenumbre: 'Número télefonico/sip'
@@ -140,6 +141,7 @@ es:
       priority: 'Prioridad'
       max_clients: 'Maximo clientes'
       notes: 'Anotaciones'
+      prefix: 'Prefijo Adicional'
     index:
       title: 'Listando Mensajes'
     edit:

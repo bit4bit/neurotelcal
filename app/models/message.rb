@@ -4,6 +4,7 @@ class Message < ActiveRecord::Base
   attr_accessible :max_clients
   attr_accessible :notes
   attr_accessible :last_client_parse_id
+  attr_accessible :prefix #prefijo numerico
   validates :name, :description, :call, :presence => true
   validates :name, :uniqueness => true
   validates :max_clients, :numericality => { :greater_than_or_equal_to => 0 }

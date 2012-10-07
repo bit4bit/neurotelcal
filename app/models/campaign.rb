@@ -175,6 +175,7 @@ class Campaign < ActiveRecord::Base
   def process_by_client(daemonize)
     total_messages_today = 0
     count_channels_messages = {}
+    id_groups_to_process = []
     if daemonize
       self.group.all.each do |group_processing|
         next unless group_processing.enable?
@@ -187,19 +188,28 @@ class Campaign < ActiveRecord::Base
           total_messages_today += 1
           logger.debug('process: today we need do the message %d %s' % [message.id, message.name])
           count_channels_messages[message.id] = 0
+          id_groups_to_process << message.group.id
         end
       end
       logger.debug('process: total messages today %d' % total_messages_today)
     end
     
+    if total_messages_today == 0
+      logger.debug('process: nothing to process')
+      sleep 5
+      return false
+    end
     
+    if id_groups_to_process.size > 0
+      clients = Client.where(:group_id => id_groups_to_process, :campaign_id => self.id, :callable => true).order('priority DESC, callable DESC')
+    else
+      clients = client
+    end
     wait_messages = []
-    client.all.each do |client_processing|
+    clients.all.each do |client_processing|
       #si no hay grupos para procesar se espera
       #lo ideal es mantener cargada la cola de clientes procesados
-      until need_process_groups?
-        sleep 2
-      end
+      return false if not need_process_groups?
 
 
       sleep 1 while pause?
@@ -241,7 +251,7 @@ class Campaign < ActiveRecord::Base
           use_extra_channels = 0
           use_extra_channels = extra_channels(message)
           #si esta sobre el limite se omite mensaje
-          if message.over_limit_process_channels?(use_extra_channels) or count_channels_messages[message.id] >= message.total_channels_today() + use_extra_channels
+          if message.over_limit_process_channels?(use_extra_channels) or (count_channels_messages[message.id] > 0 and count_channels_messages[message.id] >= message.total_channels_today() + use_extra_channels)
             wait_messages << message unless wait_messages.include?(message)
             next
           end
@@ -249,6 +259,7 @@ class Campaign < ActiveRecord::Base
           #se llama
           if process_one_client(message, client_processing)
             count_channels_messages[message.id] += 1
+            logger.debug('process: called client %d' % client_processing.id)
           end
         end
       end
@@ -257,11 +268,14 @@ class Campaign < ActiveRecord::Base
       #entonces se espera hasta que esten disponibles mensajes para llamar
       #ya que si no habria que empezar siempre la lista de lo clientes
       logger.debug('process: wait_messages size %d total to way %d' % [wait_messages.size, count_channels_messages.size])
+
       if daemonize and wait_messages.size > 0 and wait_messages.size >= count_channels_messages.size
         wait_messages.cycle{|message|
           #se termina en caso de forzado, y espera la ultima llamada
           return false if end?
           break if Call.where(:terminate => nil).count == 0
+          break 2 unless need_process_groups?
+          
           logger.debug('process: waiting channel available for message %s' % message.name)
           sleep 0.10
           unless message.over_limit_process_channels?
@@ -272,6 +286,7 @@ class Campaign < ActiveRecord::Base
         count_channels_messages = {}
         waiting_for_messages = []
       end
+
     end
     
   end
