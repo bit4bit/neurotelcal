@@ -41,8 +41,7 @@ class ToolsController < ApplicationController
       CdrSqlite.establish_connection(:adapter => 'sqlite3', :database => params[:path_cdr])
       flash[:notice] = 'Find ' + CdrSqlite.all.count.to_s + ' registers on sqlite3 db'
       tinit = Time.now
-      total_imported = 0
-      import_to_cdr(CdrSqlite.all)
+      total_imported = import_to_cdr(CdrSqlite.all)
       duration = Time.now - tinit
       flash[:notice] += ".Imported " + total_imported.to_s + ' with duration of ' + duration.to_s + ' secs.'
     end
@@ -79,7 +78,7 @@ class ToolsController < ApplicationController
     Cdr.transaction do
       cdrs.each do |cdrFS|
         next if Cdr.where(:uuid => cdrFS.uuid).exists?
-        
+        next unless PlivoCall.where(:uuid => cdrFS.uuid).exists?
         cdr = Cdr.new(:caller_id_name => cdrFS.caller_id_name,
                       :caller_id_number =>  cdrFS.caller_id_number,
                       :destination_number => cdrFS.destination_number,
