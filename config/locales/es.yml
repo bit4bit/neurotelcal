@@ -56,6 +56,8 @@ es:
         time_expected_for_call: 'Tiempo estimado por llamada'
         use_available_channels: 'Usar canales disponibles?'
         notes: 'Anotaciones'
+      plivo:
+        enable: 'Activo?'
   back: 'Atrás'	
   edit: 'Editar'
   show: 'Mostrar'
@@ -174,6 +176,7 @@ es:
       api_url: 'Api URL'
       gateways: 'Gateways'
       status: 'Estado'
+      enable: 'Activo?'
     index:
       title: 'Listando Plivo'
     new:
