@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121008234256) do
+ActiveRecord::Schema.define(:version => 20121008235602) do
 
   create_table "calendars", :force => true do |t|
     t.integer  "message_id"
@@ -172,6 +172,8 @@ ActiveRecord::Schema.define(:version => 20121008234256) do
     t.datetime "updated_at",                                            :null => false
     t.string   "phonenumber",      :default => "0000000000"
     t.boolean  "enable",           :default => true
+    t.text     "dial_plan"
+    t.text     "dial_plan_desc"
   end
 
   create_table "resources", :force => true do |t|

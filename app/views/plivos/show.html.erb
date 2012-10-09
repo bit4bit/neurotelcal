@@ -50,6 +50,15 @@
   <b>Channels:</b>
   <%= @plivo.channels %>
 </p>
+
+<p>
+  <b><%= I18n.t('plivo.l.dial_plan')%></b>
+  <%= simple_format(@plivo.dial_plan)%>
+</p>
+<p>
+  <b><%= I18n.t('plivo.l.dial_plan_desc')%></b>
+  <%= simple_format(@plivo.dial_plan_desc)%>
+</p>
 <p>
   <b><%= I18n.t('defaults.campaign')%>:</b>
   <%= @plivo.campaign.name %>

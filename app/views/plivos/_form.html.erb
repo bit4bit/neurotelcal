@@ -52,6 +52,23 @@
     Campaña<br />
     <%= f.select :campaign_id, options_for_select(@campaigns) %>
   </div>
+  
+  <hr />
+  <table>
+    <tr>
+      <td>
+	<div class="field">
+	  <%= f.input :dial_plan %>
+	</div>
+      </td>
+      <td>
+	<div class="field">
+	  <%= f.input :dial_plan_desc %>
+	</div>
+      </td>
+    </tr>
+  </table>
+
   <div class="actions">
     <%= f.submit %>
   </div>

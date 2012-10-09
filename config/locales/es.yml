@@ -58,6 +58,8 @@ es:
         notes: 'Anotaciones'
       plivo:
         enable: 'Activo?'
+        dial_plan: 'Plan de llamado'
+        dial_plan_desc: 'Descripcion del plan'
   back: 'Atrás'	
   edit: 'Editar'
   show: 'Mostrar'
@@ -177,6 +179,8 @@ es:
       gateways: 'Gateways'
       status: 'Estado'
       enable: 'Activo?'
+      dial_plan: 'Plan de llamado'
+      dial_plan_desc: 'Descripcion del plan'
     index:
       title: 'Listando Plivo'
     new:

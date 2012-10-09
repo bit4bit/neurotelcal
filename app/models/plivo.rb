@@ -11,6 +11,13 @@ end
 
 class Plivo < ActiveRecord::Base
   attr_accessible :app_url, :api_url, :auth_token, :campaign_id, :sid, :status, :gateways, :caller_name, :gateway_timeouts, :gateway_retries, :gateway_codecs, :channels, :phonenumber, :enable
+
+  #Plan de marcado, indica como se debe usar
+  #los gateway del plivo para el numero a marcar
+  #por ejemplo se puede registrir el plivo para ciertos numeros
+  attr_accessible :dial_plan
+  attr_accessible :dial_plan_desc
+
   belongs_to :campaign
   has_many :plivo_call
 
