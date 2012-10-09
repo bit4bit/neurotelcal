@@ -57,13 +57,14 @@
   <table>
     <tr>
       <td>
+	<%= render 'plivos/help_dial_plan'%>
 	<div class="field">
-	  <%= f.input :dial_plan %>
+	  <%= f.input :dial_plan , :input_html => {:rows => 10, :cols => 20}%>
 	</div>
       </td>
       <td>
 	<div class="field">
-	  <%= f.input :dial_plan_desc %>
+	  <%= f.input :dial_plan_desc, :input_html => {:rows => 10, :cols => 20} %>
 	</div>
       </td>
     </tr>

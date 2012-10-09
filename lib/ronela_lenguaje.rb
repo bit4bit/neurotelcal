@@ -53,8 +53,11 @@ class RonelaLenguaje
     if string.nil? or string.empty?
       return nil
     end
+    
+    #se elimina comentario
+    string.gsub!(/#.*$/,'')
 
-     partida = string.split
+    partida = string.split
     accion = partida[0]
 
     unless @acciones.has_key? accion
@@ -73,7 +76,7 @@ class RonelaLenguaje
 
     for i in 1..(partida.size)
       #saca variable ti color=rojo
-      if m = partida[i].to_s.match(/([0-9a-zA-Z\-_\/\\\.ñÑáéíóúÁÉÍÓÚ]+)=([0-9a-zA-Z\-_\/\\\.ñÑáéíóúÁÉÍÓÚ]+)/)
+      if m = partida[i].to_s.match(/([0-9a-zA-Z\-_\/\\\.ñÑáéíóúÁÉÍÓÚ]+)=([0-9a-zA-Z\-_\/,\\\.ñÑáéíóúÁÉÍÓÚ]+)/)
         variables[m[1]] = m[2]
         #el resto va 
       elsif !partida[i].to_s.empty?

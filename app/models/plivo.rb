@@ -24,6 +24,7 @@ class Plivo < ActiveRecord::Base
   validates :app_url, :api_url, :sid, :auth_token, :campaign_id, :gateways, :gateway_timeouts, :gateway_retries, :caller_name, :presence => true
   validates :channels, :numericality => true
   validates :gateway_retries, :gateway_timeouts, :numericality => true
+  validate :validate_dial_plan
 
   before_save :verificar_conexion
 
@@ -127,7 +128,8 @@ class Plivo < ActiveRecord::Base
       'From' => self.phonenumber,
       'CallerName' => self.caller_name,
       'To' => phonenumber_client,
-      'Gateways' => self.gateways,
+      #'Gateways' => self.gateways,
+      'Gateways' => gateway_by_client(client),
       'GatewayCodecs' => self.gateway_codecs_quote,
       'GatewayTimeouts' => self.gateway_timeouts,
       'GatewayRetries' => self.gateway_retries,
@@ -306,4 +308,58 @@ class Plivo < ActiveRecord::Base
       plivocall.save
     end
   end
+
+  def validate_dial_plan
+    if not dial_plan.nil?
+      
+      errors_actions = []
+      
+      rl = RonelaLenguaje.new do |accion, resto|
+        errors_actions << 'Unknow %s' % accion
+      end
+      
+      rl.Match do |vars, rest|
+        srexp = rest.join("").strip
+        rexp = Regexp.new(srexp)
+      end
+
+      lines = dial_plan.split("\n")
+      lines.each{|line|
+        rl.scan line
+      }
+      errors.add(:dial_plan, errors_actions.join("\n")) unless errors_actions.empty?
+    end    
+  end
+  
+  #Obtiene gateway segun el cliente
+  #esto depende del plan de llamadas del plivo
+  #::client:: cliente para determinar gateway
+  #::return:: string gateway a usar
+  def gateway_by_client(client)
+    return self.gateways if self.dial_plan.empty? or client.nil?
+    
+    rl = RonelaLenguaje.new{|accion,resto|
+    }
+    
+    use_gateway = self.gateways
+    rl.Match do |vars, rest|
+      srexp = rest.join("").strip
+      rexp = Regexp.new(srexp)
+
+      if rexp =~ client.phonenumber
+        use_gateway = vars['gateway'].strip
+        return use_gateway
+      end
+
+    end
+
+    #se busca match que encage
+    lines = dial_plan.split("\n")
+    lines.each{|line| 
+      rl.scan(line)
+    }
+
+    return use_gateway
+  end
+  
 end
