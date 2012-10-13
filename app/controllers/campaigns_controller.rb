@@ -77,8 +77,14 @@ class CampaignsController < ApplicationController
   def update
     @campaign = Campaign.find(params[:id])
 
+
     respond_to do |format|
       if @campaign.update_attributes(params[:campaign])
+
+        if @campaign.start?
+          Delayed::Job.enqueue ::CampaignJob.new(@campaign.id), :queue => @campaign.id
+        end
+
         format.html { redirect_to @campaign, :notice => 'Campaign was successfully updated.' }
         format.json { head :no_content }
       else

@@ -218,7 +218,7 @@ class PlivosController < ApplicationController
       call.save
 
       #ya no es necesario el cliente por que se recibio estado que se queria
-      if PlivoCall::ANSWER_ENUMERATION.include?(call.hangup_enumeration)
+      if PlivoCall::ANSWER_ENUMERATION.include?(call.hangup_enumeration) and not call.message.anonymous
         call.client.update_column(:callable, false)
       end
       

@@ -143,22 +143,7 @@ class Campaign < ActiveRecord::Base
     return called
   end
   
-  
-  def waiting_for_messages
-    total_messages_today = 0
-    while total_messages_today < 1
-      self.group.all.each do |group_processing|
-        group_processing.message.all.each do |message|
-          next if message.anonymous
-          next if message.done_calls_clients?
-          next unless message.time_to_process?
-          next unless message.time_to_process_calendar?
-          total_messages_today += 1
-        end
-      end
-      sleep 1
-    end
-  end
+
   
   def process(daemonize = false)
     process_by_client(daemonize)
@@ -175,30 +160,29 @@ class Campaign < ActiveRecord::Base
   def process_by_client(daemonize)
     total_messages_today = 0
     count_channels_messages = {}
-    id_groups_to_process = []
-    if daemonize
-      self.group.all.each do |group_processing|
-        next unless group_processing.enable?
-        group_processing.message.all.each do |message|
-          next if message.anonymous
-          next unless message.time_to_process?
-          next if message.done_calls_clients?
-          next unless message.time_to_process_calendar?
-          
-          total_messages_today += 1
-          logger.debug('process: today we need do the message %d %s' % [message.id, message.name])
-          count_channels_messages[message.id] = 0
-          id_groups_to_process << message.group.id
-        end
+    id_groups_to_process = [] 
+    self.group.all.each do |group_processing|
+      next unless group_processing.enable?
+      group_processing.message.all.each do |message|
+        next if message.anonymous
+        next unless message.time_to_process?
+        next if message.done_calls_clients?
+        next unless message.time_to_process_calendar?
+        
+        total_messages_today += 1
+        logger.debug('process: today we need do the message %d %s' % [message.id, message.name])
+        count_channels_messages[message.id] = 0
+        id_groups_to_process << message.group.id
       end
-      logger.debug('process: total messages today %d' % total_messages_today)
     end
-    
+
     if total_messages_today == 0
       logger.debug('process: nothing to process')
       sleep 5
       return false
     end
+
+    logger.debug('process: total messages today %d' % total_messages_today)
     
     if id_groups_to_process.size > 0
       clients = Client.where(:group_id => id_groups_to_process, :campaign_id => self.id, :callable => true).order('priority DESC, callable DESC')
@@ -250,16 +234,21 @@ class Campaign < ActiveRecord::Base
 
           use_extra_channels = 0
           use_extra_channels = extra_channels(message)
-          #si esta sobre el limite se omite mensaje
-          if message.over_limit_process_channels?(use_extra_channels) or (count_channels_messages[message.id] > 0 and count_channels_messages[message.id] >= message.total_channels_today() + use_extra_channels)
-            wait_messages << message unless wait_messages.include?(message)
-            next
-          end
+          logger.debug('process: message over process? %s' % message.over_limit_process_channels?(use_extra_channels).to_s)
+          logger.debug('process: count channels %d' % count_channels_messages[message.id])
+
+          
           
           #se llama
           if process_one_client(message, client_processing)
             count_channels_messages[message.id] += 1
             logger.debug('process: called client %d' % client_processing.id)
+
+            #si esta sobre el limite se omite mensaje
+            if message.over_limit_process_channels?(use_extra_channels) or (count_channels_messages[message.id] > 0 and count_channels_messages[message.id] >= message.total_channels_today() + use_extra_channels)
+              wait_messages << message unless wait_messages.include?(message)
+              next
+            end
           end
         end
       end
