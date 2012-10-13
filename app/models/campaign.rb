@@ -234,9 +234,7 @@ class Campaign < ActiveRecord::Base
 
           use_extra_channels = 0
           use_extra_channels = extra_channels(message)
-          logger.debug('process: message over process? %s' % message.over_limit_process_channels?(use_extra_channels).to_s)
-          logger.debug('process: count channels %d' % count_channels_messages[message.id])
-
+          
           
           
           #se llama
@@ -245,6 +243,9 @@ class Campaign < ActiveRecord::Base
             logger.debug('process: called client %d' % client_processing.id)
 
             #si esta sobre el limite se omite mensaje
+            logger.debug('process: message over process? %s' % message.over_limit_process_channels?(use_extra_channels).to_s)
+            logger.debug('process: count channels %d' % count_channels_messages[message.id])
+            
             if message.over_limit_process_channels?(use_extra_channels) or (count_channels_messages[message.id] > 0 and count_channels_messages[message.id] >= message.total_channels_today() + use_extra_channels)
               wait_messages << message unless wait_messages.include?(message)
               next

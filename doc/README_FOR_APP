@@ -35,9 +35,9 @@ Aplicativo de software para el despacho de llamadas programadas. Puede ser utili
 
 ==USO
  * iniciar demonio para manejo de mensajes programados:
-   $ rake neurotelcal:service_start
+   $ ruby1.9 scripts/delayed_job -n 6 start
  * terminar demonio de despacho
-   $ rake neurotelcal:service_stop
+   $ ruby1.9 scripts/delayed_job stop
  * iniciar servidor web:
   * Para servidor (Thin) recomendado:
    $ thin start

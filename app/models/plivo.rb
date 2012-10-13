@@ -95,6 +95,9 @@ class Plivo < ActiveRecord::Base
   def call_client(client, message, message_calendar = nil)
     raise PlivoChannelFull, "No hay canales disponibles" unless can_call?
     
+    return false if client.nil?
+    return false if message.nil?
+
     #http://wiki.freeswitch.org/wiki/Channel_Variables#monitor_early_media_ring
     extra_dial_string = "leg_delay_start=1,bridge_early_media=true,hangup_after_bridge=true" 
     
@@ -123,6 +126,7 @@ class Plivo < ActiveRecord::Base
 
     #se agrega prefijo
     phonenumber_client = message.prefix + phonenumber_client.to_s if message.prefix
+    return false if phonenumber_client.nil?
 
     call_params = {
       'From' => self.phonenumber,
