@@ -34,7 +34,7 @@ Aplicativo de software para el despacho de llamadas programadas. Puede ser utili
 
 
 ==USO
- * iniciar demonio para manejo de mensajes programados:
+ * iniciar demonio spara manejo de mensajes programados:
    $ ruby1.9 scripts/delayed_job -n 6 start
  * terminar demonio de despacho
    $ ruby1.9 scripts/delayed_job stop

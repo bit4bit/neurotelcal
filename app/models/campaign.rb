@@ -258,7 +258,8 @@ class Campaign < ActiveRecord::Base
       #entonces se espera hasta que esten disponibles mensajes para llamar
       #ya que si no habria que empezar siempre la lista de lo clientes
       logger.debug('process: wait_messages size %d total to way %d' % [wait_messages.size, count_channels_messages.size])
-
+      
+      time_elapsed_waiting = 0
       if daemonize and wait_messages.size > 0 and wait_messages.size >= count_channels_messages.size
         wait_messages.cycle{|message|
           #se termina en caso de forzado, y espera la ultima llamada
@@ -266,7 +267,9 @@ class Campaign < ActiveRecord::Base
           break if Call.where(:terminate => nil).count == 0
           
           logger.debug('process: waiting channel available for message %s' % message.name)
+          time_elapsed_waiting += 0.10
           sleep 0.10
+          break if time_elapsed_waiting > 0.10 * 10 * 180 #espera 3 minutos
           unless message.over_limit_process_channels?
             break #se salta este mensaje y se vuelve a buscar cliente
           end
