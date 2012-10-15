@@ -25,7 +25,7 @@
   </div>
   <div class="field">
     <%= f.label :group_id %><br />
-    <%= f.select :group_id, @groups, :prompt => "Seleccion Grupo" %>
+    <%= f.select :group_id, options_for_select(@groups, @client.group_id), :prompt => "Seleccion Grupo" %>
   </div>
   <div class="actions">
     <%= f.submit %>

@@ -55,7 +55,7 @@ class ClientsController < ApplicationController
   def new
     @client = Client.new
     @client.campaign_id = session[:campaign_id]
-    @groups = Group.where("campaign_id = ?", @client.campaign_id).all.collect {|g| [g.name, g.id]}
+    @groups = Group.where("campaign_id = ?", @client.campaign_id).all.map {|u| [u.name, u.id] }
     
     respond_to do |format|
       format.html # new.html.erb

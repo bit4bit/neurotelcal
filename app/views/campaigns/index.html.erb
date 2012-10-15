@@ -8,8 +8,8 @@
 
 <table>
   <tr>
+    <th><%= I18n.t('campaign.l.entity')%></th>
     <th><%= I18n.t('campaign.l.name')%></th>
-    <th><%= I18n.t('campaign.l.description')%></th>
     <th><%= I18n.t('campaign.l.status')%></th>
     <th><%= I18n.t('defaults.clients')%></th>
     <th></th>
@@ -19,9 +19,9 @@
 
 <% @campaigns.each do |campaign| %>
   <tr>
+    <td><%= campaign.entity.name%></td>
     <td><%= campaign.name %></td>
-    <td><%= campaign.description %></td>
-    <td><%= Campaign::STATUS.invert[campaign.status] %></td>
+    <td><%= I18n.t('campaign.l.'+Campaign::STATUS.invert[campaign.status].to_s) %></td>
     <td><%= campaign.client.count%></td>
     <td style="padding: 0; margin: 0;"><%= link_to I18n.t('show'), campaign %><br />      
     <%= link_to I18n.t('edit'), edit_campaign_path(campaign) %><br />

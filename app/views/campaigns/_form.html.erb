@@ -13,7 +13,7 @@
 
   <div class="field">
     <%= I18n.t('defaults.entity')%><br />
-    <%= f.select :entity_id, options_for_select(@entities) %>
+    <%= f.select :entity_id, options_for_select(@entities, @campaign.entity_id) %>
   </div>
 
   <div class="field">
@@ -26,7 +26,7 @@
   </div>
   <div class="field">
     <%= f.label :status %><br />
-    <%= f.select :status, Campaign::STATUS, :prompt => 'Seleccion estado inicial' %>
+    <%= f.select :status, options_for_select(Campaign::STATUS.map {|u,v| [I18n.t('campaign.l.'+u.to_s),v]}, @campaign.status), :prompt => 'Seleccion estado inicial' %>
   </div>
   <div class="field">
     <%= f.label :notes%><br />
