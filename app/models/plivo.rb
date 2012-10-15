@@ -76,7 +76,7 @@ class Plivo < ActiveRecord::Base
 
   #Canales en uso
   def using_channels
-    PlivoCall.where(:end => false).count()
+    PlivoCall.where(:end => false, :plivo_id => self.id).count()
   end
   
   #pregunta si puede llamara
@@ -177,7 +177,7 @@ class Plivo < ActiveRecord::Base
     #Se registra la llamada iniciada de plivo
     plivocall = PlivoCall.new
     plivocall.number = phonenumber_client
-    plivocall.plivo_id = id
+    plivocall.plivo_id = self.id
     plivocall.uuid = ''
     plivocall.status = 'calling'
     plivocall.hangup_enumeration = nil
