@@ -105,4 +105,42 @@ class CampaignsController < ApplicationController
       format.json { head :no_content }
     end
   end
+
+  #PUT
+  def status_start
+    @campaign = Campaign.find(params[:campaign_id])
+    respond_to do |format|
+      if @campaign.update_column(:status, Campaign::STATUS['START'])
+        format.html { redirect_to :action => 'index', :notice => 'Campaign was successfully updated.' }
+      else
+        format.html { redirect_to :action => 'campaigns#index'}        
+      end
+    end
+  end
+  
+  #PUT
+  def status_pause
+   @campaign = Campaign.find(params[:campaign_id])
+    respond_to do |format|
+      if @campaign.update_column(:status, Campaign::STATUS['PAUSE'])
+        format.html { redirect_to :action => 'index', :notice => 'Campaign was successfully updated.' }
+      else
+        format.html { redirect_to :action => 'campaigns#index'}        
+      end
+    end
+  end
+  
+  #PUT
+  def status_end
+   @campaign = Campaign.find(params[:campaign_id])
+    respond_to do |format|
+      if @campaign.update_column(:status, Campaign::STATUS['END'])
+        format.html { redirect_to :action => 'index', :notice => 'Campaign was successfully updated.' }
+      else
+        format.html { redirect_to :action => 'campaigns#index'}        
+      end
+    end
+  end
+  
+  
 end

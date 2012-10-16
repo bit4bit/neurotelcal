@@ -100,3 +100,20 @@ div span.hint {
 .help { background: #9FDAEE; border: 1px solid #2BB0D7;	}
 .info { background: #9FDAEE; border: 1px solid #2BB0D7;	}
 .warning { background: #FFFFAA; border: 1px solid #FFAD33; }
+
+
+a.campaign-status {
+   font-size: 0.7em;
+}
+
+a.campaign-status-start {
+   color: #00AA00;
+}
+
+a.campaign-status-end {
+   color: #AA0000;
+}
+
+a.campaign-status-pause {
+   color: #0000AA;
+}

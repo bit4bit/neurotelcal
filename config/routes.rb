@@ -46,7 +46,13 @@ Neurotelcal::Application.routes.draw do
 
   resources :resources
 
-  resources :campaigns
+  resources :campaigns do
+    put 'change_status'
+    put 'status_start'
+    put 'status_pause'
+    put 'status_end'
+  end
+  
 
   # The priority is based upon order of creation:
   # first created -> highest priority.
