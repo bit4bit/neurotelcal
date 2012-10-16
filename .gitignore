@@ -22,4 +22,5 @@ pickle-email-*.html
 /app/log/
 **~
 **#
+**.#
 *~

@@ -104,21 +104,6 @@ class Campaign < ActiveRecord::Base
     return true
   end
   
-  #Para mandar lotes de llamadas
-  #::deprecation:: acutalmente no esta confirmado su uso correcto
-  def call_clients(clients, message)
-    self.plivo.all.each { |plivo|
-      begin
-        plivo.call_clients(clients, message)
-        return true
-      rescue PlivoChannelFull => e
-        logger.debug("Plivo id %d full trying next plivo" % plivo.id)
-        next
-      end
-    }
-    return false
-  end
-  
   #Campaign llama cliente, buscando un espacio disponible entre sus servidores plivos
   def call_client(client, message, message_calendar = nil)
     raise PlivoNotFound, "There is not plivo server, first add one" unless self.plivo.exists?
@@ -185,7 +170,8 @@ class Campaign < ActiveRecord::Base
     logger.debug('process: total messages today %d' % total_messages_today)
     
     if id_groups_to_process.size > 0
-      clients = Client.where(:group_id => id_groups_to_process, :campaign_id => self.id, :callable => true).order('priority DESC, callable DESC')
+      id_groups_to_process.uniq!
+      clients = Client.where(:group_id => id_groups_to_process, :callable => true).order('priority DESC, callable DESC')
     else
       clients = client
     end
