@@ -101,6 +101,9 @@ div span.hint {
 .info { background: #9FDAEE; border: 1px solid #2BB0D7;	}
 .warning { background: #FFFFAA; border: 1px solid #FFAD33; }
 
+.container {
+   width: 80%
+}
 
 a.campaign-status {
    font-size: 0.7em;
@@ -117,3 +120,8 @@ a.campaign-status-end {
 a.campaign-status-pause {
    color: #0000AA;
 }
+
+h1 {
+   font-size: 2.5em;
+
+}	
