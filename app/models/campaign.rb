@@ -20,6 +20,7 @@ class Campaign < ActiveRecord::Base
   has_many :group, :dependent => :delete_all
   belongs_to :entity
 
+
   def pause?
     #Se reconsulta para obtener ultimo estado
     r = Campaign.select('status').where(:id => self.id).first.status
@@ -37,6 +38,11 @@ class Campaign < ActiveRecord::Base
     return STATUS['START'] == r
   end
 
+  #Clientes restantes
+  def client_rest
+    Client.where(:group_id => self.group.all)
+  end
+  
   #Se verifica si se puede llamara a un cliente
   #con un determinado mensaje y un calendario de mensaje.
   #El objetivo primordial es llamar las veces que sea necesario
