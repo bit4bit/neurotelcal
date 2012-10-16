@@ -142,5 +142,27 @@ class CampaignsController < ApplicationController
     end
   end
   
+
+  #GET.json
+  def status
+    @campaign = Campaign.find(params[:campaign_id])
+    messages = []
+    @campaign.group.each { |group|
+      messages << group.id_messages_share_clients
+    }
+    messages.flatten!
+
+    respond_to do |format|
+      format.json { 
+        render :json => {
+          :status => Campaign::STATUS.invert[@campaign.status],
+          :calls_in_process => Call.in_process_for_message(messages).count
+        }
+        
+      }
+    end
+  end
+  
+
   
 end

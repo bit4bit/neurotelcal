@@ -15,3 +15,5 @@ Este software esta bajo licencia GPLv3 o superior
  * Gestionar Campañas
  * Programar llamadas
  * Obtener reporte de llamadas realizadas
+
+Mirar documentacion en doc/README_FOR_APP para mas informacion

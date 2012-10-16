@@ -49,7 +49,8 @@ module PlivosHelper
       end
     elsif step[:audio]
       local_resource = Rails.root.join(step[:audio])
-      xml.Play @plivo.app_url.to_s + '/resources/audio/' + File.basename(step[:audio].to_s)
+      audio = @plivo.app_url.to_s + '/resources/audio/' + File.basename(step[:audio].to_s)
+      xml.Play "${http_get(%s)}" % audio.to_s
     elsif step[:audio_local]
       xml.Play step[:audio_local]
     elsif step[:decir]

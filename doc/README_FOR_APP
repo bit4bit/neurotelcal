@@ -26,6 +26,7 @@ Aplicativo de software para el despacho de llamadas programadas. Puede ser utili
 ==Freeswitch
  * mod_shout (mp3, para compilar necesita libmpg123-dev)
  * mod_esl
+ * mod_http_cache
 
 ===INSTALAR
  # cd /usr/local/src

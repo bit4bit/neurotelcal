@@ -51,6 +51,7 @@ Neurotelcal::Application.routes.draw do
     put 'status_start'
     put 'status_pause'
     put 'status_end'
+    get 'status'
   end
   
 
