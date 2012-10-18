@@ -1,0 +1,26 @@
+
+MONAPP
+==========
+Actualmente hay muchisimos aplicativos de monitoreo de servicios, procesos, archivos, etc.. 
+Pero no he encontrado un servicio de monitoreo que sea para el estado de las aplicaciones o para las aplicaciones mismas de forma
+que desde el aplicativo se puedan mandar alertas o bien notificar estados.
+
+Como no he encontrado alguno entonces manos al teclado:
+
+
+Munin:: excelente aplicativo de monitoreo lo que mas me intereso es su metodo para la generacion de los graficos de estado.
+
+
+El aplicativo de monitoreo debe ser un demonio que se inicia este testeando continuamente el aplicativo para esto hay que realizar dos cosas:
+
+1) Muchas veces el aplicativo se esta ejecutando y es importando poder llevar un perfilado/monitoreo en tiempo de ejecucion directamente desde el aplicativo, para esto se puede iniciar un RESTFul servicio que reciba estos mensajes para perfilar/monitorear. Aqui es importante que esto afecte en lo menor al aplicativo.
+2) Algunas veces no es necesario que el monitoreo este en el aplicativo y mas bien otro servicio aparte realize un sondeo de su data y tome las medidas necesarias.
+
+La intencion es que se pueda perfilar/monitorear un aplicativo.
+
+Debe ser tan sencillo como:
+* Logger
+* TestUnit
+
+Capacidad:
+* Atrapar excepcion y notificarlas
