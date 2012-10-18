@@ -44,11 +44,13 @@ class Campaign < ActiveRecord::Base
   end
 
   def active_channels
-    return plivo.all.size > 1 ? plivo.all.inject{|s,v| s.channels + v.channels} : plivo.first.channels
+    return plivo.first.channels if plivo.all.size == 1
+    return plivo.all.size > 1 ? plivo.all.inject{|s,v| s.channels + v.channels} : 0
   end
 
   def using_channels
-    return plivo.all.size > 1 ? plivo.all.inject{|s,v| s.using_channels + v.using_channels} : plivo.first.using_channels
+    return plivo.first.using_channels if plivo.all.size == 1
+    return plivo.all.size > 1 ? plivo.all.inject{|s,v| s.using_channels + v.using_channels} : 0
   end
   
   
