@@ -239,8 +239,8 @@ class Campaign < ActiveRecord::Base
           use_extra_channels = extra_channels(message)
           
           #si esta sobre el limite se omite mensaje
-          logger.debug('process: message over process? %s' % message.over_limit_process_channels?(use_extra_channels).to_s)
-          logger.debug('process: count channels %d' % count_channels_messages[message.id])
+          #logger.debug('process: message over process? %s' % message.over_limit_process_channels?(use_extra_channels).to_s)
+          #logger.debug('process: count channels %d' % count_channels_messages[message.id])
           
           if message.over_limit_process_channels?(use_extra_channels) or (count_channels_messages[message.id] > 0 and count_channels_messages[message.id] >= message.total_channels_today() + use_extra_channels)
             wait_messages << message unless wait_messages.include?(message)
@@ -270,14 +270,14 @@ class Campaign < ActiveRecord::Base
           logger.debug('process: waiting channel available for message %s' % message.name)
           time_elapsed_waiting += 0.10
           sleep 0.10
-          break if time_elapsed_waiting > 0.10 * 10 * 180 #espera 3 minutos
-          unless message.over_limit_process_channels?
+          if not message.over_limit_process_channels? or time_elapsed_waiting > 0.10 * 10 * 180 #espera 3 minutos
+            wait_messages.each {|m| count_channels_messages[m.id] = m.calls_in_process}
             break #se salta este mensaje y se vuelve a buscar cliente
           end
 
         }
-        count_channels_messages = {}
-        waiting_for_messages = []
+        #count_channels_messages = {}
+        wait_messages = []
       end
 
     end

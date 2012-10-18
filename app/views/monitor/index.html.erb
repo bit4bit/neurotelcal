@@ -20,17 +20,23 @@
 function updateCampaigns(){
 $.get("campaigns_status", function(data){
  $("#campaigns").html(data);
- window.setTimeout(updateCampaigns, 2000);
 });
 }
-updateCampaigns();
+
 
 function updateCalls(){
  $.get("channels_status", function(data){
-  $("#calls").html(data); window.setTimeout(updateCalls, 1000);
+  $("#calls").html(data); 
  });
 }
-updateCalls();
+
+function updates(){
+ updateCampaigns();
+ updateCalls();
+ window.setTimeout(updates, 1500);
+}
+updates();
+
 SCRIPT
 )
 %>

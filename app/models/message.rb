@@ -34,6 +34,10 @@ class Message < ActiveRecord::Base
     return false
   end
   
+  def calls_in_process
+    return Call.in_process_for_message(id).count
+  end
+  
   def over_limit_process_channels?(extra_channels = 0)
     return Call.in_process_for_message(id).count >= total_channels_today() + extra_channels
   end
