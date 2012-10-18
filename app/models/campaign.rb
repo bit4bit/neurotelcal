@@ -42,6 +42,15 @@ class Campaign < ActiveRecord::Base
   def client_rest
     Client.where(:group_id => self.group.all)
   end
+
+  def active_channels
+    return plivo.all.size > 1 ? plivo.all.inject{|s,v| s.channels + v.channels} : plivo.first.channels
+  end
+
+  def using_channels
+    return plivo.all.size > 1 ? plivo.all.inject{|s,v| s.using_channels + v.using_channels} : plivo.first.using_channels
+  end
+  
   
   #Se verifica si se puede llamara a un cliente
   #con un determinado mensaje y un calendario de mensaje.
@@ -330,8 +339,8 @@ class Campaign < ActiveRecord::Base
       #logger.debug('extra_channels: calls_expected %d' % calls_expected)
 
       #llamadas permitias desde plivo
-      plivo_total_channels = plivo.all.size > 1 ? plivo.all.inject{|s,v| s.channels + v.channels} : plivo.first.channels
-      plivo_using_channels = plivo.all.size > 1 ? plivo.all.inject{|s,v| s.using_channels + v.using_channels} : plivo.first.using_channels
+      plivo_total_channels = active_channels
+      plivo_using_channels = using_channels
       #logger.debug('extra_channels: plivo_total_channels %d , plivo_using_channels %d' % [plivo_total_channels, plivo_using_channels])
 
       #cantidad de canales disponibles despues de los ya usados y los separados

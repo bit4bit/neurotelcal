@@ -15,5 +15,31 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 %>
-<%= link_to I18n.t('tools.new_import_cdr.title'), new_import_cdr_tools_path, :class => 'button'%>
 
+<%= javascript_tag(<<SCRIPT
+function updateCampaigns(){
+$.get("campaigns_status", function(data){
+ $("#campaigns").html(data);
+ window.setTimeout(updateCampaigns, 2000);
+});
+}
+updateCampaigns();
+
+function updateCalls(){
+ $.get("channels_status", function(data){
+  $("#calls").html(data); window.setTimeout(updateCalls, 1000);
+ });
+}
+updateCalls();
+SCRIPT
+)
+%>
+<h1><%= I18n.t('monitor.index.title')%></h1>
+<h2><%= I18n.t('defaults.campaigns')%></h2>
+<div id="campaigns">
+</div>
+
+
+<h2><%= I18n.t('defaults.call')%></h2>
+<div id="calls">
+</div>

@@ -74,6 +74,7 @@ es:
     admin: 'Administración'
     tools: 'Herramientas'
     about: 'Acerca de'
+    monitor: 'Monitor'
     quit: 'Salir'
   defaults:
     name: 'Nombre'
@@ -93,6 +94,8 @@ es:
     direct_message: 'MENSAJE DIRECTO'
     entity: 'Entidad'
     generate: 'Generar'
+    channels: 'Canales'
+    using_channels: 'Canales En Uso'
   clients:
     fullname: 'Nombre completo'
   campaign:
@@ -278,3 +281,6 @@ es:
   tools:
     new_import_cdr:
       title: 'Importar CDRs FS'
+  monitor:
+    index:
+      title: 'Monitor'

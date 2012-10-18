@@ -1,4 +1,10 @@
 Neurotelcal::Application.routes.draw do
+  get "monitor/index"
+
+  get "monitor/campaigns_status"
+
+  get "monitor/channels_status"
+
   resources :tools do 
     get 'new_import_cdr', :on => :collection
     post 'create_import_cdr', :on => :collection
@@ -54,7 +60,7 @@ Neurotelcal::Application.routes.draw do
     get 'status'
   end
   
-
+  
   # The priority is based upon order of creation:
   # first created -> highest priority.
 
