@@ -72,19 +72,19 @@ class Campaign < ActiveRecord::Base
   def total_calls_answer_today
     #@todo cahecar
     messages_today = self.group.map{|g| g.need_process_messages? ? g.id_messages_share_clients : nil}.flatten.compact
-    return Call.where(:message_id => messages_today, :hangup_enumeration => PlivoCall::ANSWER_ENUMERATION).where('enter >= ?', Time.zone.today()).count
+    return Call.where(:message_id => messages_today, :hangup_enumeration => PlivoCall::ANSWER_ENUMERATION).where('enter >= ?', DateTime.now.beginning_of_day.getutc).count
   end
   
   def total_calls_not_answer_today
     #@todo cachear
     messages_today = self.group.map{|g| g.need_process_messages? ? g.id_messages_share_clients : nil}.flatten.compact
-    return Call.where(:message_id => messages_today).where('enter >= ?', Time.zone.today()).where("hangup_enumeration NOT IN(?)", PlivoCall::ANSWER_ENUMERATION).count
+    return Call.where(:message_id => messages_today).where('enter >= ?', DateTime.now.beginning_of_day.getutc).where("hangup_enumeration NOT IN(?)", PlivoCall::ANSWER_ENUMERATION).count
   end
   
   #::return:: en porcentaje la probabilidad de alcanzar las llamadas esperadas en base a las contestadas y no contestadas hasta ahora
   def percent_probability_to_complete
-    mcf = MessageCalendar.where('stop >= ? AND start >= ?', Time.zone.today(), Time.zone.today()).order('stop ASC').first
-    mci = MessageCalendar.where('start >= ?', Time.zone.today()).order('start DESC').first
+    mcf = MessageCalendar.where('stop >= ? AND start >= ?', DateTime.now.beginning_of_day.getutc, DateTime.now.beginning_of_day.getutc).order('stop ASC').first
+    mci = MessageCalendar.where('start >= ?', DateTime.now.beginning_of_day.getutc).order('start DESC').first
     c = total_calls_answer_today
     #cn = total_calls_not_answer_today
     tcd = total_calls_today
