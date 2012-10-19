@@ -242,6 +242,14 @@ class Campaign < ActiveRecord::Base
     else
       clients = client
     end
+
+    #end if not have client
+    if clients.empty?
+      logger.debug('process: we not have clients to call')
+      sleep 30
+      return false
+    end
+    
     wait_messages = []
     clients.all.each do |client_processing|
       #si no hay grupos para procesar se espera
