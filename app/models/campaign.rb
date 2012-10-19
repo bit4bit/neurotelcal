@@ -10,6 +10,8 @@
 class Campaign < ActiveRecord::Base
   STATUS = { 'START' => 0, 'PAUSE' => 1, 'END' => 2}
 
+
+
   attr_accessible :description, :name, :status, :entity_id
   attr_accessible :notes
   validates :name, :presence => true, :uniqueness => true
@@ -19,8 +21,7 @@ class Campaign < ActiveRecord::Base
   has_many :plivo, :dependent => :delete_all, :conditions => 'enable = 1'
   has_many :group, :dependent => :delete_all
   belongs_to :entity
-
-
+  
   def pause?
     #Se reconsulta para obtener ultimo estado
     r = Campaign.select('status').where(:id => self.id).first.status
@@ -51,6 +52,55 @@ class Campaign < ActiveRecord::Base
   def using_channels
     return plivo.first.using_channels if plivo.all.size == 1
     return plivo.all.size > 1 ? plivo.all.inject{|s,v| s.using_channels + v.using_channels} : 0
+  end
+  
+  def total_calls_today
+    n_calls = 0
+    self.group.all.each do |group|
+      next unless group.need_process_messages?
+      group.message.all.each do |message|
+        next if not message.time_to_process? or not message.time_to_process_calendar?
+        message.message_calendar.all.each do |mc|
+          next unless mc.time_to_process?
+          n_calls += mc.max_clients
+        end
+      end
+    end
+    return n_calls
+  end
+  
+  def total_calls_answer_today
+    #@todo cahecar
+    messages_today = self.group.map{|g| g.need_process_messages? ? g.id_messages_share_clients : nil}.flatten.compact
+    return Call.where(:message_id => messages_today, :hangup_enumeration => PlivoCall::ANSWER_ENUMERATION).where('enter >= ?', Time.zone.today()).count
+  end
+  
+  def total_calls_not_answer_today
+    #@todo cachear
+    messages_today = self.group.map{|g| g.need_process_messages? ? g.id_messages_share_clients : nil}.flatten.compact
+    return Call.where(:message_id => messages_today).where('enter >= ?', Time.zone.today()).where("hangup_enumeration NOT IN(?)", PlivoCall::ANSWER_ENUMERATION).count
+  end
+  
+  #::return:: en porcentaje la probabilidad de alcanzar las llamadas esperadas en base a las contestadas y no contestadas hasta ahora
+  def percent_probability_to_complete
+    mcf = MessageCalendar.where('stop >= ? AND start >= ?', Time.zone.today(), Time.zone.today()).order('stop ASC').first
+    mci = MessageCalendar.where('start >= ?', Time.zone.today()).order('start DESC').first
+    c = total_calls_answer_today
+    #cn = total_calls_not_answer_today
+    tcd = total_calls_today
+    tr = (mcf.stop() - Time.now()) / 60 #tiempo restante
+    ti = (Time.now() - mci.start) / 60 #tiempo desde inicio
+    tt = tr + ti #total de tiempo para las llamadas
+    lxm = tcd / tt #llamadas x minuto esperadas
+    lea = lxm * ti #llamadas esperedas hasta ahora
+    
+    #logger.debug("tr %d, ti %d, lea %d, c %d" % [tr,ti,lea, c])
+    begin
+      #return (c / tcd) * (tcd / (c+cn))
+      return ((c / lea) * 100).floor # a porcentaje
+    rescue Exception => e
+      return 0
+    end
   end
   
   

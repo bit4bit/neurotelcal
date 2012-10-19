@@ -96,6 +96,10 @@ es:
     generate: 'Generar'
     channels: 'Canales'
     using_channels: 'Canales En Uso'
+    calls_today: 'Ll. Hoy'
+    calls_answer_today: 'Ll. Cont'
+    calls_not_answer_today: 'Ll. No Cont'
+    probability_complete: '% Probalidad'
   clients:
     fullname: 'Nombre completo'
   campaign:

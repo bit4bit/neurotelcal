@@ -24,6 +24,10 @@
     <th><%= I18n.t('defaults.clients_rest')%></th>
     <th><%= I18n.t('defaults.channels')%></th>
     <th><%= I18n.t('defaults.using_channels')%></th>
+    <th><%= I18n.t('defaults.calls_today')%></th>
+    <th><%= I18n.t('defaults.calls_answer_today')%></th>
+    <th><%= I18n.t('defaults.calls_not_answer_today')%></th>
+    <th><%= I18n.t('defaults.probability_complete')%></th>
   </tr>
   <% @campaigns.each do |campaign| %>
   <tr>
@@ -34,6 +38,10 @@
     <td><%= campaign.client.count%></td>
     <td><%= campaign.active_channels%></td>
     <td><%= campaign.using_channels%></td>
+    <td><%= campaign.total_calls_today%></td>
+    <td><%= campaign.total_calls_answer_today%></td>
+    <td><%= campaign.total_calls_not_answer_today%></td>
+    <td><%= campaign.percent_probability_to_complete%></td>
   </tr>
   <% end %>
 </table>
