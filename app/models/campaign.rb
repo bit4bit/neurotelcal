@@ -323,7 +323,7 @@ class Campaign < ActiveRecord::Base
         wait_messages.cycle{|message|
           #se termina en caso de forzado, y espera la ultima llamada
           return false if end?
-          break if Call.where(:terminate => nil).count == 0
+          return false if not need_process_groups?
           
           logger.debug('process: waiting channel available for message %s' % message.name)
           time_elapsed_waiting += 0.10
