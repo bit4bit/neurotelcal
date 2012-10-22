@@ -107,7 +107,7 @@ module MonAPP
       instance_eval(&block) if name.nil?
     end
     
-    def notify msg, type => :info
+    def notify msg, type = :info
       case type
       when :info
         @logger.info("Message to notify: #{msg}")
