@@ -4,6 +4,7 @@ Neurotelcal::Application.routes.draw do
   get "monitor/campaigns_status"
 
   get "monitor/channels_status"
+  get "monitor/cdr"
 
   resources :tools do 
     get 'new_import_cdr', :on => :collection
@@ -20,7 +21,7 @@ Neurotelcal::Application.routes.draw do
   get "reports/export_csv_index"
   post "reports/export_with_format"
   get "reports/export"
-
+  
   controller :sessions do
     get 'login' => :new
     post 'login' => :create

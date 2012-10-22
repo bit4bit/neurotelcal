@@ -23,19 +23,31 @@ class SessionsController < ApplicationController
 
   def new
     render :layout => 'front'
+    session.clear
   end
 
   def create
     if user = User.authenticate(params[:name], params[:password])
       session[:user_id] = user.id
-      redirect_to campaigns_url
+      session[:monitor_campaign_id] = user.monitor_campaign_id
+      session[:monitor] = user.monitor
+      session[:admin] = user.admin 
+      logger.debug(session)
+      if session[:monitor] == true and session[:admin] == false
+        redirect_to monitor_index_path
+      else
+        redirect_to campaigns_url
+      end
     else
       redirect_to login_url, :alert => "Invalido combinación usuario/contraseña"
     end
   end
 
   def destroy
+    session.clear
     session[:user_id] = nil
+
+    reset_session
     redirect_to login_url, :notice => "Se finalizo el ingreso"
   end
 end

@@ -6,6 +6,7 @@ class User < ActiveRecord::Base
   validates :name, :presence => true, :uniqueness => true
   validates :password, :confirmation => true
   attr_accessor :password_confirmation
+  attr_accessible :monitor, :monitor_campaign_id, :admin
   attr_reader :password
   
   validate :password_must_be_present

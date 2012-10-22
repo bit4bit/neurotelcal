@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121013163839) do
+ActiveRecord::Schema.define(:version => 20121022190846) do
 
   create_table "calendars", :force => true do |t|
     t.integer  "message_id"
@@ -38,7 +38,10 @@ ActiveRecord::Schema.define(:version => 20121013163839) do
     t.integer  "message_calendar_id", :default => 0
   end
 
+  add_index "calls", ["client_id", "hangup_enumeration"], :name => "index_calls_on_client_id_and_hangup_enumeration"
+  add_index "calls", ["message_calendar_id", "hangup_enumeration"], :name => "index_calls_on_message_calendar_id_and_hangup_enumeration"
   add_index "calls", ["message_id", "client_id"], :name => "index_calls_on_message_id_and_client_id"
+  add_index "calls", ["terminate"], :name => "index_calls_on_terminate"
 
   create_table "campaigns", :force => true do |t|
     t.string   "name"
@@ -133,6 +136,8 @@ ActiveRecord::Schema.define(:version => 20121013163839) do
     t.text     "notes"
   end
 
+  add_index "message_calendars", ["message_id"], :name => "index_message_calendars_on_message_id"
+
   create_table "messages", :force => true do |t|
     t.string   "name"
     t.text     "description"
@@ -169,6 +174,8 @@ ActiveRecord::Schema.define(:version => 20121013163839) do
     t.datetime "updated_at",                            :null => false
   end
 
+  add_index "plivo_calls", ["end", "plivo_id"], :name => "index_plivo_calls_on_end_and_plivo_id"
+  add_index "plivo_calls", ["end"], :name => "index_plivo_calls_on_end"
   add_index "plivo_calls", ["uuid"], :name => "index_plivo_calls_on_uuid"
 
   create_table "plivos", :force => true do |t|
@@ -205,8 +212,11 @@ ActiveRecord::Schema.define(:version => 20121013163839) do
     t.string   "name"
     t.string   "hashed_password"
     t.string   "salt"
-    t.datetime "created_at",      :null => false
-    t.datetime "updated_at",      :null => false
+    t.datetime "created_at",                             :null => false
+    t.datetime "updated_at",                             :null => false
+    t.boolean  "admin",               :default => false
+    t.boolean  "monitor",             :default => false
+    t.integer  "monitor_campaign_id", :default => 0
   end
 
 end

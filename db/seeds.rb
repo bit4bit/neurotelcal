@@ -7,4 +7,4 @@
 #   Mayor.create(:name => 'Emanuel', :city => cities.first)
 
 
-User.create(:name => 'admin', :password => 'admin');
+User.create(:name => 'admin', :password => 'admin', :admin => true);

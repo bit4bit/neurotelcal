@@ -19,7 +19,7 @@
   <tr>
     <td><%= client.fullname %></td>
     <td><%= client.phonenumber %></td>
-    <td><%= client.group.name %></td>
+    <td><%= client.group.name if client.group %></td>
     <td><%= link_to I18n.t('show'), client %></td>
     <td><%= link_to I18n.t('edit'), edit_client_path(client) %></td>
     <td><%= link_to I18n.t('destroy'), client, :confirm => I18n.t('are_you_sure'), :method => :delete %></td>

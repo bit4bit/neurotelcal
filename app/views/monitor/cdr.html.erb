@@ -1,0 +1,46 @@
+<%= stylesheet_link_tag params[:controller]%>
+<h1><%= I18n.t('report.index.title')%></h1>
+<h3>Detallado</h3>
+<table>
+  <tr>
+    <th><%= I18n.t('defaults.entity')%></th>
+    <th><%= I18n.t('defaults.campaign')%></th>
+    <th><%= I18n.t('defaults.message')%></th>
+    <th><%= I18n.t('message.l.call')%></th>
+    <th><%= I18n.t('defaults.client')%></th>
+    <th><%= I18n.t('report.l.enter')%></th>
+    <th><%= I18n.t('report.l.terminate')%></th>
+    <th><%= I18n.t('report.l.enter_listen')%></th>
+    <th><%= I18n.t('report.l.terminate_listen')%></th>
+    <th><%= I18n.t('report.l.status')%></th>
+  </tr>
+  <% @calls.each do |call| %>
+  <% begin %>
+  <tr>
+    <td><%= call.client.campaign.entity.name%></td>
+    <td><%= call.client.campaign.name %></td>
+    <% if call.message.nil? %>
+    <td><%= I18n.t('defaults.direct_message')%></td> 
+    <td></td>
+    <% else%>    
+    <td><%= call.message.name %></td>
+    <td><%= call.message.call %></td>
+    <% end %>
+    <td><%= call.client.fullname%></td>
+    <td><%= call.enter%></td>
+    <td><%= call.terminate%></td>
+    <td><%= call.enter_listen%></td>
+    <td><%= call.terminate_listen%></td>
+    <% if call.hangup_status %>
+    <td><%= call.hangup_status%></td>
+    <% else %>
+    <td><%= call.status%></td>
+    <% end %>
+  </tr>
+  <% rescue %>
+  <% end %>
+  <% end %>
+  
+</table>
+
+<%= will_paginate @calls%>

@@ -43,7 +43,7 @@ class UsersController < ApplicationController
   # GET /users/new.json
   def new
     @user = User.new
-
+    @campaigns = Campaign.all
     respond_to do |format|
       format.html # new.html.erb
       format.json { render json: @user }
@@ -53,12 +53,14 @@ class UsersController < ApplicationController
   # GET /users/1/edit
   def edit
     @user = User.find(params[:id])
+    @campaigns = Campaign.all
   end
 
   # POST /users
   # POST /users.json
   def create
     @user = User.new(params[:user])
+    @campaigns = Campaign.all
 
     respond_to do |format|
       if @user.save
@@ -75,6 +77,7 @@ class UsersController < ApplicationController
   # PUT /users/1.json
   def update
     @user = User.find(params[:id])
+    @campaigns = Campaign.all
 
     respond_to do |format|
       if @user.update_attributes(params[:user])
