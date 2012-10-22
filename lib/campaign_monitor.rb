@@ -15,13 +15,11 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-#Utilizamos RSpec como monitor del comportamiento de neurotelcal
-#por ejemplo el avisar si no se ha podido llamar, o bien
-#muchas llamadas estan siendo rechazadas
-
-
-class CampaignMonitor < MonitorApp
-  def setup
+#Se dan algunos casos que se puede
+#dar una solucion automatica
+monapp_case "campaigns" do
+  setup do
+    @logger = Rails.logger = Logger.new(Rails.root.join('log', 'campaign_monitor.log'), 3, 5*1024*1024)
     @messages_processing = {}
     Campaign.all.each do |campaign|
       if campaign.start? and campaign.need_process_groups?
@@ -34,31 +32,64 @@ class CampaignMonitor < MonitorApp
         @id_messages[campaign.id] = id_messages
       end
     end
-  end
 
-  def test_be_calling_if_there_are_messages_on_time
+  end
+  
+  problem "be calling if there are messages on time" do
     @messages_processing.each do |campaign_id, messages|
+      @campaign_id = campaign_id
       assert Call.in_process_for_message(messages).count > 0, 'Campaign %d not is calling' % campaign_id
     end
   end
   
-  def test_be_calling_if_70_percent_had_answered
-    @messages_processing.each do |campaign_id, messages|
-      last_calls = Call.where(:message_id => messages).limit(200)
-      
-      calls = last_calls.count
-      answers_calls = 0
-      last_calls.each do |last_call|
-        answers_calls += 1 if PlivoCall::ANSWER_ENUMERATION.include?(last_call.hangup_enumeration)
-      end
+  solution "be calling if there are messages on time" do
+    @campaign_be_calling = [] if @campaign_be_calling.nil?
 
-      assert answers_calls > 0, 'Campaign %d not had answereds calls'
-      assert ( (100 * answers_calls) / calls) > 69, 'Campaign %d has more 70% percent with not answereds calls' % campaign_id #debe ser mayor a 70% sino se envia alerta
+    if @campaign_be_calling.include?(@campaign_id)
+      notify "We trying restarting but not work", :fatal
+      return try_problem('dont know')
+    end
+    
+    @campaign_be_calling << @campaign_id
+
+    notify "Restarting campaign #{campaign.id}"
+    campaign = Campaign.find(@campaign_id)
+    Campaign.transaction do
+      campaign.update_column(:status, Campaign::STATUS['END'])
+    end
+    
+    sleep 20
+    Campaign.transaction do
+      campaign.update_column(:status, Campaign::STATUS['START'])
+    end
+    
+    Delayed::Job.enqueue ::CampaignJob.new(campaign.id), :queue => campaign.id
+
+    sleep 10
+  end
+
+  #No hay clientes
+  problem 'not have clients' do
+    @messages_processing.each do |campaign_id, messages|
+      @campaign_name = Campaign.find(campaign_id).name
+      @campaign_id = campaign_id
+      assert Client.where(:campaign_id => campaign_id, :callable => 1).count > 0
+    end
+  end
+
+  solution 'not have clients' do
+    notify "HAAA!! campaign #{@campaign_name} not have clients we stop the campaign", :fatal
+    Campaign.transaction do
+      Campaign.find(campaign_id).update_column(:status, Campaign::STATUS['END'])
     end
   end
   
-  def test_greater_than_zero
-    assert 3 > 5, "No es mayor"
+  
+  problem 'dont know' do
+  end
+  
+  solution 'dont know' do
+    notify "We dont know how resolv the problem..good bye", :fatal
   end
   
 end
