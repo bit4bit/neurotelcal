@@ -63,13 +63,13 @@ class PlivosControllerTest < ActionController::TestCase
   end
   
   test "answer client decir hola" do
-    message = Message.new(:description => "Decir hola")
+    message = Message.new(:description => "Decir hola", :group_id => Group.all.first.id)
     call = Call.new(:client_id => Client.all.first)
     assert call.save()
-    plvc = PlivoCall.new(:uuid => 'testeo',  :step => 0, :data => message.description_to_call_sequence({}).to_yaml, :plivo_id => Plivo.all.first, :call_id => call)
+    plvc = PlivoCall.new(:uuid => 'testeo',  :step => 0, :data => message.description_to_call_sequence({}).to_yaml, :plivo_id => Plivo.all.first.id, :call_id => call.id)
     assert plvc.save()
 
-    post :answer_client, {:format => :xml, :ALegRequestUUID => 'testeo'}
+    post :answer_client, {:format => 'xml', :CallUUID => 'testeo', :AccountSID => plvc.id}
     builder = Builder::XmlMarkup.new(:indent => 2)
     builder.instruct!
     xml = builder.Response { |r| r.Speak 'hola'; r.Hangup}
@@ -82,10 +82,10 @@ class PlivosControllerTest < ActionController::TestCase
     message = Message.new(:description => "Registrar digitos cantidad=1")
     call = Call.new(:client_id => Client.all.first)
     assert call.save()
-    plvc = PlivoCall.new(:uuid => 'testeo',  :step => 0, :data => message.description_to_call_sequence({}).to_yaml, :plivo_id => Plivo.all.first, :call_id => call)
+    plvc = PlivoCall.new(:uuid => 'testeo',  :step => 0, :data => message.description_to_call_sequence({}).to_yaml, :plivo_id => Plivo.all.first.id, :call_id => call.id)
     assert plvc.save()
 
-    post :answer_client, {:format => :xml, :ALegRequestUUID => 'testeo'}
+    post :answer_client, {:format => 'xml', :CallUUID => 'testeo', :AccountSID => plvc.id}
     builder = Builder::XmlMarkup.new(:indent => 2)
     builder.instruct!
     xml = builder.Response { |b| b.GetDigits(:action=>"http://192.168.1.1:3000/plivos/testeo/get_digits_client", :retries => 1, :timeout => 5, :numDigits => 1, :validDigits => "0123456789*#"){}; b.Hangup}
@@ -101,10 +101,10 @@ class PlivosControllerTest < ActionController::TestCase
     #se compara el si cumple = 3
     sq = message.description_to_call_sequence({})
     sq[0][:result] = 3
-    plvc = PlivoCall.new(:uuid => 'testeo',  :step => 1, :data => sq.to_yaml, :plivo_id => Plivo.all.first, :call_id => call)
+    plvc = PlivoCall.new(:uuid => 'testeo',  :step => 1, :data => sq.to_yaml, :plivo_id => Plivo.all.first.id, :call_id => call.id)
     assert plvc.save()
 
-    post :answer_client, {:format => :xml, :ALegRequestUUID => 'testeo'}
+    post :answer_client, {:format => :xml, :CallUUID => 'testeo', :AccountSID => plvc.id}
     builder = Builder::XmlMarkup.new(:indent => 2)
     builder.instruct!
     xml = builder.Response { |b| b.Speak "el 3"; b.Hangup }
@@ -116,10 +116,10 @@ class PlivosControllerTest < ActionController::TestCase
     #se compar el no cumple = 3
     sq = message.description_to_call_sequence({})
     sq[0][:result] = 4
-    plvc = PlivoCall.new(:uuid => 'testeo2',  :step => 1, :data => sq.to_yaml, :plivo_id => Plivo.all.first, :call_id => call)
+    plvc = PlivoCall.new(:uuid => 'testeo2',  :step => 1, :data => sq.to_yaml, :plivo_id => Plivo.all.first.id, :call_id => call.id)
     assert plvc.save()
 
-    post :answer_client, {:format => :xml, :ALegRequestUUID => 'testeo2'}
+    post :answer_client, {:format => :xml, :CallUUID => 'testeo2', :AccountSID => plvc.id}
     builder = Builder::XmlMarkup.new(:indent => 2)
     builder.instruct!
     xml = builder.Response {|b| b.Speak 'ninguno'; b.Hangup}
@@ -136,10 +136,10 @@ class PlivosControllerTest < ActionController::TestCase
     
     sq = message.description_to_call_sequence({})
     sq[0][:result] = 3
-    plvc = PlivoCall.new(:uuid => 'testeo',  :step => 1, :data => sq.to_yaml, :plivo_id => Plivo.all.first, :call_id => call)
+    plvc = PlivoCall.new(:uuid => 'testeo',  :step => 1, :data => sq.to_yaml, :plivo_id => Plivo.all.first.id, :call_id => call.id)
     assert plvc.save()
 
-    post :answer_client, {:format => :xml, :ALegRequestUUID => 'testeo'}
+    post :answer_client, {:format => :xml, :CallUUID => 'testeo', :AccountSID => plvc.id}
     builder = Builder::XmlMarkup.new(:indent => 2)
     builder.instruct!
     xml = builder.Response { |b| b.GetDigits(:action=>"http://192.168.1.1:3000/plivos/testeo/get_digits_client", :retries => 1, :timeout => 5, :numDigits => 1, :validDigits => "0123456789*#"){}; b.Hangup}
@@ -149,7 +149,7 @@ class PlivosControllerTest < ActionController::TestCase
     cl = plvc.call_sequence
     cl[1][:result] = 2
     plvc.update_call_sequence(cl)
-    post :answer_client, {:format => :xml, :ALegRequestUUID => 'testeo'}
+    post :answer_client, {:format => :xml, :CallUUID => 'testeo', :AccountSID => plvc.id}
     builder = Builder::XmlMarkup.new(:indent => 2)
     builder.instruct!
     xml = builder.Response {|b| b.Speak 'si 2'; b.Hangup}
@@ -158,6 +158,18 @@ class PlivosControllerTest < ActionController::TestCase
 
     plvc = PlivoCall.where(:uuid => 'testeo').first
     assert_equal [{:register=>:digits, :options=>{:retries=>1, :timeout=>5, :numDigits=>1, :validDigits=>"0123456789*#"}, :result=>3}, {:register=>:digits, :options=>{:retries=>1, :timeout=>5, :numDigits=>1, :validDigits=>"0123456789*#"}, :result=>2}, {:decir => 'si 2'}], plvc.call_sequence
+
+  end
+
+  test "hangup" do
+ message = Message.new(:description => "Decir hola", :group_id => Group.all.first.id)
+    call = Call.new(:client_id => Client.all.first)
+    assert call.save()
+    plvc = PlivoCall.new(:uuid => 'testeo',  :step => 0, :data => message.description_to_call_sequence({}).to_yaml, :plivo_id => Plivo.all.first.id, :call_id => call.id)
+    assert plvc.save()
+
+    post :hangup_client, {:format => 'xml', :CallUUID => 'testeo', :AccountSID => plvc.id}
+    assert_equal "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Response>\n</Response>\n", @response.body
 
   end
   
