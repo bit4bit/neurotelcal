@@ -23,7 +23,7 @@ class SessionsController < ApplicationController
 
   def new
     render :layout => 'front'
-    session.clear
+    #session.clear
   end
 
   def create
