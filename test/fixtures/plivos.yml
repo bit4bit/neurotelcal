@@ -1,0 +1,18 @@
+
+one:
+  app_url: http://192.168.1.1:3000
+  api_url: http://192.168.1.100:8080
+  auth_token: tremendoelplivo
+  campaign_id: 1
+  sid: tremendoelplivo
+  gateways: sofia/gateway/one/
+  caller_name: Neurotelcal
+  gateway_timeouts: 60
+  gateway_retries: 1
+  gateway_codecs: 'PCMA,PCMU'
+  channels: 10
+  phonenumber: 0000000
+  enable: 1
+  dial_plan: ''
+  dial_plan_desc: ''
+    

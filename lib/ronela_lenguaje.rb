@@ -49,13 +49,16 @@ class RonelaLenguaje
       string.delete! "\n"
     end
 
+    #se elimina comentario
+    string.gsub!(/#.*$/,'')
+    string.strip!
+
     #toma primer palabra que determina que hacer
     if string.nil? or string.empty?
       return nil
     end
     
-    #se elimina comentario
-    string.gsub!(/#.*$/,'')
+
 
     partida = string.split
     accion = partida[0]
@@ -84,7 +87,10 @@ class RonelaLenguaje
       end
     end
 
-    @acciones[accion].each {|f| f.call(variables, resto)}
+    @acciones[accion].each {|f| 
+      f.call(variables, resto)
+    }
+    
   end
 
   #@method indica la accion y se espera una funcion
