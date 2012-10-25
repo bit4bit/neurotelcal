@@ -36,6 +36,7 @@ class CampaignJob
       campaign.process(true)
       break if campaign.end?
     end
+    campaign.update_column(:status, Campaign::STATUS['END'])
     Rails.logger.debug("End processing campaign")
   end
 end
