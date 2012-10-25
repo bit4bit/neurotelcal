@@ -20,6 +20,8 @@ require 'logger'
 require 'net/smtp'
 
 module MonAPP
+
+  
   class Assertion < Exception;  end
   class Solution; end
   
@@ -39,40 +41,44 @@ module MonAPP
   class Case
     include MonAPP::Assertions
 
-    def initialize(name)
+    def initialize(name, logger = nil)
       @name = name
       @problems = {}
       @its = {}
       @solutions = {}
       @without_solution = {}
       @setups = {}
-      @logger = Logger.new($STDERR)
+      Rails.logger.debug('created case %s' % @name)
     end
     
     def run(problem = nil)
+      Rails.logger.debug('running case %s' % @name)
       begin
         @problem = nil
         if problem
-          @problem = problem
           instance_eval(@setups[problem]) unless @setups[problem].nil?
+          @problem = problem
+          Rails.logger.debug('seeing -> %s' % problem)
           instance_eval(&@problems[problem])
         else
           @problems.each{|k,f| @problem = k;  
+          Rails.logger.debug('seeing -> %s' % k)
             instance_eval(@setups[k]) unless @setups[k].nil?
             instance_eval(&f)}    
         end
         
       rescue MonAPP::Assertion => e #Hay que solucionar el problema
         begin
-          @logger.debug("Finding solution for #{@problem}")
+          Rails.logger.debug("Finding solution for #{@problem}")
           @solutions[@problem].each{|f| f.call}
           run(@problem)
         rescue MonAPP::Solution => esolg #hay solucion a problema
-          @logger.debug("We fond solution for #{@problem}")
+          Rails.logger.debug("We fond solution for #{@problem}")
           run(@problem)
         rescue MonAPP::Assertion => esol #No hay solucion a las prueba
+          Rails.logger.error("Without solution for #{@problem}")
         rescue Exception => e
-          @logger.error("Without solution for #{@problem}")
+          Rails.logger.error("Without solution for #{@problem} exception %s" % e.backtrace.join("\n")) 
           @without_solution[@problem].call if @without_solution[@problem]
         end
       end
@@ -110,23 +116,25 @@ module MonAPP
     def notify msg, type = :info
       case type
       when :info
-        @logger.info("Message to notify: #{msg}")
+        Rails.logger.info("Message to notify: #{msg}")
       when :fatal
-        @logger.info("Message to notify(fatal): #{msg}")
+        Rails.logger.info("Message to notify(fatal): #{msg}")
       end
       
     end
   end
   
   @@cases = []
-  def self.evaluate(name, &script)
-    c = MonAPP::Case.new(name)
+  def self.evaluate(name, logger = nil, &script)
+    c = MonAPP::Case.new(name, logger)
     c.instance_eval(&script)
     @@cases << c
   end
   
-  def self.run
-    @@cases.each {|c| c.run}
+  def self.run()
+    @@cases.each {|c| 
+      c.run
+    }
   end
 end
 
@@ -135,6 +143,10 @@ module Kernel
   def monapp_case desc, &block
     MonAPP.evaluate(desc, &block)
   end
+  def monapp_run
+    ::MonAPP.run
+  end
+  
 end
 
 if $0 == __FILE__

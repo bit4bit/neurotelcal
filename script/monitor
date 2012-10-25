@@ -23,15 +23,25 @@ require 'net/smtp'
 require 'daemons'
 require 'monapp'
 require 'campaign_monitor'
+
 TICK_MONITOR = 600 #cada diez minutos
 
 
-Daemons.run_proc('monitor', :dir_mode => :normal) do
+Daemons.run_proc('monitor', :backtrace => true, :log_dir => Rails.root.join('log'), :dir_mode => :normal, :log_output => false, :dir => Rails.root.join('tmp')) do
+
   loop {
-    MonAPP.run
-    sleep TICK_MONITOR
+    begin	
+      Rails.logger = Logger.new(Rails.root.join('log', 'campaign_monitor.log'), 3, 5*1024*1024)
+      monapp_run
+      Rails.logger.debug('TICK..')
+      sleep TICK_MONITOR
+    rescue Exception => e
+      Rails.logger.error('Exception: %s ' % e.backtrace.join("\n"))
+    end
   }
 end
+
+  
 
 
 

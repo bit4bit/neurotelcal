@@ -19,18 +19,15 @@
 #dar una solucion automatica
 monapp_case "campaigns" do
   setup do
-    @logger = Rails.logger = Logger.new(Rails.root.join('log', 'campaign_monitor.log'), 3, 5*1024*1024)
     @messages_processing = {}
     Campaign.all.each do |campaign|
-      if campaign.start? and campaign.need_process_groups?
-        id_messages = []
-        campaign.group.all.each do |group|
-          next unless group.need_process_messages?
-          id_messages << group.id_messages_share_clients
-        end
-        id_messages.flatten!
-        @id_messages[campaign.id] = id_messages
+      id_messages = []
+      campaign.group.all.each do |group|
+        next unless group.need_process_messages?
+        id_messages << group.id_messages_share_clients
       end
+      id_messages.flatten!
+      @id_messages[campaign.id] = id_messages unless id_messages.empty?
     end
 
   end
@@ -93,3 +90,4 @@ monapp_case "campaigns" do
   end
   
 end
+
