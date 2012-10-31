@@ -136,7 +136,7 @@ class Plivo < ActiveRecord::Base
       'Gateways' => gateway_by_client(client),
       'GatewayCodecs' => self.gateway_codecs_quote,
       'GatewayTimeouts' => self.gateway_timeouts,
-      'GatewayRetries' => self.gateway_retries,
+      'GatewayRetries' => timeout_by_client(client),
       'ExtraDialString' => extra_dial_string,
       'AnswerUrl' => "%s/plivos/0/answer_client" % self.app_url,
       'HangupUrl' => "%s/plivos/0/hangup_client" % self.app_url,
@@ -241,6 +241,7 @@ class Plivo < ActiveRecord::Base
     rl = RonelaLenguaje.new{|accion,resto|
     }
     
+    gateway = {}
     use_gateway = self.gateways
     rl.Match do |vars, rest|
       srexp = rest.join("").strip
@@ -260,6 +261,34 @@ class Plivo < ActiveRecord::Base
     }
 
     return use_gateway
+  end
+
+  def timeout_by_client(client)
+    return self.gateway_timeouts if self.dial_plan.empty? or client.nil?
+    
+    rl = RonelaLenguaje.new{|accion,resto|
+    }
+    
+    gateway = {}
+    use_timeout = self.gateway_timeouts
+    rl.Match do |vars, rest|
+      srexp = rest.join("").strip
+      rexp = Regexp.new(srexp)
+
+      if rexp =~ client.phonenumber
+        use_timeout = vars['timeout'].strip
+        return use_timeout
+      end
+
+    end
+
+    #se busca match que encage
+    lines = dial_plan.split("\n")
+    lines.each{|line| 
+      rl.scan(line)
+    }
+
+    return use_timeout
   end
   
 end
