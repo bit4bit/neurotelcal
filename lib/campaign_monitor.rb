@@ -27,7 +27,7 @@ monapp_case "campaigns" do
         id_messages << group.id_messages_share_clients
       end
       id_messages.flatten!
-      @id_messages[campaign.id] = id_messages unless id_messages.empty?
+      @messages_processing[campaign.id] = id_messages unless id_messages.empty?
     end
 
   end
