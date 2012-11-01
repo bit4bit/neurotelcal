@@ -164,12 +164,11 @@ class PlivosController < ApplicationController
     @plivo = @plivocall.plivo
     #actualiza estado de llamada
     call = Call.find(@plivocall.call_id)
-    if call
-      call.enter_listen = Time.now
-      call.status = @plivocall.status
-      call.save
-    end
-
+    call.enter_listen = Time.now
+    call.status = @plivocall.status
+    call.client.update_column(:calling, true)
+    call.save
+    
     logger.debug('Trying first plivo from campaign to url ' + @plivo.app_url)
     respond_to do |format|
       format.xml
@@ -177,56 +176,53 @@ class PlivosController < ApplicationController
   end
 
   def hangup_client
-    logger.debug('hangup')
-    #logger.debug('hangup')
+    logger.debug('hangup_client:')
+    logger.debug(params)
+
     plivocall = PlivoCall.where(:id => params["AccountSID"]).first
     plivocall.uuid = params["CallUUID"]
     plivocall.status = params["CallStatus"]
 
-    #@todo mejorar esto un campo y listo
     plivocall.hangup_enumeration = params["HangupCause"] if params["HangupCause"]
     plivocall.bill_duration = params["BillDuration"] if params["BillDuration"]
     plivocall.end = true
     plivocall.save
-    logger.debug(params)
-    
-    case params["CallStatus"]
-    when 'completed'
-    end
+
 
     #se notifica que porfin se contesto
 
-    if Call.where(:id => plivocall.call_id).exists?
-      call = Call.find(plivocall.call_id)
-      call.terminate = Time.now
-      call.completed_p = true
-      
-      if plivocall.answered?
-        call.terminate_listen = Time.now
-      else
-        call.terminate_listen = nil
-      end
-
-      call.status = plivocall.status
-      call.hangup_enumeration = plivocall.hangup_enumeration
-      
-      if call.terminate_listen and call.enter_listen
-        call.length = call.terminate_listen - call.enter_listen
-      else
-        call.length = 0
-      end
-
-      call.bill_duration = params["BillDuration"] if params["BillDuration"]
-      call.save
-
-      #ya no es necesario el cliente por que se recibio estado que se queria
-      if PlivoCall::ANSWER_ENUMERATION.include?(call.hangup_enumeration) and not call.message.anonymous
-        call.client.update_column(:callable, false)
-      end
-      
+    call = Call.find(plivocall.call_id)
+    call.terminate = Time.now
+    call.completed_p = true
+    call.data = plivocall.data
+    
+    if plivocall.answered?
+      call.terminate_listen = Time.now
+    else
+      call.terminate_listen = nil
+    end
+    
+    call.status = plivocall.status
+    call.hangup_enumeration = plivocall.hangup_enumeration
+    
+    if call.terminate_listen and call.enter_listen
+      call.length = call.terminate_listen - call.enter_listen
+    else
+      call.length = 0
     end
 
+    call.bill_duration = plivocall.bill_duration
+    call.save
 
+    call.client.update_column(:calling, false)
+    call.delay(:queue => 'neurotelcal').verify_call_to_client
+
+    #ya no es necesario el cliente por que se recibio estado que se queria
+    if PlivoCall::ANSWER_ENUMERATION.include?(call.hangup_enumeration) and not call.message.anonymous
+      call.client.update_column(:callable, false)
+    end
+      
+    #se da por sentado que no se necesita mas el plivo
 
     respond_to do |format|
       format.xml
@@ -245,7 +241,9 @@ class PlivosController < ApplicationController
     #se notifica que porfin se contesto
     call = Call.find(plivocall.call_id)
     call.status = plivocall.status
+    call.client.update_column(:calling, true)
     call.save
+
 
     respond_to do |format|
       format.xml
@@ -255,19 +253,26 @@ class PlivosController < ApplicationController
   def docall_client
     @campaign = Campaign.find(session[:campaign_id])
     @client = Client.find(params[:id])
-    params[:message][:id] = nil
-    params[:message][:name] = I18n.t('defaults.direct_message') + @client.object_id.to_s
-    params[:message][:call] = Time.now
-    params[:message][:call_end] = Time.now
-    params[:message][:anonymous] = true
-    @message = Message.new(params[:message])
-    @message.group_id = @client.group.id
+    flash[:notice] = ''
+    flash[:error] = ''
 
+    if @client.calling?
+      flash[:error] = 'Ya hay una en proceso'
+      return respond_to do |format|
+        format.html { render :action => 'call_client' }
+      end
+    end
+    
 
-    if @message.valid?
-      @message.save
-      
     begin
+      params[:message][:id] = nil
+      params[:message][:name] = I18n.t('defaults.direct_message') + @client.object_id.to_s
+      params[:message][:call] = Time.now
+      params[:message][:call_end] = Time.now
+      params[:message][:anonymous] = true
+      @message = Message.new(params[:message])
+      @message.group_id = @client.group.id
+      @message.save!
       @campaign.call_client!(@client, @message)
     rescue PlivoCannotCall => e
       flash[:notice] = 'No hay canales disponibles'
@@ -275,10 +280,10 @@ class PlivosController < ApplicationController
       flash[:error] = 'No se pudo conectar al/los plivo de la campana'
     rescue Exception => e
       logger.debug(e)
-      flash[:notice] = "error:" + e.class.to_s
+      flash[:error] = "error:" + e.class.to_s
     end
-      flash[:notice] = ''
-    end
+
+
 
     respond_to do |format|
       format.html { render :action => 'call_client' }

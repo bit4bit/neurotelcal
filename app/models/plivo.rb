@@ -187,6 +187,7 @@ class Plivo < ActiveRecord::Base
     plivocall.step = 0
     plivocall.save
     call_params['AccountSID'] = plivocall.id
+    client.update_column(:calling, true) 
     logger.debug(call_params)      
     
     #@todo ERROR OCURRE ERROR..SE ENVIA LA LLAMA Y PLIVO RESPONDE DEMASIADO RAPIDO
@@ -196,14 +197,18 @@ class Plivo < ActiveRecord::Base
     result = ActiveSupport::JSON.decode(plivor.call(call_params).body)
     logger.debug('process:' + result.to_s)
 
+
     if result["Success"]
       plivocall.uuid = result["RequestUUID"]
       plivocall.save
+
+      plivocall.delay(:queue => 'plivocall', :run_at => 10.seconds.from_now).verify
       return result['RequestUUID']
     else
       logger.error(result)
       plivocall.destroy
       call.destroy
+      client.update_column(:calling, false) 
       return false
     end
   end

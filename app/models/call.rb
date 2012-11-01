@@ -35,5 +35,15 @@ class Call < ActiveRecord::Base
   def answered?
     return self.hangup_enumeration == 'NORMAL_CLEARING'
   end
-  
+
+  #Verifica como termino la llamada del cliente
+  #y realiza actualizaciones necesarias
+  def verify_call_to_client
+    if Call.where(:client_id => self.client.id).where("hangup_enumeration IN (%s)" % PlivoCall::INVALID_ENUMERATION.map {|v| "'%s'" % v}.join(',')).count > 0
+      self.client.update_column(:error, true)
+      #@todo aclarar mejor los errores
+      self.client.update_column(:error_msg, "INVALID NUMBER");
+    end
+  end
+   
 end

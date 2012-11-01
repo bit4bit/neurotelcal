@@ -122,6 +122,12 @@ class Campaign < ActiveRecord::Base
   #::message_calendar:: calendario de mensaje usado en caso de haber
   #::return:: boolean indicando si se pudo o no realizar la llamada
   def can_call_client?(client, message, message_calendar = nil)
+    return false if  client.calling?
+    #el cliente ya fue llamadao y no nay necesida de volverle a llamar
+    return false unless client.callable?
+    #no hay que botar escape ni modo de ubicar el numero
+    return false if client.error?
+
     called = false
     if not message.anonymous and client.group.messages_share_clients
       ncalls = Call.where(:message_id => client.group.id_messages_share_clients, :client_id => client.id).count
@@ -139,13 +145,7 @@ class Campaign < ActiveRecord::Base
       else
         message_id = message.id
       end
-      
-      #no hay que botar escape ni modo de ubicar el numero
-      return false if Call.where(:client_id => client.id).where("hangup_enumeration IN (%s)" % PlivoCall::REJECTED_ENUMERATION.map {|v| "'%s'" % v}.join(',')).count > 0
-      #ya se marco
-      return false if Call.where(:message_id => message_id, :client_id => client.id).where(:hangup_enumeration => PlivoCall::ANSWER_ENUMERATION).count > 0
-      return false if Call.in_process_for_message_client?(message_id, client.id).exists?
-      
+
       #se vuelve a marcar desde la ultima marcacion
       begin
         calls_faileds = Call.where(:message_id => message_id, :client_id => client.id).where("hangup_enumeration NOT IN (%s)" % PlivoCall::ANSWER_ENUMERATION.map {|v| "'%s'" % v}.join(',')).count
@@ -252,10 +252,13 @@ class Campaign < ActiveRecord::Base
     
     wait_messages = []
     clients.all.each do |client_processing|
+      next if client_processing.calling?
+      next if client_processing.error?
+
       #si no hay grupos para procesar se espera
       #lo ideal es mantener cargada la cola de clientes procesados
       return false if not need_process_groups?
-
+      
 
       sleep 1 while pause?
 

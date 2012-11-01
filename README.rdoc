@@ -1,6 +1,11 @@
 =NeuroTelCal
 AutoMarcador, realize llamadas programadas a sus clientes.
 
+== Cambios criticos
+=== 1 nov 2012
+ * El modelo *PlivoCall* pasa a mantener solo las llamadas que se estan realizando.
+ * El modelo *Call* asume responsabilidad de almacenar el resultado el IVR, e historico de llamadas.
+ 
 ==Requerimientos
  * Rails 3
  * Servidor freeswitch
@@ -15,5 +20,6 @@ Este software esta bajo licencia GPLv3 o superior
  * Gestionar Campañas
  * Programar llamadas
  * Obtener reporte de llamadas realizadas
+
 
 Mirar documentacion en doc/README_FOR_APP para mas informacion

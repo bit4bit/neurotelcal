@@ -3,9 +3,11 @@ class Client < ActiveRecord::Base
   attr_accessible :campaign_id, :fullname, :group_id, :phonenumber, :priority
   attr_accessible :priority #campo de su interno
   attr_accessible :callable #se puede llamar?
+  attr_accessible :calling, :error, :error_msg
   belongs_to :campaign
   belongs_to :group
-  
+
+
   has_many :call
 
   validates :fullname, :group_id, :presence => true
@@ -14,6 +16,19 @@ class Client < ActiveRecord::Base
   #  :message => "Solo números y separados por coma para multiples numeros"
   #}
 
+  def calling?
+    return Client.select('calling').where(:id => self.id).first.calling == true
+  end
+  
+  def callable?
+    return Client.select('callable').where(:id => self.id).first.callable == true
+  end
+  
+  def error?
+    return Client.select('error').where(:id => self.id).first.error == true
+  end
+  
+    
   #Segun la prioridad que lleve el cliente se va 
   #poniendo en cola para volver a intentarle la llamada
   def priority_to_seconds_wait

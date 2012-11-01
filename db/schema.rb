@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121101203144) do
+ActiveRecord::Schema.define(:version => 20121101214537) do
 
   create_table "calendars", :force => true do |t|
     t.integer  "message_id"
@@ -37,6 +37,7 @@ ActiveRecord::Schema.define(:version => 20121101203144) do
     t.datetime "updated_at",                             :null => false
     t.integer  "message_calendar_id", :default => 0
     t.integer  "bill_duration",       :default => 0
+    t.text     "data"
   end
 
   add_index "calls", ["client_id", "hangup_enumeration"], :name => "index_calls_on_client_id_and_hangup_enumeration"
@@ -80,10 +81,13 @@ ActiveRecord::Schema.define(:version => 20121101203144) do
     t.string   "phonenumber"
     t.integer  "campaign_id"
     t.integer  "group_id"
-    t.datetime "created_at",                    :null => false
-    t.datetime "updated_at",                    :null => false
+    t.datetime "created_at",                     :null => false
+    t.datetime "updated_at",                     :null => false
     t.integer  "priority",    :default => 0
     t.boolean  "callable",    :default => true
+    t.boolean  "calling",     :default => false
+    t.boolean  "error",       :default => false
+    t.string   "error_msg",   :default => ""
   end
 
   create_table "delayed_jobs", :force => true do |t|
