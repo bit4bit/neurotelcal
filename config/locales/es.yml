@@ -203,7 +203,7 @@ es:
       title: 'Mostrando Plivo'
   report:
     export_csv: 'Exportar CSV'
-    length: 'Duración'
+    length: 'Duración Proc.'
     l:
       enter: 'Llamada ini.'
       terminate: 'Llamada fin.'

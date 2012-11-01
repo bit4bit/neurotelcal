@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121101201541) do
+ActiveRecord::Schema.define(:version => 20121101203144) do
 
   create_table "calendars", :force => true do |t|
     t.integer  "message_id"
@@ -36,6 +36,7 @@ ActiveRecord::Schema.define(:version => 20121101201541) do
     t.datetime "created_at",                             :null => false
     t.datetime "updated_at",                             :null => false
     t.integer  "message_calendar_id", :default => 0
+    t.integer  "bill_duration",       :default => 0
   end
 
   add_index "calls", ["client_id", "hangup_enumeration"], :name => "index_calls_on_client_id_and_hangup_enumeration"

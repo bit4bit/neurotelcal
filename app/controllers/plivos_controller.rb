@@ -216,6 +216,7 @@ class PlivosController < ApplicationController
         call.length = 0
       end
 
+      call.bill_duration = params["BillDuration"] if params["BillDuration"]
       call.save
 
       #ya no es necesario el cliente por que se recibio estado que se queria

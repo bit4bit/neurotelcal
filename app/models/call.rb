@@ -1,5 +1,5 @@
 class Call < ActiveRecord::Base
-  attr_accessible :client_id, :completed_p, :length, :message_id, :enter, :terminate, :hangup_enumeration, :status, :enter_listen, :terminate_listen
+  attr_accessible :client_id, :completed_p, :length, :message_id, :enter, :terminate, :hangup_enumeration, :status, :enter_listen, :terminate_listen, :bill_duration
   attr_accessible :message_calendar_id
   belongs_to :message
   belongs_to :client
