@@ -38,6 +38,7 @@ class ApplicationController < ActionController::Base
                   {:controller => 'monitor', :action => 'index'},
                   {:controller => 'monitor', :action => 'campaigns_status'},
                   {:controller => 'monitor', :action => 'channels_status'},
+                  {:controller => 'monitor', :action => 'cdr'},
                   {:controller => 'sessions', :action => 'new'},
                   {:controller => 'sessions', :action => 'destroy'}
                  ]

@@ -149,7 +149,7 @@ es:
     l:
       name: 'Nombre'
       description: 'Descripción'
-      call: 'Programada Para'
+      call: 'Programada Desde'
       repeat_interval: 'Repetir Intervalo'
       repeat_until: 'Repetir Hasta'
       call_end: 'Hasta'
