@@ -4,7 +4,7 @@ AutoMarcador, realize llamadas programadas a sus clientes.
 ==Requerimientos
  * Rails 3
  * Servidor freeswitch
- * Plivo conectado al servidor freeswitch
+ * Plivo/bit4bit conectado al servidor freeswitch
  * Acceso a puertos de Plivo.
  * Thin, para mejor rendimiento
 

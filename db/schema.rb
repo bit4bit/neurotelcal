@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121022190846) do
+ActiveRecord::Schema.define(:version => 20121101201541) do
 
   create_table "calendars", :force => true do |t|
     t.integer  "message_id"
@@ -172,6 +172,7 @@ ActiveRecord::Schema.define(:version => 20121022190846) do
     t.boolean  "end",                :default => false
     t.datetime "created_at",                            :null => false
     t.datetime "updated_at",                            :null => false
+    t.integer  "bill_duration",      :default => 0
   end
 
   add_index "plivo_calls", ["end", "plivo_id"], :name => "index_plivo_calls_on_end_and_plivo_id"

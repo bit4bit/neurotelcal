@@ -185,6 +185,7 @@ class PlivosController < ApplicationController
 
     #@todo mejorar esto un campo y listo
     plivocall.hangup_enumeration = params["HangupCause"] if params["HangupCause"]
+    plivocall.bill_duration = params["BillDuration"] if params["BillDuration"]
     plivocall.end = true
     plivocall.save
     logger.debug(params)

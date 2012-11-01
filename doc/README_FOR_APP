@@ -17,6 +17,7 @@ Aplicativo de software para el despacho de llamadas programadas. Puede ser utili
 
 =REQUERIMIENTOS
 ==Plivo
+ * Se pasa a la version de bit4bit, por el uso de la variable BillDuration
 ==Ruby
  * Rails >= 3.2.8
  * Ruby >= 1.9
