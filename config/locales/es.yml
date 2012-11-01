@@ -213,6 +213,7 @@ es:
       start: 'Inicia'
       end: 'Termina'
       duration_expected: 'Duracion Espereda'
+      bill_duration: 'Cobro Seg.'
     index:
       title: 'Reportes'
     export:

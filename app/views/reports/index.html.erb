@@ -27,7 +27,7 @@
     <th><%= I18n.t('report.l.terminate')%></th>
     <th><%= I18n.t('report.l.enter_listen')%></th>
     <th><%= I18n.t('report.l.terminate_listen')%></th>
-    <th><%= I18n.t('report.length')%></th>
+    <th><%= I18n.t('report.l.bill_duration')%></th>
     <th><%= I18n.t('report.l.status')%></th>
   </tr>
   <% @calls.each do |call| %>
@@ -47,7 +47,7 @@
     <td><%= call.terminate%></td>
     <td><%= call.enter_listen%></td>
     <td><%= call.terminate_listen%></td>
-    <td><%= call.length%></td>
+    <td><%= call.bill_duration%></td>
     <% if call.hangup_status %>
     <td><%= call.hangup_status%></td>
     <% else %>
