@@ -288,7 +288,7 @@ class Plivo < ActiveRecord::Base
       rexp = Regexp.new(srexp)
 
       if rexp =~ client.phonenumber
-        use_gateway = vars['gateway'].strip
+        use_gateway = vars['gateway'].strip unless vars['gateway'].nil?
         return use_gateway
       end
 
@@ -316,7 +316,7 @@ class Plivo < ActiveRecord::Base
       rexp = Regexp.new(srexp)
 
       if rexp =~ client.phonenumber
-        use_timeout = vars['timeout'].strip
+        use_timeout = vars['timeout'].strip unless vars['timeout'].nil?
         return use_timeout
       end
 
