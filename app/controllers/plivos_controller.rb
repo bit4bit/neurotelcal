@@ -253,8 +253,8 @@ class PlivosController < ApplicationController
   def docall_client
     @campaign = Campaign.find(session[:campaign_id])
     @client = Client.find(params[:id])
-    flash[:notice] = ''
-    flash[:error] = ''
+    flash[:notice] = '' unless flash[:notice].nil?
+    flash[:error] = '' unless flash[:notice].nil?
 
     if @client.calling?
       flash[:error] = 'Ya hay una en proceso'
@@ -270,6 +270,7 @@ class PlivosController < ApplicationController
       params[:message][:call] = Time.now
       params[:message][:call_end] = Time.now
       params[:message][:anonymous] = true
+      params[:message][:retries] = 1
       @message = Message.new(params[:message])
       @message.group_id = @client.group.id
       @message.save!

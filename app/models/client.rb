@@ -11,10 +11,6 @@ class Client < ActiveRecord::Base
   has_many :call
 
   validates :fullname, :group_id, :presence => true
-  #validates :phonenumber, :format => {
-  #  :with => /[0-9]+(,[0-9]+)*/,
-  #  :message => "Solo números y separados por coma para multiples numeros"
-  #}
 
   def calling?
     return Client.select('calling').where(:id => self.id).first.calling == true
@@ -45,6 +41,8 @@ class Client < ActiveRecord::Base
       self.priority += 200
     when 'ALLOTED_TIMEOUT'
       self.priority -= 100
+    when 'NO_ANSWER'
+      self.priority -= 200
     when 'USER_BUSY'
       self.priority -= 300
     when 'CALL_REJECTED'

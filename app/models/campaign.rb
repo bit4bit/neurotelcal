@@ -136,7 +136,6 @@ class Campaign < ActiveRecord::Base
     end
     #@todo agregar exepction
     if ncalls > 0
-      considera_contestada = PlivoCall::ANSWER_ENUMERATION
       
       #logger.debug("Grupo comparte mensajes?" + client.group.messages_share_clients.to_s )
       
