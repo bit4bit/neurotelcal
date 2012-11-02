@@ -14,15 +14,21 @@ class Client < ActiveRecord::Base
   validates :fullname, :group_id, :presence => true
 
   def calling?
-    return Client.select('calling').where(:id => self.id).first.calling == true
+    v = self.class.select('calling').where(:id => self.id).first.calling
+    self[:calling] = v
+    return v == true
   end
   
   def callable?
-    return Client.select('callable').where(:id => self.id).first.callable == true
+    v = self.class.select('callable').where(:id => self.id).first.callable
+    self[:callable] = v
+    return v == true
   end
   
   def error?
-    return Client.select('error').where(:id => self.id).first.error == true
+    v = self.class.select('error').where(:id => self.id).first.error
+    self[:error] = v
+    return v == true
   end
   
     

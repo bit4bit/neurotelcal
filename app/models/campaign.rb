@@ -122,19 +122,20 @@ class Campaign < ActiveRecord::Base
   #::message_calendar:: calendario de mensaje usado en caso de haber
   #::return:: boolean indicando si se pudo o no realizar la llamada
   def can_call_client?(client, message, message_calendar = nil)
-    client_fresh = Client.select('id, calling, callable, error, calls_faileds, last_call_at, priority').where(:id => client.id).first
-    #logger.debug('process: client %d calls_faileds %d' % [client_fresh.id, client_fresh.calls_faileds])
-    return false if  client_fresh.calling 
+    client.reload
+
+    #logger.debug('process: client %d calls_faileds %d' % [client.id, client.calls_faileds])
+    return false if  client.calling 
     #el cliente ya fue llamadao y no nay necesida de volverle a llamar
-    return false unless client_fresh.callable
+    return false unless client.callable
     #no hay que botar escape ni modo de ubicar el numero
-    return false if client_fresh.error
+    return false if client.error
     return true if message.anonymous?
 
     #se vuelve a marcar desde la ultima marcacion
-    if client_fresh.calls_faileds > message.retries
+    if client.calls_faileds > message.retries
       #logger.debug('process: client %d priority to seconds %d wait %d' % [client_fresh.id, client_fresh.priority_to_seconds_wait, (client_fresh.last_call_at + client_fresh.priority_to_seconds_wait) - Time.now])
-      if not (Time.now >= client_fresh.last_call_at + client_fresh.priority_to_seconds_wait)
+      if not (Time.now >= client.last_call_at + client.priority_to_seconds_wait)
         return false
       end
     end
