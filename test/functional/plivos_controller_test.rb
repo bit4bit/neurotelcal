@@ -64,7 +64,7 @@ class PlivosControllerTest < ActionController::TestCase
   
   test "answer client decir hola" do
     message = Message.new(:description => "Decir hola", :group_id => Group.all.first.id)
-    call = Call.new(:client_id => Client.all.first)
+    call = Call.new(:client_id => Client.all.first.id)
     assert call.save()
     plvc = PlivoCall.new(:uuid => 'testeo',  :step => 0, :data => message.description_to_call_sequence({}).to_yaml, :plivo_id => Plivo.all.first.id, :call_id => call.id)
     assert plvc.save()
@@ -80,7 +80,7 @@ class PlivosControllerTest < ActionController::TestCase
 
   test "answer client registrar digitos" do
     message = Message.new(:description => "Registrar digitos cantidad=1")
-    call = Call.new(:client_id => Client.all.first)
+    call = Call.new(:client_id => Client.all.first.id)
     assert call.save()
     plvc = PlivoCall.new(:uuid => 'testeo',  :step => 0, :data => message.description_to_call_sequence({}).to_yaml, :plivo_id => Plivo.all.first.id, :call_id => call.id)
     assert plvc.save()
@@ -88,14 +88,14 @@ class PlivosControllerTest < ActionController::TestCase
     post :answer_client, {:format => 'xml', :CallUUID => 'testeo', :AccountSID => plvc.id}
     builder = Builder::XmlMarkup.new(:indent => 2)
     builder.instruct!
-    xml = builder.Response { |b| b.GetDigits(:action=>"http://192.168.1.1:3000/plivos/testeo/get_digits_client", :retries => 1, :timeout => 5, :numDigits => 1, :validDigits => "0123456789*#"){}; b.Hangup}
+    xml = builder.Response { |b| b.GetDigits(:action=>"http://192.168.1.5:3000/plivos/testeo/get_digits_client", :retries => 1, :timeout => 5, :numDigits => 1, :validDigits => "0123456789*#"){}; b.Hangup}
     assert_equal xml, @response.body
 
   end
 
   test "answer client registrar/si" do
     message = Message.new(:description => "Registrar digitos cantidad=1\nSi = 3 / Decir el 3 | Decir ninguno")
-    call = Call.new(:client_id => Client.all.first)
+    call = Call.new(:client_id => Client.all.first.id)
     assert call.save()
     
     #se compara el si cumple = 3
@@ -131,7 +131,7 @@ class PlivosControllerTest < ActionController::TestCase
 
   test 'answer_client si anidado' do
     message = Message.new(:description => "Registrar digitos cantidad=1\nSi = 3 / Registrar digitos cantidad=1 > Si = 2 / Decir si 2 | Decir no 2  | Decir ninguno")
-    call = Call.new(:client_id => Client.all.first)
+    call = Call.new(:client_id => Client.all.first.id)
     assert call.save()
     
     sq = message.description_to_call_sequence({})
@@ -163,7 +163,7 @@ class PlivosControllerTest < ActionController::TestCase
 
   test "hangup" do
  message = Message.new(:description => "Decir hola", :group_id => Group.all.first.id)
-    call = Call.new(:client_id => Client.all.first)
+    call = Call.new(:client_id => Client.all.first.id)
     assert call.save()
     plvc = PlivoCall.new(:uuid => 'testeo',  :step => 0, :data => message.description_to_call_sequence({}).to_yaml, :plivo_id => Plivo.all.first.id, :call_id => call.id)
     assert plvc.save()

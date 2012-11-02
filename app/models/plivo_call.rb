@@ -44,18 +44,6 @@ class PlivoCall < ActiveRecord::Base
     return answer_list.include?(cause)
   end
   
-  #Verifica que si se ha realizado la llamado
-  #o bien se elimina informacion basura
-  #esta debe ser llamada un tiempo despues
-  #de haberse enviado la llamada a plivo
-  def verify
-    pc = PlivoCall.find(self.id)
-    if pc.hangup_enumeration.nil? and pc.status == 'calling'
-      pc.call.client.update_column(:calling, false)
-      PlivoCall.delete(self.id)
-      Call.delete(self.call_id)
-    end
-  end
-
+ 
 
 end

@@ -122,50 +122,23 @@ class Campaign < ActiveRecord::Base
   #::message_calendar:: calendario de mensaje usado en caso de haber
   #::return:: boolean indicando si se pudo o no realizar la llamada
   def can_call_client?(client, message, message_calendar = nil)
-    return false if  client.calling?
+    client_fresh = Client.select('id, calling, callable, error, calls_faileds, last_call_at, priority').where(:id => client.id).first
+    #logger.debug('process: client %d calls_faileds %d' % [client_fresh.id, client_fresh.calls_faileds])
+    return false if  client_fresh.calling 
     #el cliente ya fue llamadao y no nay necesida de volverle a llamar
-    return false unless client.callable?
+    return false unless client_fresh.callable
     #no hay que botar escape ni modo de ubicar el numero
-    return false if client.error?
+    return false if client_fresh.error
+    return true if message.anonymous?
 
-    called = false
-    if not message.anonymous and client.group.messages_share_clients
-      ncalls = Call.where(:message_id => client.group.id_messages_share_clients, :client_id => client.id).count
-    else
-      ncalls = Call.where(:message_id => message.id, :client_id => client.id).count
-    end
-    #@todo agregar exepction
-    if ncalls > 0
-      
-      #logger.debug("Grupo comparte mensajes?" + client.group.messages_share_clients.to_s )
-      
-      if not message.anonymous and client.group.messages_share_clients 
-        message_id = client.group.id_messages_share_clients
-      else
-        message_id = message.id
+    #se vuelve a marcar desde la ultima marcacion
+    if client_fresh.calls_faileds > message.retries
+      #logger.debug('process: client %d priority to seconds %d wait %d' % [client_fresh.id, client_fresh.priority_to_seconds_wait, (client_fresh.last_call_at + client_fresh.priority_to_seconds_wait) - Time.now])
+      if not (Time.now >= client_fresh.last_call_at + client_fresh.priority_to_seconds_wait)
+        return false
       end
-
-      #se vuelve a marcar desde la ultima marcacion
-      begin
-        calls_faileds = Call.where(:message_id => message_id, :client_id => client.id).where("hangup_enumeration NOT IN (%s)" % PlivoCall::ANSWER_ENUMERATION.map {|v| "'%s'" % v}.join(',')).count
-        #logger.debug('calls faileds %d for client %d' % [calls_faileds, client.id])
-        call_failed = Call.where(:message_id => message_id, :client_id => client.id).where("hangup_enumeration NOT IN (%s)" % PlivoCall::ANSWER_ENUMERATION.map {|v| "'%s'" % v}.join(',')).order('terminate').reverse_order.first if calls_faileds > 0
-
-        if calls_faileds >= message.retries
-          #logger.debug('client %d priority to seconds %d' % [client.id, client.priority_to_seconds_wait])
-          if not (Time.now >= Time.parse(call_failed.terminate.to_s) + client.priority_to_seconds_wait)
-            return false
-          else
-            #se actualiza prioridad a cliente para marcacion
-            client.update_priority_by_hangup_cause(call_failed.hangup_enumeration)
-          end
-        end
-        
-      rescue Exception => e
-        logger.error('Error seen calls faileds. %s' % e.message)
-      end
-      
     end
+
     
     return true
   end
@@ -226,10 +199,10 @@ class Campaign < ActiveRecord::Base
         id_groups_to_process << message.group.id
       end
     end
-
+    #no hay que estar corriendo
+    sleep 5
     if total_messages_today == 0
       logger.debug('process: nothing to process')
-      sleep 5
       return false
     end
 
@@ -251,6 +224,7 @@ class Campaign < ActiveRecord::Base
     
     wait_messages = []
     clients.all.each do |client_processing|
+      next unless client_processing.callable?
       next if client_processing.calling?
       next if client_processing.error?
 
@@ -392,18 +366,13 @@ class Campaign < ActiveRecord::Base
       next if Time.now < message_calendar.start or Time.now > message_calendar.stop
       next unless message_calendar.time_expected_for_call > 0
       next unless message_calendar.use_available_channels
-      #llamadas contestadas
+
       calls_answered = Call.answered_for_message(message.id).count
-      #logger.debug('extra_channels: calls_answered %d' % calls_answered)
 
-      #llamadas esperedas o bien los clientes que debe hacer el calendario
       calls_expected = message_calendar.max_clients
-      #logger.debug('extra_channels: calls_expected %d' % calls_expected)
 
-      #llamadas permitias desde plivo
       plivo_total_channels = active_channels
       plivo_using_channels = using_channels
-      #logger.debug('extra_channels: plivo_total_channels %d , plivo_using_channels %d' % [plivo_total_channels, plivo_using_channels])
 
       #cantidad de canales disponibles despues de los ya usados y los separados
       diff_mc_and_plivo = message_calendar_total_channels - plivo_using_channels
@@ -413,7 +382,6 @@ class Campaign < ActiveRecord::Base
         channels_availables = plivo_total_channels - plivo_using_channels
       end
 
-      #logger.debug('extra_channels: channels_availables %d' % channels_availables)
 
       #llamada restantes para limite
       calls_to_complete = calls_expected - calls_answered

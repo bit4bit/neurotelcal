@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121101214537) do
+ActiveRecord::Schema.define(:version => 20121102055258) do
 
   create_table "calendars", :force => true do |t|
     t.integer  "message_id"
@@ -81,13 +81,17 @@ ActiveRecord::Schema.define(:version => 20121101214537) do
     t.string   "phonenumber"
     t.integer  "campaign_id"
     t.integer  "group_id"
-    t.datetime "created_at",                     :null => false
-    t.datetime "updated_at",                     :null => false
-    t.integer  "priority",    :default => 0
-    t.boolean  "callable",    :default => true
-    t.boolean  "calling",     :default => false
-    t.boolean  "error",       :default => false
-    t.string   "error_msg",   :default => ""
+    t.datetime "created_at",                       :null => false
+    t.datetime "updated_at",                       :null => false
+    t.integer  "priority",      :default => 0
+    t.boolean  "callable",      :default => true
+    t.boolean  "calling",       :default => false
+    t.boolean  "error",         :default => false
+    t.string   "error_msg",     :default => ""
+    t.integer  "retries",       :default => 0
+    t.integer  "calls",         :default => 0
+    t.datetime "last_call_at"
+    t.integer  "calls_faileds", :default => 0
   end
 
   create_table "delayed_jobs", :force => true do |t|
@@ -147,7 +151,7 @@ ActiveRecord::Schema.define(:version => 20121101214537) do
     t.string   "name"
     t.text     "description"
     t.integer  "group_id"
-    t.boolean  "processed"
+    t.boolean  "processed",            :default => false
     t.datetime "call"
     t.datetime "call_end"
     t.boolean  "anonymous",            :default => false

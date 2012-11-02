@@ -122,7 +122,7 @@ class PlivosController < ApplicationController
     @call_sequence[@plivocall.step-1][:result] = params['Digits']
     @plivocall.data = @call_sequence.to_yaml
     unless @plivocall.save(:validate => false)
-      logger.error('plivos: fallo actualizar digitos de plivo call %d digito %s' % [@plivocall.id, params['Digits']])
+      logger.error('plivos: error fallo actualizar digitos de plivo call %d digito %s' % [@plivocall.id, params['Digits']])
     end
     
 
@@ -130,11 +130,11 @@ class PlivosController < ApplicationController
     @plivo = @plivocall.plivo
     #actualiza estado de llamada
     call = Call.find(@plivocall.call_id)
-    if call
-      call.enter_listen = Time.now
-      call.status = @plivocall.status
-      call.save
-    end
+    call.client.update_column(:calling, true)
+    call.enter_listen = Time.now
+    call.status = @plivocall.status
+    call.save
+
 
 
     respond_to do |format|
@@ -189,9 +189,10 @@ class PlivosController < ApplicationController
     plivocall.save
 
 
-    #se notifica que porfin se contesto
+    
 
     call = Call.find(plivocall.call_id)
+   
     call.terminate = Time.now
     call.completed_p = true
     call.data = plivocall.data
@@ -214,14 +215,26 @@ class PlivosController < ApplicationController
     call.bill_duration = plivocall.bill_duration
     call.save
 
-    call.client.update_column(:calling, false)
-    call.delay(:queue => 'neurotelcal').verify_call_to_client
-
+   
+    #se notifica que porfin se contesto
     #ya no es necesario el cliente por que se recibio estado que se queria
-    if PlivoCall::ANSWER_ENUMERATION.include?(call.hangup_enumeration) and not call.message.anonymous
+    if PlivoCall::ANSWER_ENUMERATION.include?(plivocall.hangup_enumeration) and not call.message.anonymous
       call.client.update_column(:callable, false)
+    else
+      call.client.increment!(:calls_faileds)
     end
-      
+
+    if PlivoCall::INVALID_ENUMERATION.include?(call.hangup_enumeration) and not call.message.anonymous
+      call.client.update_column(:error, true)
+      call.client.update_column(:error_msg, 'INVALID')
+    end
+
+    
+    #se actualiza prioridad a cliente para marcacion
+    call.client.update_column(:last_call_at, Time.now())
+    call.client.update_priority_by_hangup_cause(call.hangup_enumeration)
+    call.client.update_column(:calling, false)
+    call.client.increment!(:calls)
     #se da por sentado que no se necesita mas el plivo
 
     respond_to do |format|

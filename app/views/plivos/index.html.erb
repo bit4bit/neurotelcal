@@ -19,7 +19,7 @@
   <tr>
     <td><%= plivo.caller_name %></td>
     <td><%= plivo.api_url %></td>
-    <td><%= plivo.gateways %></td>
+    <td><%= simple_format(plivo.gateways) %></td>
     <td><%= plivo.campaign.name %></td>
     <td><%= plivo.status %></td>
     <td><%= link_to I18n.t('show'), plivo %></td>

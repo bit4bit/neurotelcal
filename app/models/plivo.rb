@@ -1,4 +1,8 @@
 # -*- coding: utf-8 -*-
+require 'net/http'
+require 'uri'
+
+
 class PlivoCannotCall < Exception
 end
 
@@ -27,6 +31,7 @@ class Plivo < ActiveRecord::Base
   validate :validate_dial_plan
 
   before_save :verificar_conexion
+  before_save :verificar_conexion_app
 
   #Realiza prueba de conexion
   #al servidor plivo
@@ -63,7 +68,31 @@ class Plivo < ActiveRecord::Base
     return true
   end
 
-  
+  #@todo no funciona
+  def verificar_conexion_app
+    #Siempre retorna timeout???
+    #desde terminal funciona pero desde aqui pailas
+    return true
+    begin
+      uri = URI.parse("%s" % self.app_url.strip)
+      r = Net::HTTP.get_response(uri)
+      
+      
+      if not r.body.include?("NeuroTelCal")
+        errorsrs.add(:app_url, "Invalido") 
+        return false
+      end
+    rescue Errno::ECONNREFUSED => e
+      errors.add(:app_url, "Conexion rechazada")
+      return false
+    rescue Exception => e
+      errors.add(:app_url, "Invalido %s" % e.message)
+      return false
+    end
+    
+    return true
+  end
+    
   
   #Encommila la cadena de los codecs
   def gateway_codecs_quote
@@ -74,6 +103,10 @@ class Plivo < ActiveRecord::Base
     return verificar_conexion ? "Conectado" : "Desconectado"
   end
 
+  def status_app
+    return verificar_conexion_app ? "Conectado" : "Desconectado"
+  end
+  
   #Canales en uso
   def using_channels
     PlivoCall.where(:end => false, :plivo_id => self.id).count()
@@ -158,6 +191,10 @@ class Plivo < ActiveRecord::Base
       call_params['GatewayTimeouts'] = message.hangup_on_ring
     end
     
+    client.update_column(:calling, true) 
+
+    
+      
     call = Call.new
     call.message_id = message.id
     call.client_id = client.id
@@ -187,7 +224,7 @@ class Plivo < ActiveRecord::Base
     plivocall.step = 0
     plivocall.save
     call_params['AccountSID'] = plivocall.id
-    client.update_column(:calling, true) 
+
     logger.debug(call_params)      
     
     #@todo ERROR OCURRE ERROR..SE ENVIA LA LLAMA Y PLIVO RESPONDE DEMASIADO RAPIDO
@@ -201,8 +238,6 @@ class Plivo < ActiveRecord::Base
     if result["Success"]
       plivocall.uuid = result["RequestUUID"]
       plivocall.save
-
-      plivocall.delay(:queue => 'plivocall', :run_at => 10.seconds.from_now).verify
       return result['RequestUUID']
     else
       logger.error(result)

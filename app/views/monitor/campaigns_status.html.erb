@@ -27,7 +27,6 @@
     <th><%= I18n.t('defaults.calls_today')%></th>
     <th><%= I18n.t('defaults.calls_answer_today')%></th>
     <th><%= I18n.t('defaults.calls_not_answer_today')%></th>
-    <th><%= I18n.t('defaults.probability_complete')%></th>
   </tr>
   <% @campaigns.each do |campaign| %>
   <tr>
@@ -41,7 +40,6 @@
     <td><%= campaign.total_calls_today%></td>
     <td><%= campaign.total_calls_answer_today%></td>
     <td><%= campaign.total_calls_not_answer_today%></td>
-    <td><%= campaign.percent_probability_to_complete%></td>
   </tr>
   <% end %>
 </table>

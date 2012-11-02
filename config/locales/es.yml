@@ -190,6 +190,7 @@ es:
       api_url: 'Api URL'
       gateways: 'Gateways'
       status: 'Estado'
+      status_app: 'Estado App'
       enable: 'Activo?'
       dial_plan: 'Plan de llamado'
       dial_plan_desc: 'Descripcion del plan'

@@ -3,7 +3,8 @@ class Client < ActiveRecord::Base
   attr_accessible :campaign_id, :fullname, :group_id, :phonenumber, :priority
   attr_accessible :priority #campo de su interno
   attr_accessible :callable #se puede llamar?
-  attr_accessible :calling, :error, :error_msg
+  attr_accessible :calling, :error, :error_msg, :calls, :last_call_at
+  attr_accessible :calls_faileds
   belongs_to :campaign
   belongs_to :group
 
