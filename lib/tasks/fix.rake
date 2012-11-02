@@ -1,4 +1,13 @@
 namespace :fix do
+  desc 'Fix new update using Plivo from Bit4bit'
+  task :billsec => :environment do
+    PlivoCall.all.each do |plivo_call|
+      cdr = Cdr.where(:uuid => plivo_call.uuid).first
+      plivo_call.update_column(:bill_duration, cdr.billsec)
+      plivo_call.call.update_column(:bill_duration, cdr.billsec)
+    end
+  end
+  
   desc 'Fix bug with plivo_calls.uuid and cdrs.uuid when not match. Bug 20 sep 2012'
   task :uuid => :environment do
     #Intentamos arreglar el error de almacenaje de los UUID
