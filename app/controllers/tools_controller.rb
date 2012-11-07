@@ -28,7 +28,7 @@ class ToolsController < ApplicationController
 
   #Get
   def index_archive
-    @archives = Archive.paginate(:page => params[:page], :order => "created_at DESC", :conditions => "processing = 0")
+    @archives = Archive.paginate(:page => params[:page], :order => "created_at DESC")
     respond_to do |format|
       format.html
     end
