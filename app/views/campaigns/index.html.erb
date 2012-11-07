@@ -27,8 +27,8 @@
       <%= link_to(I18n.t('campaign.l.END'), campaign_status_end_path(campaign), :method  => :put, :class => 'campaign-status campaign-status-end')%>
       <%= link_to(I18n.t('campaign.l.START'), campaign_status_start_path(campaign), :method => :put, :class => 'campaign-status campaign-status-start')%>
     </td>
-    <td><%= campaign.client_rest.count %></td>
-    <td><%= campaign.client.count%></td>
+    <td><%= campaign.client.count %></td>
+    <td><%= campaign.client_rest.count%></td>
     <td style="padding: 0; margin: 0;"><%= link_to I18n.t('show'), campaign %><br />      
     <%= link_to I18n.t('edit'), edit_campaign_path(campaign) %><br />
     <%= link_to I18n.t('destroy'), campaign, :confirm => I18n.t('are_you_sure'), :method => :delete %><br />

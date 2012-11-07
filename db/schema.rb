@@ -11,7 +11,17 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121102055258) do
+ActiveRecord::Schema.define(:version => 20121107012353) do
+
+  create_table "archives", :force => true do |t|
+    t.datetime "from_at"
+    t.datetime "to_at"
+    t.integer  "version"
+    t.datetime "created_at",                     :null => false
+    t.datetime "updated_at",                     :null => false
+    t.boolean  "processing",  :default => false
+    t.integer  "campaign_id"
+  end
 
   create_table "calendars", :force => true do |t|
     t.integer  "message_id"

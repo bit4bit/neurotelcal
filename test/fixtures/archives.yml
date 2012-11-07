@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  from_at: 2012-11-02 11:53:34
+  to_at: 2012-11-02 11:53:34
+  version: 1
+  name: MyString
+
+two:
+  from_at: 2012-11-02 11:53:34
+  to_at: 2012-11-02 11:53:34
+  version: 1
+  name: MyString

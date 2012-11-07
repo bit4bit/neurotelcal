@@ -4,7 +4,7 @@ require 'digest'
 class Resource < ActiveRecord::Base
   TYPES = ["audio", "documento"]
 
-  attr_accessible :campaign_id, :file, :name, :type_file
+  attr_accessible :campaign_id, :file, :name, :type_file, :created_at, :updated_at
 
   validates :name, :type_file, :file, :presence => true
   validates :name, :uniqueness => true

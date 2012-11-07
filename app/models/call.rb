@@ -1,8 +1,12 @@
 class Call < ActiveRecord::Base
   attr_accessible :client_id, :completed_p, :length, :message_id, :enter, :terminate, :hangup_enumeration, :status, :enter_listen, :terminate_listen, :bill_duration
+  attr_accessible :data, :digits, :created_at, :id, :updated_at, :client
   attr_accessible :message_calendar_id
+  attr_accessible :plivo_call
   belongs_to :message
   belongs_to :client
+  has_one :plivo_call
+
   scope :done_calls_message, lambda {|message_id| where(:message_id => message_id, :hangup_enumeration => PlivoCall::ANSWER_ENUMERATION)}
   scope :done_calls_message_client?, lambda {|message_id, client_id| where(:message_id => message_id, :client_id => client_id, :hangup_enumeration => PlivoCall::ANSWER_ENUMERATION)}
   scope :not_answered_for_message_client, lambda{|message_id, client_id| where(:message_id => message_id, :client_id => client_id).where("hangup_enumeration NOT IN(?)", PlivoCall::ANSWER_ENUMERATION)}

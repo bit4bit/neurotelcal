@@ -12,6 +12,9 @@ es:
       group: 'Grupo'
       message_calendar: 'Calendario de Mensaje'
     attributes:
+      archive:
+        from_at: 'Desde'
+        to_at: 'Hasta'
       entity:
         name: 'Nombre'
         slogan: 'Lema'
@@ -285,8 +288,14 @@ es:
     show:
       title: 'Mostrando Entidad'
   tools:
+    l:
+      from_at: 'Desde'
+      to_at: 'Hasta'
+      restore_archive: 'Restaurar'
     new_import_cdr:
       title: 'Importar CDRs FS'
+    new_archive:
+      title: "Archivar"
   monitor:
     index:
       title: 'Monitor'

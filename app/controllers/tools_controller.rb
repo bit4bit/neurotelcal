@@ -16,12 +16,86 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
+
 #Herramientas, o acciones utiles de neurotelcal:
 # * Importacion de CDRs desde sqlite del servider
 # * Importacion de CSV enviado
 class ToolsController < ApplicationController
 
   def index
+
+  end
+
+  #Get
+  def index_archive
+    @archives = Archive.paginate(:page => params[:page], :order => "created_at DESC", :conditions => "processing = 0")
+    respond_to do |format|
+      format.html
+    end
+  end
+  
+  #Get
+  def new_archive
+    @campaigns = Campaign.all.map {|u| [u.name, u.id] }
+    @archive = Archive.new
+    respond_to do |format|
+      format.html
+    end
+  end
+  
+  #Post
+  def create_archive
+    @campaigns = Campaign.all.map {|u| [u.name, u.id] }
+    @archive = Archive.new(params["archive"])
+    respond_to do |format|
+      if @archive.save
+        if not @archive.processing
+          Delayed::Job.enqueue ::ArchiveJob.new(@archive.id, :archive), :queue => 'archive'
+          format.html { redirect_to index_archive_tools_path, :notice => "Archivado correctamente."}
+          format.json { render :json => @archive, :status => :created, :location => index_archive_tools_path}
+        else
+          format.html { redirect_to index_archive_tools_path, :error => "Actualmente esta en proceso."}
+          format.json { render :json => @archive, :status => :created, :location => index_archive_tools_path}
+        end
+      else
+        format.html { render :action => "new_archive" }
+        format.json { render :json => @archive.errors, :status => :unprocessable_entity}
+      end
+    end
+  end
+  
+  #GET
+  def restore_archive
+    @archive = Archive.find(params[:tool_id])
+
+    respond_to do |format|
+      if not @archive.processing?
+        Delayed::Job.enqueue ::ArchiveJob.new(@archive.id, :restore), :queue => 'archive'
+        @archive.update_column(:processing, true)
+        format.html { redirect_to index_archive_tools_path, :notice => "Se ha iniciado restauracion."}
+        format.json { head :no_content }
+      else
+        format.html { redirect_to index_archive_tools_path, :error => "Actualmente esta en proceso."}
+        format.json { head :no_content }
+      end
+      
+    end
+    
+  end
+  
+  #DELETE
+  def destroy_archive
+    @archive = Archive.find(params[:tool_id])
+
+    if File.exists?(@archive.path)
+      File.unlink(@archive.path).delay
+    end
+    @archive.destroy
+    respond_to do |format|
+      format.html { redirect_to index_archive_tools_path, :notice => "Eliminado correctamente."}
+      format.json { head :no_content }
+    end
+    
   end
   
   #GET#
@@ -32,6 +106,7 @@ class ToolsController < ApplicationController
     
   end
   
+
   #POST
   def create_import_cdr
     #Importar desde un archivo sqlite local

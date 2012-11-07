@@ -15,6 +15,7 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 %>
-<%= link_to I18n.t('tools.new_import_cdr.title'), new_import_cdr_tools_path, :class => 'button'%>
-<%= link_to I18n.t('tools.new_archive.title'), index_archive_tools_path, :class => 'button'%>
+<%= link_to I18n.t('back'), index_archive_tools_path, :class =>"button negative"%>
+<br />
+<%= render 'form_archive' %>
 

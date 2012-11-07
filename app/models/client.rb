@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 class Client < ActiveRecord::Base
   attr_accessible :campaign_id, :fullname, :group_id, :phonenumber, :priority
+  attr_accessible :created_at, :id, :retries, :updated_at, :campaign
+  attr_accessible :updated_at
   attr_accessible :priority #campo de su interno
   attr_accessible :callable #se puede llamar?
   attr_accessible :calling, :error, :error_msg, :calls, :last_call_at
