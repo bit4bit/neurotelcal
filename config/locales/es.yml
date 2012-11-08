@@ -80,6 +80,7 @@ es:
     monitor: 'Monitor'
     quit: 'Salir'
   defaults:
+    id: 'ID'
     name: 'Nombre'
     group: 'Grupo'
     campaign: 'Campaña'

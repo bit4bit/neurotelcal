@@ -20,7 +20,7 @@ class CampaignsController < ApplicationController
   # GET /campaigns
   # GET /campaigns.json
   def index
-    @campaigns = Campaign.paginate :page => params[:page]
+    @campaigns = Campaign.paginate :page => params[:page], :order => "created_at DESC"
 
     respond_to do |format|
       format.html # index.html.erb

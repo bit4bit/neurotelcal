@@ -8,6 +8,7 @@
 
 <table>
   <tr>
+    <th><%= I18n.t('defaults.id')%></th>
     <th><%= I18n.t('campaign.l.entity')%></th>
     <th><%= I18n.t('campaign.l.name')%></th>
     <th><%= I18n.t('campaign.l.status')%></th>
@@ -20,6 +21,7 @@
 
 <% @campaigns.each do |campaign| %>
   <tr>
+    <td><%= campaign.id%></td>
     <td><%= campaign.entity.name%></td>
     <td><%= campaign.name %></td>
     <td><%= I18n.t('campaign.l.'+Campaign::STATUS.invert[campaign.status].to_s) %><br />
