@@ -34,7 +34,7 @@
   <% @archives.each do |archive| %>
   <tr>
     <td><%= archive.created_at%></td>
-    <td><%= archive.campaign.name%></td>
+    <td><%= archive.name%></td>
     <td>
       <% if not archive.processing %>
       <%= link_to I18n.t('destroy'), tool_destroy_archive_path(archive.id), :method => :delete, :confirm => "Esta seguro(a), no podra volver a recuperar la informacion?"%>

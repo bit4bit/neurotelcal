@@ -1,5 +1,5 @@
 class Archive < ActiveRecord::Base
-  attr_accessible :version, :processing, :campaign_id
+  attr_accessible :version, :processing, :campaign_id, :name
   
   belongs_to :campaign
  # before_save :verify_need_calls

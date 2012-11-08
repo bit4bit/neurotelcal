@@ -47,6 +47,7 @@ class ToolsController < ApplicationController
   def create_archive
     @campaigns = Campaign.all.map {|u| [u.name, u.id] }
     @archive = Archive.new(params["archive"])
+    @archive.name = Campaign.find(@archive.campaign_id).name
     respond_to do |format|
       if @archive.save
         if not @archive.processing

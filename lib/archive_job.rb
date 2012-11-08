@@ -58,6 +58,7 @@ class ArchiveJob < Struct.new(:archive_id, :action)
       end
     end
     archive.update_column(:processing, false)
+    begin  File.unlink(archive.path) ;rescue; end
     archive.destroy
   end
   
@@ -96,7 +97,8 @@ class ArchiveJob < Struct.new(:archive_id, :action)
     archive.campaign.group.each{|g| g.message.each{|m| m.message_calendar.delete_all}; g.message.delete_all}
     archive.campaign.group.delete_all
     archive.campaign.resource.delete_all
-    
+    archive.campaign.plivo.delete_all
+    archive.campaign.destroy
     calls.each do |call|
       call.plivo_call.destroy
       call.destroy
