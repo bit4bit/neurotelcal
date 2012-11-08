@@ -17,7 +17,7 @@ class Campaign < ActiveRecord::Base
   validates :name, :presence => true, :uniqueness => true
   validates :entity_id, :presence => true
   has_many :resource, :dependent => :delete_all
-  has_many :client, :dependent => :delete_all, :conditions => 'callable = 1', :order => 'priority DESC, callable DESC, created_at ASC'
+
   has_many :plivo, :dependent => :delete_all, :conditions => 'enable = 1'
   has_many :group, :dependent => :delete_all
   belongs_to :entity
@@ -41,9 +41,13 @@ class Campaign < ActiveRecord::Base
 
   #Clientes restantes
   def client_rest
-    Client.where(:group_id => self.group.all)
+    Client.where(:group_id => self.group.all, :callable => true, :order => 'priority DESC, callable DESC, created_at ASC')
   end
 
+  def client
+    Client.where(:group_id => self.group.all, :order => 'priority DESC, callable DESC, created_at ASC')
+  end
+  
   def active_channels
     return plivo.first.channels if plivo.all.size == 1
     return plivo.all.size > 1 ? plivo.all.inject{|s,v| s.channels + v.channels} : 0
@@ -213,7 +217,7 @@ class Campaign < ActiveRecord::Base
       id_groups_to_process.uniq!
       clients = Client.where(:group_id => id_groups_to_process, :callable => true).order('priority DESC, callable DESC, created_at ASC')
     else
-      clients = client
+      clients = client_rest
     end
 
     #end if not have client
