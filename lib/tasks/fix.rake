@@ -3,8 +3,11 @@ namespace :fix do
   task :billsec => :environment do
     PlivoCall.all.each do |plivo_call|
       cdr = Cdr.where(:uuid => plivo_call.uuid).first
-      plivo_call.update_column(:bill_duration, cdr.billsec)
-      plivo_call.call.update_column(:bill_duration, cdr.billsec)
+      if cdr
+        plivo_call.update_column(:bill_duration, cdr.billsec)
+        plivo_call.call.update_column(:bill_duration, cdr.billsec)
+      end
+      
     end
   end
   
