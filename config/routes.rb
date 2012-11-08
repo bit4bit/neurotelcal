@@ -9,8 +9,15 @@ Neurotelcal::Application.routes.draw do
   resources :tools do 
     get 'new_import_cdr', :on => :collection
     post 'create_import_cdr', :on => :collection
+
+    get 'restore_archive'
+    get 'index_archive', :on => :collection
+    get 'new_archive', :on => :collection
+    post 'create_archive', :on => :collection
+    delete "destroy_archive"
   end
-  
+
+
   resources :entities
 
   resources :message_calendars

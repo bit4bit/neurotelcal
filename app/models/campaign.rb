@@ -14,11 +14,11 @@ class Campaign < ActiveRecord::Base
 
   attr_accessible :description, :name, :status, :entity_id
   attr_accessible :notes
+  attr_accessible :created_at, :pause, :start, :stop, :updated_at
   validates :name, :presence => true, :uniqueness => true
   validates :entity_id, :presence => true
   has_many :resource, :dependent => :delete_all
-
-  has_many :plivo, :conditions => 'enable = 1'
+  has_many :plivo, :dependent => :delete_all, :conditions => 'enable = 1'
   has_many :group, :dependent => :delete_all
   belongs_to :entity
   
@@ -212,13 +212,20 @@ class Campaign < ActiveRecord::Base
     end
 
     logger.debug('process: total messages today %d' % total_messages_today)
-    
-    if id_groups_to_process.size > 0
-      id_groups_to_process.uniq!
-      clients = Client.where(:group_id => id_groups_to_process, :callable => true).order('priority DESC, callable DESC, created_at ASC')
-    else
-      clients = client_rest
+
+    if id_groups_to_process.size < 1
+      logger.debug('process: not id groups to process')
+      return false
     end
+    
+    id_groups_to_process.uniq!
+    clients = Client.where(:group_id => id_groups_to_process, :callable => true).order('priority DESC, callable DESC, created_at ASC')
+
+    
+    logger.debug('process: total messages today %d' % total_messages_today)
+
+    id_groups_to_process.uniq!
+    clients = Client.where(:group_id => id_groups_to_process, :callable => true).order('priority DESC, callable DESC, created_at ASC')
 
     #end if not have client
     if clients.empty?
