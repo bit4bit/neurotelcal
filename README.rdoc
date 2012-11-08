@@ -1,7 +1,13 @@
 =NeuroTelCal
-AutoMarcador, realize llamadas programadas a sus clientes.
+AutoMarcador, realize llamadas programadas con sencillo lenguaje para el IVR.
+Nota: este software aun esta en desarrollo puede contener cambios drasticos.
 
 == Cambios criticos
+=== 7 nov 2012
+ * Ahora el IVR tiene un nuevo lenguaje.
+ * Es necesario Plivo/bit4bit por BillDuration.
+ * Tiene *Archivador* para almacenar en XML las campanas ya no necesarios..permite restauracion.
+
 === 1 nov 2012
  * El modelo *PlivoCall* pasa a mantener solo las llamadas que se estan realizando.
  * El modelo *Call* asume responsabilidad de almacenar el resultado el IVR, e historico de llamadas.
@@ -17,9 +23,9 @@ AutoMarcador, realize llamadas programadas a sus clientes.
 Este software esta bajo licencia GPLv3 o superior
 
 ==Usted Puede
- * Gestionar Campañas
+ * Gestionar Campañas/Encuestar
  * Programar llamadas
- * Obtener reporte de llamadas realizadas
+ * Obtener reporte de llamadas realizadas(aun en construccion)
 
 
 Mirar documentacion en doc/README_FOR_APP para mas informacion
