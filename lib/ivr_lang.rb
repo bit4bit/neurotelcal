@@ -66,7 +66,7 @@ module IVRLang
     end
     
     rule :command_list do
-      (space.maybe >> (decir_command | reproducir_command | si_command | registrar_command | colgar_command)).repeat
+      (space.maybe >> (decir_command | reproducir_command | si_command | registrar_command | colgar_command | reproducirlocal_command)).repeat
     end
     
     rule :no_command do
@@ -154,7 +154,8 @@ module IVRLang
         
         {:audio => path}
       }
-      rule(:command => "ReproducirLocal", :arg => simple(:x)){
+      
+      rule(:command => "ReproducirLocal", :arg => simple(:x), :options => subtree(:l)){
         {:audio_local => x.to_s.gsub(/^\"|\"$/,"")}
       }
       
