@@ -66,7 +66,7 @@ module IVRLang
     end
     
     rule :command_list do
-      (space.maybe >> (decir_command | reproducir_command | si_command | registrar_command | colgar_command | reproducirlocal_command)).repeat
+      (space.maybe >> (decir_command | reproducirlocal_command | reproducir_command | si_command | registrar_command | colgar_command)).repeat
     end
     
     rule :no_command do
@@ -146,19 +146,24 @@ module IVRLang
       
       rule(:command => "Reproducir", :arg => simple(:x), :options => subtree(:l)){
         path = nil
-        print "Campaign id: %s" % campaign_id.to_s      
+        uri = x.to_s.gsub(/^\"|\"$/,"")
         if campaign_id
           r = Resource.where(:campaign_id => campaign_id, :type_file => 'audio', :name => x.to_s.gsub(/^\"|\"$/,"")).first
           path = r.file if r
         end
         
-        {:audio => path}
+        unless path
+          path = uri
+          {:audio_local => path}
+        else
+          {:audio => path}
+        end
+        
       }
-      
-      rule(:command => "ReproducirLocal", :arg => simple(:x), :options => subtree(:l)){
+
+      rule(:command => "ReproducirLocal" ,:arg => simple(:x), :options => subtree(:o)){
         {:audio_local => x.to_s.gsub(/^\"|\"$/,"")}
       }
-      
       rule(:command => "Decir", :arg => simple(:x), :options => subtree(:o)){
         v = {:decir => x.to_s.gsub(/^\"|\"$/,"")}
       }
