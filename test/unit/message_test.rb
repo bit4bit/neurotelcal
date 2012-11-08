@@ -45,6 +45,8 @@ Decir "finaliza"')
     assert_equal [{:register => :digits, :options => {:retries => 1, :timeout => 5, :numDigits=> 99, :validDigits => '0123456789*#'}}], IVRLang.call_sequence("Registrar digitos")
     assert_equal [{:register => :digits, :options => {:retries => 5, :timeout => 5, :numDigits=> 99, :validDigits => '0123456789*#'}}], IVRLang.call_sequence("Registrar digitos intentos=5")
     assert_equal [{:register => :digits, :options => {:retries => 5, :timeout => 10, :numDigits=> 3, :validDigits => '12'}}], IVRLang.call_sequence("Registrar digitos intentos=5 duracion=10 cantidad=3 digitosValidos=\"12\"")
+
+    assert_equal [{:audio_local => "/tmp/prueba.ogg"}], IVRLang.call_sequence('ReproducirLocal "/tmp/prueba.ogg"')
   end
   
   test "description to call sequence IVRLang Resource Campaign" do
