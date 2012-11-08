@@ -59,6 +59,10 @@ Decir "finaliza"')
     assert r.save(:validate => false)
     print "Campaign used %d\n" % cid
     assert_equal [{:audio => "teste.wav"}], IVRLang.call_sequence('Reproducir "prueba"', cid)
+    assert_equal [{:audio => "teste.wav"},{:audio_local => "prueba.ogg"}], IVRLang.call_sequence('Reproducir "prueba"
+ReproducirLocal "prueba.ogg"', cid)
+    assert_equal [{:audio => "teste.wav"},{:audio_local => "prueba.ogg"}], IVRLang.call_sequence('Reproducir "prueba"
+Reproducir "prueba.ogg"', cid)
   end
   
   test "description to call sequence option with '" do
