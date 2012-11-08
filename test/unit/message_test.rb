@@ -47,6 +47,11 @@ Decir "finaliza"')
     assert_equal [{:register => :digits, :options => {:retries => 5, :timeout => 10, :numDigits=> 3, :validDigits => '12'}}], IVRLang.call_sequence("Registrar digitos intentos=5 duracion=10 cantidad=3 digitosValidos=\"12\"")
 
     assert_equal [{:audio_local => "/tmp/prueba.ogg"}], IVRLang.call_sequence('ReproducirLocal "/tmp/prueba.ogg"')
+    assert_equal [{:si => {:condicion => '=', :valor => '3'}, :sicontinuar => [{:decir => 'mera'}], :nocontinuar => [{:audio_local => '/tmp/salida.ogg'}]}], IVRLang.call_sequence('Si =3
+Decir "mera"
+No
+ReproducirLocal "/tmp/salida.ogg"
+Fin')
   end
   
   test "description to call sequence IVRLang Resource Campaign" do

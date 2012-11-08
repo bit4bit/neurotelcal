@@ -66,7 +66,7 @@ module IVRLang
     end
     
     rule :command_list do
-      (space.maybe >> (decir_command | reproducirlocal_command | reproducir_command | si_command | registrar_command | colgar_command)).repeat
+      (space.maybe >> (si_command | decir_command | reproducirlocal_command | reproducir_command  | registrar_command | colgar_command)).repeat
     end
     
     rule :no_command do
@@ -87,13 +87,13 @@ module IVRLang
     rule :decir_command do
       str("Decir").as(:command) >> space >> string.as(:arg) >> command_options.maybe >> line_end.maybe
     end
-    
-    rule :reproducir_command do
-      str("Reproducir").as(:command) >> space.maybe >> string.as(:arg) >> command_options.maybe >> line_end.maybe
-    end
-    
+   
     rule :reproducirlocal_command do
-      str("ReproducirLocal").as(:command) >> space.maybe >> string.as(:arg) >> command_options.maybe >> line_end.maybe
+      str("ReproducirLocal").as(:command) >> space >> string.as(:arg) >> command_options.maybe >> line_end.maybe
+    end 
+
+    rule :reproducir_command do
+      str("Reproducir").as(:command) >> space >> string.as(:arg) >> command_options.maybe >> line_end.maybe
     end
     
     rule :registrar_command do
