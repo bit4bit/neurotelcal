@@ -1,7 +1,7 @@
 namespace :fix do
   desc 'Fix new update using Plivo from Bit4bit'
   task :billsec => :environment do
-    PlivoCall.all.each do |plivo_call|
+    PlivoCall.find_each do |plivo_call|
       cdr = Cdr.where(:uuid => plivo_call.uuid).first
       if cdr
         plivo_call.update_column(:bill_duration, cdr.billsec)
