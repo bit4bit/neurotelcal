@@ -33,8 +33,8 @@
     <td><%= campaign.entity.name%></td>
     <td><%= campaign.name%></td>
     <td><%= I18n.t('campaign.l.'+Campaign::STATUS.invert[campaign.status].to_s) %></td>
-    <td><%= campaign.client_rest.count%></td>
     <td><%= campaign.client.count%></td>
+    <td><%= campaign.client_rest.count%></td>
     <td><%= campaign.active_channels%></td>
     <td><%= campaign.using_channels%></td>
     <td><%= campaign.total_calls_today%></td>
