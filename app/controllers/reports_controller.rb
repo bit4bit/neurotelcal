@@ -76,12 +76,14 @@ class ReportsController < ApplicationController
     @campaign = Campaign.where(:id => params[:campaign]).first #@todo esto es caspa
 
     csv_string = CSV.generate do |csv|
-      csv << ["Entidad", "Campaña", "Client", "Mensaje", "Programado para", "LLamada Realizada", "Llamada Contestada", "Duracion Proceso", "Duración Cobro", "Estado Final"]
+      csv << ["Entidad", "Campaña", "Client", "Mensaje", "Programado para", "LLamada Realizada", "Llamada Contestada", "Duracion Proceso", "Duración Cobro", "Estado Final", "Respuestas"]
       Call.where("created_at >= ? and created_at <= ? ", date_start, date_end).where(:message_id => @campaign.group.map{|g| g.id_messages_share_clients}.flatten).find_each  do |call|
         #no se exporta los mensajes anonimos
         next if call.message.nil?
         begin
-          csv << [call.message.group.campaign.entity.name, call.message.group.campaign.name, call.client.fullname, call.message.name, call.message.call, call.enter, call.enter_listen, call.length, call.bill_duration,  call.hangup_status]
+          row = [call.message.group.campaign.entity.name, call.message.group.campaign.name, call.client.fullname, call.message.name, call.message.call, call.enter, call.enter_listen, call.length, call.bill_duration,  call.hangup_status]
+          ivr_to_cdr(YAML.load(call.plivo_call.data)).each{|r| row << r.join("=")}
+          csv << row
         rescue
         end
       end
@@ -89,24 +91,30 @@ class ReportsController < ApplicationController
     end
     
     send_data csv_string, :type => "text/csv", :filename => "export_#{session.object_id}.csv", :disposition => 'attachment'
+  end
+
+  private
+  def ivr_to_cdr(data)
+    answers = []
+    trans = Parslet::Transform.new do
+      rule(:register => simple(:x), :options => subtree(:o), :result => simple(:r)){
+        title = ""
+        if o[:id]
+          title = o[:id]
+        elsif o[:audio]
+          title = o[:audio]
+        elsif o[:decir]
+          title = o[:decir]
+        end
+
+        answers << [title, r]
+        nil
+      }
+    end
+    
+    trans.apply(data)
+    logger.debug(answers)
+    return answers
   end
   
-  def export_csv_index
-    csv_string = CSV.generate do |csv|
-      csv << ["Entidad", "Campaña", "Client", "Mensaje", "Programado para", "LLamada inicio", "Llamada finalizo", "Contesta inicio", "Contesta finalizo", "Duración", "Estado Final"]
-      Call.find_each  do |call|
-        #no se exporta los mensajes anonimos
-        next if call.message.nil?
-        begin
-          csv << [call.message.group.campaign.entity.name, call.message.group.campaign.name, call.client.fullname, call.message.name, call.message.call, call.enter, call.terminate, call.enter_listen, call.terminate_listen, call.length,  call.hangup_status]
-        rescue
-        end
-        
-      end
-
-    end
-    
-    send_data csv_string, :type => "text/csv", :filename => "export_#{session.object_id}.csv", :disposition => 'attachment'
-  end
-
 end

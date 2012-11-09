@@ -111,8 +111,6 @@ module IVRLang
     root :expression
   end
   
-  
-
 
   def self.call_sequence(str, campaign_id = nil)
     p = IVRLang::Parser.new
@@ -139,6 +137,8 @@ module IVRLang
             options[:audio] = option[:value].to_s.gsub(/^\"|\"$/,"")
           when 'decir'
             options[:decir] = option[:value].to_s.gsub(/^\"|\"$/,"")
+          else
+            options[option[:name].to_s.gsub(/^\"|\"$/,"")] = option[:value].to_s.gsub(/^\"|\"$/,"")
           end
         }
         {:register => :digits, :options => options}
