@@ -25,6 +25,8 @@ Neurotelcal::Application.routes.draw do
   get "page/about"
 
   get "reports/index"
+  get "reports/new_export_csv"
+  post "reports/export_csv"
   get "reports/export_csv_index"
   post "reports/export_with_format"
   get "reports/export"

@@ -65,6 +65,32 @@ class ReportsController < ApplicationController
     
   end
   
+  def new_export_csv
+    @campaigns = Campaign.all
+  end
+  
+  def export_csv
+    @campaigns = Campaign.all
+    date_start = DateTime.civil(params[:start][:year].to_i, params[:start][:month].to_i,params[:start][:day].to_i, params[:start][:hour].to_i,params[:start][:minute].to_i)
+    date_end = DateTime.civil(params[:end][:year].to_i, params[:end][:month].to_i,params[:end][:day].to_i, params[:end][:hour].to_i,params[:end][:minute].to_i)
+    @campaign = Campaign.where(:id => params[:campaign]).first #@todo esto es caspa
+
+    csv_string = CSV.generate do |csv|
+      csv << ["Entidad", "Campaña", "Client", "Mensaje", "Programado para", "LLamada Realizada", "Llamada Contestada", "Duracion Proceso", "Duración Cobro", "Estado Final"]
+      Call.where("created_at >= ? and created_at <= ? ", date_start, date_end).where(:message_id => @campaign.group.map{|g| g.id_messages_share_clients}.flatten).find_each  do |call|
+        #no se exporta los mensajes anonimos
+        next if call.message.nil?
+        begin
+          csv << [call.message.group.campaign.entity.name, call.message.group.campaign.name, call.client.fullname, call.message.name, call.message.call, call.enter, call.enter_listen, call.length, call.bill_duration,  call.hangup_status]
+        rescue
+        end
+      end
+
+    end
+    
+    send_data csv_string, :type => "text/csv", :filename => "export_#{session.object_id}.csv", :disposition => 'attachment'
+  end
+  
   def export_csv_index
     csv_string = CSV.generate do |csv|
       csv << ["Entidad", "Campaña", "Client", "Mensaje", "Programado para", "LLamada inicio", "Llamada finalizo", "Contesta inicio", "Contesta finalizo", "Duración", "Estado Final"]
