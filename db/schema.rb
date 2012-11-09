@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121107012353) do
+ActiveRecord::Schema.define(:version => 20121109024047) do
 
   create_table "archives", :force => true do |t|
     t.datetime "from_at"
@@ -21,6 +21,7 @@ ActiveRecord::Schema.define(:version => 20121107012353) do
     t.datetime "updated_at",                     :null => false
     t.boolean  "processing",  :default => false
     t.integer  "campaign_id"
+    t.string   "name"
   end
 
   create_table "calendars", :force => true do |t|
@@ -103,6 +104,8 @@ ActiveRecord::Schema.define(:version => 20121107012353) do
     t.datetime "last_call_at"
     t.integer  "calls_faileds", :default => 0
   end
+
+  add_index "clients", ["group_id"], :name => "index_clients_on_group_id"
 
   create_table "delayed_jobs", :force => true do |t|
     t.integer  "priority",   :default => 0
