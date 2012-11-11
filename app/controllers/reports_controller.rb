@@ -82,7 +82,10 @@ class ReportsController < ApplicationController
         next if call.message.nil?
         begin
           row = [call.message.group.campaign.entity.name, call.message.group.campaign.name, call.client.fullname, call.message.name, call.message.call, call.enter, call.enter_listen, call.length, call.bill_duration,  call.hangup_status]
-          ivr_to_cdr(YAML.load(call.plivo_call.data)).each{|r| row << r.join("=")}
+          ivrr = ivr_to_cdr(YAML.load(call.plivo_call.data))
+          row << ivrr.join("|") if ivrr
+
+            
           csv << row
         rescue
         end
@@ -107,7 +110,7 @@ class ReportsController < ApplicationController
           title = o[:decir]
         end
 
-        answers << [title, r]
+        answers << "%s=%s" % [title, r]
         nil
       }
     end
