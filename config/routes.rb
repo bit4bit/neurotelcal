@@ -1,4 +1,6 @@
 Neurotelcal::Application.routes.draw do
+  get "notification/index"
+
   get "monitor/index"
 
   get "monitor/campaigns_status"

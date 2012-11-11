@@ -14,7 +14,7 @@
 #
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
+require 'fileutils'
 
 
 #Herramientas, o acciones utiles de neurotelcal:
@@ -111,18 +111,24 @@ class ToolsController < ApplicationController
   #POST
   def create_import_cdr
     #Importar desde un archivo sqlite local
+   
+    
 
     #@todo distinguir entre CSV y SQLITE
     if not params[:path_cdr].nil? and File.exists?(params[:path_cdr])
       CdrSqlite.establish_connection(:adapter => 'sqlite3', :database => params[:path_cdr])
-      flash[:notice] = 'Find ' + CdrSqlite.all.count.to_s + ' registers on sqlite3 db'
-      tinit = Time.now
-      total_imported = import_to_cdr(CdrSqlite.all)
-      duration = Time.now - tinit
-      flash[:notice] += ".Imported " + total_imported.to_s + ' with duration of ' + duration.to_s + ' secs.'
+      flash[:notice] = 'Find ' + CdrSqlite.all.count.to_s + ' registers on sqlite3 db. Sending to queue.'
+      Delayed::Job.enqueue ::CDRJob.new(params[:path_cdr], session[:user_id]), :queue => 'cdr_import'
     end
     
     if not params[:upload_cdr].nil?
+      lock = File.basename(params[:path_cdr])
+      if lock_import_cdr?(lock)
+        return respond_to do |format|
+          format.html { render :action => 'new_import_cdr', :notice => 'Ya se esta importando este archivo' }
+        end
+      end
+
       header = params[:upload_cdr].tempfile.read(15); params[:upload_cdr].tempfile.seek(0);
       #prueba si sqlite
       cdrs = nil
@@ -149,8 +155,25 @@ class ToolsController < ApplicationController
   end
   
   private
-  def import_to_cdr(cdrs)
+  def lock_import_cdr?(id)
+    return File.exists?(Rails.root.join('tmp', 'lock_cdr_%s' % id))
+  end
+
+  def lock_import_cdr(id)
+    File.open(Rails.root.join('tmp', 'lock_cdr_%s' % id), 'w'){|f| f.write({}.to_yaml)}
+  end
+
+  def unlock_import_cdr(id)
+    File.unlink(Rails.root.join('tmp', 'lock_cdr_%s' % id))
+  end
+
+  def import_to_cdr(cdrs, lock = nil)
     total_imported = 0
+    lock_import_cdr(lock)
+
+    Notifaction.save({:user_id => session[:user_id],
+                       :msg => 'Importando CDR con un total de %d registros.' % cdrs.count,
+                       :type => 'notice'})
     Cdr.transaction do
       cdrs.each do |cdrFS|
         next if Cdr.where(:uuid => cdrFS.uuid).exists?
@@ -170,9 +193,14 @@ class ToolsController < ApplicationController
                       :account_code => cdrFS.account_code
                       )
         cdr.save()
+        data_import_cdr(lock, "count", total_imported)
         total_imported += 1
       end
     end
+    unlock_import_cdr(lock)
+    Notifaction.save({:user_id => session[:user_id],
+                       :msg => 'Importado CDR con un total de %d registros.' % total_imported,
+                       :type => 'notice'})
     return total_imported
   end
   

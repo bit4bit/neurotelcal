@@ -77,6 +77,7 @@ es:
     admin: 'Administración'
     tools: 'Herramientas'
     about: 'Acerca de'
+    notifications: 'Notificaciones'
     monitor: 'Monitor'
     quit: 'Salir'
   defaults:
@@ -300,3 +301,8 @@ es:
   monitor:
     index:
       title: 'Monitor'
+  notification:
+    l:
+      msg: 'Mensajes'
+    index:
+      title: 'Notificaciones'

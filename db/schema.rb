@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121109024047) do
+ActiveRecord::Schema.define(:version => 20121111151122) do
 
   create_table "archives", :force => true do |t|
     t.datetime "from_at"
@@ -181,6 +181,14 @@ ActiveRecord::Schema.define(:version => 20121109024047) do
   end
 
   add_index "messages", ["group_id"], :name => "index_messages_on_group_id"
+
+  create_table "notifications", :force => true do |t|
+    t.integer  "user_id"
+    t.text     "msg"
+    t.string   "type_msg"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
 
   create_table "plivo_calls", :force => true do |t|
     t.integer  "plivo_id"

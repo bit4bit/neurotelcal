@@ -1,0 +1,13 @@
+<h1><%= I18n.t('notification.index.title')%></h1>
+
+<table>
+  <tr>
+    <th><%= I18n.t('notification.l.msg')%></th>
+  </tr>
+  <% @notifications.each do |n| %>
+  <tr>
+    <td><span class="cdr-<%= n.type_msg%>"><%= n.msg%></span></td>
+  </tr>
+  <% end %>
+</table>
+<%= will_paginate @notifications%>
