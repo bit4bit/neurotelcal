@@ -17,6 +17,9 @@ require 'ivr_lang'
 
 #tercerxs
 require 'extensions'
+require 'tempfile'
+require 'zlib'
+require 'csv'
 
 # Initialize the rails application
 Neurotelcal::Application.initialize!

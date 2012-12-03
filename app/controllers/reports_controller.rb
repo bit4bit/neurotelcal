@@ -74,9 +74,10 @@ class ReportsController < ApplicationController
     date_start = DateTime.civil(params[:start][:year].to_i, params[:start][:month].to_i,params[:start][:day].to_i, params[:start][:hour].to_i,params[:start][:minute].to_i)
     date_end = DateTime.civil(params[:end][:year].to_i, params[:end][:month].to_i,params[:end][:day].to_i, params[:end][:hour].to_i,params[:end][:minute].to_i)
     @campaign = Campaign.where(:id => params[:campaign]).first #@todo esto es caspa
-
-    csv_string = CSV.generate do |csv|
-      csv << ["Entidad", "Campaña", "Client", "Mensaje", "Programado para", "LLamada Realizada", "Llamada Contestada", "Duracion Proceso", "Duración Cobro", "Estado Final", "Respuestas"]
+    tmpfile = Tempfile.new('neurotelcalexportcsv')
+    csv_string = Zlib::GzipWriter.open(tmpfile) do |gz|
+      
+      gz << ["Entidad", "Campaña", "Client", "Mensaje", "Programado para", "LLamada Realizada", "Llamada Contestada", "Duracion Proceso", "Duración Cobro", "Estado Final", "Respuestas"].to_csv
       Call.where("created_at >= ? and created_at <= ? ", date_start, date_end).where(:message_id => @campaign.group.map{|g| g.id_messages_share_clients}.flatten).find_each  do |call|
         #no se exporta los mensajes anonimos
         next if call.message.nil?
@@ -86,14 +87,15 @@ class ReportsController < ApplicationController
           row << ivrr.join("|") if ivrr
 
             
-          csv << row
+          gz << row.to_csv
         rescue
         end
       end
 
     end
     
-    send_data csv_string, :type => "text/csv", :filename => "export_#{session.object_id}.csv", :disposition => 'attachment'
+    send_file tmpfile.path,  :filename => "export_#{session.object_id}.csv.gz"
+    begin tmpfile.unlink ;rescue; end
   end
 
   private
