@@ -4,7 +4,9 @@
 
 <table>
   <tr>
-    <th>Name</th>
+    <th><%= I18n.t('group.l.name')%></th>
+    <th><%= I18n.t('defaults.clients')%></th>
+    <th><%= I18n.t('message_calendar.l.calls_completed')%></th>
     <th></th>
     <th></th>
     <th></th>
@@ -13,12 +15,16 @@
 <% @groups.each do |group| %>
   <tr>
     <td><%= group.name %></td>
-    <td><%= link_to I18n.t('show'), group %></td>
-    <td><%= link_to I18n.t('edit'), edit_group_path(group) %></td>
-    <td><%= link_to I18n.t('destroy'), group, :confirm => I18n.t('are_you_sure'), :method => :delete %></td>
+    <td><%= group.client.count %></td>
+    <td><%= group.total_calls %></td>
     <td>
       <%= link_to I18n.t('defaults.messages'), messages_path(:group_id => group)%>
     </td>
+    <td><%= link_to I18n.t('show'), group %></td>
+    <td><%= link_to I18n.t('edit'), edit_group_path(group) %><br />
+<%= link_to I18n.t('destroy'), group, :confirm => I18n.t('are_you_sure'), :method => :delete %></td>
+   
+    
   </tr>
 <% end %>
 </table>

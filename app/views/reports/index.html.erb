@@ -1,4 +1,5 @@
-<%= link_to I18n.t('report.export.title'), reports_export_path(), :class => 'button' %>
+<%= link_to I18n.t('report.export_csv'), reports_new_export_csv_path ,:class => 'button' %>
+<!-- <%= link_to I18n.t('report.export.title'), reports_export_path(), :class => 'button' %> -->
 <%= stylesheet_link_tag params[:controller]%>
 <h1><%= I18n.t('report.index.title')%></h1>
 <h3>General</h3>
@@ -14,7 +15,7 @@
 </table>
 <hr/>
 <h3>Detallado</h3>
-<%= link_to I18n.t('report.export_csv'), reports_new_export_csv_path%>
+
 <table>
   <tr>
     <th><%= I18n.t('defaults.entity')%></th>

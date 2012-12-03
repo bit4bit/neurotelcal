@@ -14,5 +14,9 @@ class Group < ActiveRecord::Base
     message.all.map {|m| return true if m.time_to_process? and m.time_to_process_calendar?}
     return false
   end
+
+  def total_calls
+    client.where(:callable => false).count
+  end
   
 end

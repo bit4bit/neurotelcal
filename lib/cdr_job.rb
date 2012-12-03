@@ -44,7 +44,8 @@ class CDRJob < Struct.new(:file, :user_id)
                       )
         cdr.save()
         total_imported += 1
-        if ( ((total_imported * 100) / total) % 10 < 3)
+        percent = ((total_imported * 100) / total)
+        if ( percent % 20 == 0 or percent % 40 == 0 or percent % 80 == 0)
           Notification.new({:user_id => self.user_id,
                               :msg => 'Porcentaje %d hasta ahora importado de %d registros.' % [((total_imported * 100) / total), total_imported],
                               :type_msg => 'notice'}).save(:validate => false)
