@@ -90,6 +90,7 @@ es:
     resources: 'Recursos'
     clients: 'Clientes'
     clients_rest: 'Clientes Falt.'
+    clients_answer: 'Clientes Contes.'
     messages: 'Mensajes'
     description: 'descripcion'
     call: 'Llamar'
