@@ -16,21 +16,23 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #Demonio de monitor del aplicativo
-
-require File.expand_path(File.join(File.dirname(__FILE__), '..', 'config', 'environment'))
-require 'net/smtp'
-
+require File.expand_path('../../config/environment', __FILE__)
 require 'daemons'
-require 'monapp'
-require 'campaign_monitor'
-
-TICK_MONITOR = 600 #cada diez minutos
+require 'tmpdir'
+TICK_MONITOR = 10 #cada diez minutos
 
 
 Daemons.run_proc('monitor', :backtrace => true, :log_dir => Rails.root.join('log'), :dir_mode => :normal, :log_output => false, :dir => Rails.root.join('tmp')) do
+  Rails.application.require_environment!
+  ActiveRecord::Base.establish_connection
+
+  require 'net/smtp'
+  require 'monapp'
+  require 'campaign_monitor'
 
   loop {
-    begin	
+    begin
+	
       Rails.logger = Logger.new(Rails.root.join('log', 'campaign_monitor.log'), 3, 5*1024*1024)
       monapp_run
       Rails.logger.debug('TICK..')
@@ -40,8 +42,3 @@ Daemons.run_proc('monitor', :backtrace => true, :log_dir => Rails.root.join('log
     end
   }
 end
-
-  
-
-
-

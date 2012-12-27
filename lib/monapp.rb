@@ -64,7 +64,8 @@ module MonAPP
           @problems.each{|k,f| @problem = k;  
           Rails.logger.debug('seeing -> %s' % k)
             instance_eval(@setups[k]) unless @setups[k].nil?
-            instance_eval(&f)}    
+            break if instance_eval(&f) == true #termina de buscar problemas si retorna verdadero
+          }    
         end
         
       rescue MonAPP::Assertion => e #Hay que solucionar el problema
