@@ -20,7 +20,10 @@
 monapp_case "campaigns" do
   setup do
     @messages_processing = {}
+    @campaigns = []
+    @campaigns_end = []
     Campaign.all.each do |campaign|
+      @campaigns << campaign.id
       id_messages = []
       campaign.group.all.each do |group|
         next unless group.need_process_messages?
@@ -28,41 +31,36 @@ monapp_case "campaigns" do
       end
       id_messages.flatten!
       @messages_processing[campaign.id] = id_messages unless id_messages.empty?
+      if campaign.end?
+        @campaigns_end << campaign.id
+      end
+      
     end
-
   end
-  
-  problem "be calling if there are messages on time" do
-    @messages_processing.each do |campaign_id, messages|
+
+  problem "be calling if campaign stop and have work to do" do
+    @campaigns.each do |campaign_id|
+      campaign = Campaign.find_by_id(campaign_id)
       @campaign_id = campaign_id
-      assert Call.in_process_for_message(messages).count > 0, 'Campaign %d not is calling' % campaign_id
+      assert campaign.end? == false, 'Campaign %d not is calling and have messages to process' % campaign_id
     end
   end
   
-  solution "be calling if there are messages on time" do
-    @campaign_be_calling = [] if @campaign_be_calling.nil?
+  solution "be calling if campaign stop and have work to do" do
+    notify "Init campaign #{@campaign_id}"
+    campaign = Campaign.find_by_id(@campaign_id)
+    break unless campaign.end?
 
-    if @campaign_be_calling.include?(@campaign_id)
-      notify "We trying restarting but not work", :fatal
-      return try_problem('dont know')
-    end
-    
-    @campaign_be_calling << @campaign_id
-
-    notify "Restarting campaign #{campaign.id}"
-    campaign = Campaign.find(@campaign_id)
+    notify "Force stop campaign"
     Campaign.transaction do
       campaign.update_column(:status, Campaign::STATUS['END'])
-    end
-    
-    sleep 20
-    Campaign.transaction do
+      sleep 20
+      notify "Starting again campaign"
       campaign.update_column(:status, Campaign::STATUS['START'])
     end
     
+    notify "Enqueue campaign again and running"
     Delayed::Job.enqueue ::CampaignJob.new(campaign.id), :queue => campaign.id
-
-    sleep 10
   end
 
   #No hay clientes
