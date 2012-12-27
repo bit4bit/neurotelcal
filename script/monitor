@@ -19,7 +19,7 @@
 require File.expand_path('../../config/environment', __FILE__)
 require 'daemons'
 require 'tmpdir'
-TICK_MONITOR = 10 #cada diez minutos
+TICK_MONITOR = 600 #cada diez minutos
 
 
 Daemons.run_proc('monitor', :backtrace => true, :log_dir => Rails.root.join('log'), :dir_mode => :normal, :log_output => false, :dir => Rails.root.join('tmp')) do
