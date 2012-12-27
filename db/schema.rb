@@ -14,14 +14,12 @@
 ActiveRecord::Schema.define(:version => 20121111151122) do
 
   create_table "archives", :force => true do |t|
-    t.datetime "from_at"
-    t.datetime "to_at"
     t.integer  "version"
+    t.string   "name"
     t.datetime "created_at",                     :null => false
     t.datetime "updated_at",                     :null => false
     t.boolean  "processing",  :default => false
     t.integer  "campaign_id"
-    t.string   "name"
   end
 
   create_table "calendars", :force => true do |t|
@@ -51,10 +49,13 @@ ActiveRecord::Schema.define(:version => 20121111151122) do
     t.text     "data"
   end
 
+  add_index "calls", ["client_id", "hangup_enumeration"], :name => "client_id"
   add_index "calls", ["client_id", "hangup_enumeration"], :name => "index_calls_on_client_id_and_hangup_enumeration"
   add_index "calls", ["message_calendar_id", "hangup_enumeration"], :name => "index_calls_on_message_calendar_id_and_hangup_enumeration"
+  add_index "calls", ["message_calendar_id", "hangup_enumeration"], :name => "message_calendar_id"
   add_index "calls", ["message_id", "client_id"], :name => "index_calls_on_message_id_and_client_id"
   add_index "calls", ["terminate"], :name => "index_calls_on_terminate"
+  add_index "calls", ["terminate"], :name => "terminate"
 
   create_table "campaigns", :force => true do |t|
     t.string   "name"
@@ -99,7 +100,6 @@ ActiveRecord::Schema.define(:version => 20121111151122) do
     t.boolean  "calling",       :default => false
     t.boolean  "error",         :default => false
     t.string   "error_msg",     :default => ""
-    t.integer  "retries",       :default => 0
     t.integer  "calls",         :default => 0
     t.datetime "last_call_at"
     t.integer  "calls_faileds", :default => 0
@@ -159,6 +159,7 @@ ActiveRecord::Schema.define(:version => 20121111151122) do
   end
 
   add_index "message_calendars", ["message_id"], :name => "index_message_calendars_on_message_id"
+  add_index "message_calendars", ["message_id"], :name => "message_id"
 
   create_table "messages", :force => true do |t|
     t.string   "name"
@@ -205,6 +206,7 @@ ActiveRecord::Schema.define(:version => 20121111151122) do
     t.integer  "bill_duration",      :default => 0
   end
 
+  add_index "plivo_calls", ["end", "plivo_id"], :name => "end"
   add_index "plivo_calls", ["end", "plivo_id"], :name => "index_plivo_calls_on_end_and_plivo_id"
   add_index "plivo_calls", ["end"], :name => "index_plivo_calls_on_end"
   add_index "plivo_calls", ["uuid"], :name => "index_plivo_calls_on_uuid"
