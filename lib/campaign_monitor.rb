@@ -42,7 +42,11 @@ monapp_case "campaigns" do
     @campaigns.each do |campaign_id|
       campaign = Campaign.find_by_id(campaign_id)
       @campaign_id = campaign_id
-      assert campaign.end? == false, 'Campaign %d not is calling and have messages to process' % campaign_id
+      campaign.group.all.each do |group|
+        if group.need_process_messages?
+          assert campaign.end? == false, 'Campaign %d not is calling and have messages to process' % campaign_id
+        end
+      end
     end
   end
   
