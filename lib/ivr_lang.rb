@@ -66,7 +66,7 @@ module IVRLang
     end
     
     rule :command_list do
-      (space.maybe >> (si_command | decir_command | reproducirlocal_command | reproducir_command  | registrar_command | colgar_command)).repeat
+      (space.maybe >> (si_command | decir_command | contactar_command | reproducirlocal_command | reproducir_command  | registrar_command | colgar_command)).repeat
     end
     
     rule :no_command do
@@ -83,6 +83,9 @@ module IVRLang
       (space >> match("[a-zA-Z0-9]").repeat(1).as(:name) >> match("[=]") >> (integer | string).as(:value)).repeat.as(:options)
     end
     
+    rule :contactar_command do
+      str("Contactar").as(:command) >> space >> string.as(:arg) >> command_options.maybe >> line_end.maybe
+    end
     
     rule :decir_command do
       str("Decir").as(:command) >> space >> string.as(:arg) >> command_options.maybe >> line_end.maybe
@@ -167,7 +170,28 @@ module IVRLang
       rule(:command => "Decir", :arg => simple(:x), :options => subtree(:o)){
         v = {:decir => x.to_s.gsub(/^\"|\"$/,"")}
       }
-      
+
+      rule(:command => "Contactar", :arg => simple(:x), :options => subtree(:o)){
+        v = {:contactar => x.to_s.gsub(/^\"|\"$/,""), :codecs => "", :digitar => "", :duracion => "", :intentos => ""}
+        o.each{|option|
+          option_value = option[:value].to_s.gsub(/^\"|\"$/,"")
+          case option[:name].to_s
+          when "pasarela"
+            v[:pasarela] = option_value
+          when "codec"
+            v[:codec] = option_value
+          when "digitar" #envia digito
+            v[:digitar] = option_value
+          when "duracion"
+            v[:duracion] = option_value.to_i
+          when "intentos"
+            v[:intentos] = option_value.to_i
+            #@todo sendOnPreanswer??
+          end
+        }
+        v
+      }
+
       rule(:command => "Colgar", :options => subtree(:o)) {
         v = {:colgar => true, :razon => '', :segundos => 0}
         o.each{|option|

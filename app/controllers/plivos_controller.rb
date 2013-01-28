@@ -108,7 +108,29 @@ class PlivosController < ApplicationController
     end
   end
 
+  #Actualiza sequencia de llamada
+  def continue_sequence_client
+    @plivocall = PlivoCall.where(:id => params["AccountSID"]).first
+    @call_sequence = @plivocall.call_sequence
+    if @plivocall.step > 1
+      @plivocall.step -= 1
+      @plivocall.save(:validate => false)
+    end
+    
 
+    @plivo = @plivocall.plivo
+    #actualiza estado de llamada
+    call = Call.find(@plivocall.call_id)
+    call.client.update_column(:calling, true)
+    call.enter_listen = Time.now
+    call.status = @plivocall.status
+    call.save
+
+    respond_to do |format|
+      format.xml { render 'answer_client' }
+    end    
+  end
+  
   def get_digits_client
     logger.debug('get_digits')
     logger.debug(params)

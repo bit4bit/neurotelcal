@@ -55,6 +55,10 @@ module PlivosHelper
       xml.Play step[:audio_local]
     elsif step[:decir]
       xml.Speak step[:decir]
+    elsif step[:contactar]
+      xml.Dial :action => @plivo.app_url.to_s + continue_sequence_client_plivo_path(@plivocall.uuid) do 
+        xml.Number step[:contactar], :gateways => step[:pasarela], :gatewayCodecs => step[:codec], :sendDigits => step[:digitar], :gatewayTimeouts => step[:duracion], :gatewayRetries => step[:intentos]
+      end
     elsif step[:register]
       case step[:register]
       when :digits
