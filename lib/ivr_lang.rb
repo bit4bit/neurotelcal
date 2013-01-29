@@ -172,7 +172,7 @@ module IVRLang
       }
 
       rule(:command => "Contactar", :arg => simple(:x), :options => subtree(:o)){
-        v = {:contactar => x.to_s.gsub(/^\"|\"$/,""), :codecs => "", :digitar => "", :duracion => "", :intentos => ""}
+        v = {:contactar => x.to_s.gsub(/^\"|\"$/,""), :codecs => "", :digitar => "", :duracion => "", :intentos => "0"}
         o.each{|option|
           option_value = option[:value].to_s.gsub(/^\"|\"$/,"")
           case option[:name].to_s

@@ -112,12 +112,6 @@ class PlivosController < ApplicationController
   def continue_sequence_client
     @plivocall = PlivoCall.where(:id => params["AccountSID"]).first
     @call_sequence = @plivocall.call_sequence
-    if @plivocall.step > 1
-      @plivocall.step -= 1
-      @plivocall.save(:validate => false)
-    end
-    
-
     @plivo = @plivocall.plivo
     #actualiza estado de llamada
     call = Call.find(@plivocall.call_id)
@@ -138,10 +132,11 @@ class PlivosController < ApplicationController
     #@plivocall = PlivoCall.where(:uuid => params["id"]).first
     @plivocall = PlivoCall.where(:id => params["AccountSID"]).first
     @call_sequence = @plivocall.call_sequence
-    
     @plivocall.status = params['CallStatus']
     #almacena resultado de esta peticion
     @call_sequence[@plivocall.step-1][:result] = params['Digits']
+
+    
     @plivocall.data = @call_sequence.to_yaml
     unless @plivocall.save(:validate => false)
       logger.error('plivos: error fallo actualizar digitos de plivo call %d digito %s' % [@plivocall.id, params['Digits']])
