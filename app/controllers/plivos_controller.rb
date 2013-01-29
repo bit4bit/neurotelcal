@@ -108,7 +108,23 @@ class PlivosController < ApplicationController
     end
   end
 
+  #Actualiza sequencia de llamada
+  def continue_sequence_client
+    @plivocall = PlivoCall.where(:id => params["AccountSID"]).first
+    @call_sequence = @plivocall.call_sequence
+    @plivo = @plivocall.plivo
+    #actualiza estado de llamada
+    call = Call.find(@plivocall.call_id)
+    call.client.update_column(:calling, true)
+    call.enter_listen = Time.now
+    call.status = @plivocall.status
+    call.save
 
+    respond_to do |format|
+      format.xml { render 'answer_client' }
+    end    
+  end
+  
   def get_digits_client
     logger.debug('get_digits')
     logger.debug(params)
@@ -116,10 +132,11 @@ class PlivosController < ApplicationController
     #@plivocall = PlivoCall.where(:uuid => params["id"]).first
     @plivocall = PlivoCall.where(:id => params["AccountSID"]).first
     @call_sequence = @plivocall.call_sequence
-    
     @plivocall.status = params['CallStatus']
     #almacena resultado de esta peticion
     @call_sequence[@plivocall.step-1][:result] = params['Digits']
+
+    
     @plivocall.data = @call_sequence.to_yaml
     unless @plivocall.save(:validate => false)
       logger.error('plivos: error fallo actualizar digitos de plivo call %d digito %s' % [@plivocall.id, params['Digits']])

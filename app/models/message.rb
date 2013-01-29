@@ -66,7 +66,8 @@ class Message < ActiveRecord::Base
              'Decir',
              'Registrar',
              'Si', #toma el resultado de lo ultimo evaluado
-             'Colgar'
+             'Colgar',
+             'Contactar'
             ]
 
     words = line.split
