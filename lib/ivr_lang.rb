@@ -215,6 +215,8 @@ module IVRLang
     transform.apply(p.parse(str))
   end
   
+  #Utilidades para el Helper de plivo
+  #en el procesamiento de las llamadas
   module Helper
 
     #
