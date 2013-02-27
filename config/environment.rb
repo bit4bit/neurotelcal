@@ -10,7 +10,7 @@ require 'ronela_lenguaje'
 require 'campaign_job'
 require 'archive_job'
 require 'cdr_job'
-
+require 'mailer_job'
 #IVR LANG
 require 'ivr_lang'
 

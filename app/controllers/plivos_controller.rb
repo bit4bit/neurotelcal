@@ -325,7 +325,8 @@ class PlivosController < ApplicationController
       params[:message][:retries] = 1
       @message = Message.new(params[:message])
       @message.group_id = @client.group.id
-      @message.save!
+      @message.save(:validate => false)
+      @message.reload
       @campaign.call_client!(@client, @message)
     rescue PlivoCannotCall => e
       flash[:notice] = 'No hay canales disponibles'

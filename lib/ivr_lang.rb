@@ -72,7 +72,7 @@ module IVRLang
     end
     
     rule :command_list do
-      (space.maybe >> (si_command | decir_command | contactar_command | reproducirlocal_command | reproducir_command  | registrar_command | colgar_command)).repeat
+      (space.maybe >> (si_command | decir_command | correoe_command | contactar_command | reproducirlocal_command | reproducir_command  | registrar_command | colgar_command)).repeat
     end
     
     rule :no_command do
@@ -87,6 +87,10 @@ module IVRLang
     
     rule :command_options do
       (space >> match("[a-zA-Z0-9]").repeat(1).as(:name) >> match("[=]") >> (integer | string).as(:value)).repeat.as(:options)
+    end
+
+    rule :correoe_command do
+      str("EnviarCorreoe").as(:command) >> space >> string.as(:arg) >> command_options.maybe >> line_end.maybe
     end
     
     rule :contactar_command do
@@ -175,6 +179,19 @@ module IVRLang
       }
       rule(:command => "Decir", :arg => simple(:x), :options => subtree(:o)){
         v = {:decir => x.to_s.gsub(/^\"|\"$/,"")}
+      }
+
+      rule(:command => "EnviarCorreoe", :arg => simple(:x), :options => subtree(:o)){
+        v = {:correoe => x.to_s.gsub(/^\"|\"$/,"")}
+        o.each{|option|
+          option_value = option[:value].to_s.gsub(/^\"|\"$/,"")
+          case option[:name].to_s
+          when "plantilla" #nombre de recurso
+            r = Resource.where(:campaign_id => campaign_id, :type_file => 'correoe', :name => option_value).first
+            v[:plantilla] = r.file
+          end
+        }
+        v
       }
 
       rule(:command => "Contactar", :arg => simple(:x), :options => subtree(:o)){
@@ -278,6 +295,12 @@ module IVRLang
         xml.Play step[:audio_local]
       elsif step[:decir]
         xml.Speak step[:decir]
+      elsif step[:correoe]
+        #@todo este proceso no deberia ir aqui..pero entonces donde?
+        #envia correo-e
+        Delayed::Job.enqueue ::MailerJob.new(step[:correoe], File.read(Rails.root.join(step[:plantilla])), @plivocall.id), :queue => 'correoe'
+
+        xml.Wait :length => 1
       elsif step[:contactar]
         xml.Dial :action => @plivo.app_url.to_s + continue_sequence_client_plivo_path(@plivocall.uuid), :callbackUrl => @plivo.app_url.to_s + contact_client_plivo_path(@plivocall.id) do 
           xml.Number step[:contactar], :gateways => step[:pasarela], :gatewayCodecs => step[:codec], :sendDigits => step[:digitar], :gatewayTimeouts => step[:duracion], :gatewayRetries => step[:intentos]
