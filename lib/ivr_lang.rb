@@ -236,7 +236,7 @@ module IVRLang
         begin
           case step[:si][:condicion]
           when "="
-            vr = true if step[:si][:valor].to_s == last_step[:result].to_s
+            vr = true if step[:si][:valor].to_s.gsub(/^\"|\"$/,"").strip() == last_step[:result].to_s.gsub(/^\"|\"$/,"").strip()
           end
         rescue
         end
@@ -279,7 +279,7 @@ module IVRLang
       elsif step[:decir]
         xml.Speak step[:decir]
       elsif step[:contactar]
-        xml.Dial :action => @plivo.app_url.to_s + continue_sequence_client_plivo_path(@plivocall.uuid) do 
+        xml.Dial :action => @plivo.app_url.to_s + continue_sequence_client_plivo_path(@plivocall.uuid), :callbackUrl => @plivo.app_url.to_s + contact_client_plivo_path(@plivocall.id) do 
           xml.Number step[:contactar], :gateways => step[:pasarela], :gatewayCodecs => step[:codec], :sendDigits => step[:digitar], :gatewayTimeouts => step[:duracion], :gatewayRetries => step[:intentos]
         end
         return false

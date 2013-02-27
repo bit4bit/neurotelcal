@@ -51,7 +51,9 @@ Neurotelcal::Application.routes.draw do
       post 'ringing_client', :defaults => { :format => 'xml' }
       post 'get_digits_client', :defaults => { :format => 'xml' }
       post 'continue_sequence_client', :defaults => { :format =>  'xml' }
+      post 'contact_client', :defaults => { :format => 'xml' }
     end
+
     #post 'get_digits_client/:id' => 'plivos#get_digits_client', :defaults => { :format => 'xml' }, :on => :collection
     post 'hangup_client', :defaults => { :format => 'xml' }, :on => :collection
     post 'answer_client', :defaults => { :format => 'xml' }, :on => :collection

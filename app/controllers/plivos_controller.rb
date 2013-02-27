@@ -108,8 +108,30 @@ class PlivosController < ApplicationController
     end
   end
 
+  #actualiza cuando se contacta el cliente
+  #se espera id => de plivo call
+  def contact_client
+    logger.debug('contact_client')
+    logger.debug(params)
+
+    #@todo esto es una aberracion pero funciona..
+    #se almacena estado de cuelgue de la llamada
+    if params['DialBLegHangupCause']
+      @plivocall = PlivoCall.find(params['id'])
+      @call_sequence = @plivocall.call_sequence
+      @call_sequence[@plivocall.step-1][:result] = params['DialBLegHangupCause']
+      @plivocall.data = @call_sequence.to_yaml
+      unless @plivocall.save(:validate => false)
+        logger.error('plivos: error fallo actualizar digitos de plivo call %d digito %s' % [@plivocall.id, params['Digits']])
+      end
+    end
+    
+  end
+  
   #Actualiza sequencia de llamada
   def continue_sequence_client
+    logger.debug('continue_sequence_client')
+    logger.debug(params)
     @plivocall = PlivoCall.where(:id => params["AccountSID"]).first
     @call_sequence = @plivocall.call_sequence
     @plivo = @plivocall.plivo
