@@ -57,6 +57,7 @@ GEM
       thor (~> 0.14)
     json (1.7.5)
     libv8 (3.3.10.4)
+    liquid (2.4.1)
     mail (2.4.4)
       i18n (>= 0.4.0)
       mime-types (~> 1.16)
@@ -131,6 +132,7 @@ DEPENDENCIES
   foreverb
   jquery-rails
   json
+  liquid
   mysql2
   parslet
   rails (= 3.2.3)

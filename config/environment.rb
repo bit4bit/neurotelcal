@@ -21,5 +21,7 @@ require 'tempfile'
 require 'zlib'
 require 'csv'
 
+require 'liquid'
+
 # Initialize the rails application
 Neurotelcal::Application.initialize!
