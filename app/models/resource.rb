@@ -2,7 +2,7 @@
 require 'digest'
 
 class Resource < ActiveRecord::Base
-  TYPES = ["audio", "documento"]
+  TYPES = ["audio", "documento", "correoe"]
 
   attr_accessible :campaign_id, :file, :name, :type_file, :created_at, :updated_at
 
@@ -58,7 +58,12 @@ class Resource < ActiveRecord::Base
       #ni audio/x-wav, audio/ogg
       mime_audio = ['audio/mpeg', 'audio/wav', 'audio/x-wav']
       mime_document = ['application/pdf', 'application/vnd.oasis.opendocument.text']
+      mime_correoe = ['text/plain']
       case type_file
+      when 'correoe'
+        unless mime_correoe.include? file.content_type
+          errors.add(:file, 'Archivo no compatible con correo-e')
+        end
       when 'audio'
         unless mime_audio.include? file.content_type
           errors.add(:file, 'Archivo no compatible con tipo audio')

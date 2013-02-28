@@ -19,7 +19,13 @@
 #con este ya podemos tener:
 #Si =3
 # Decir "Hola"
+#No
+# Decir "haa"
 #Fin
+#el cual es cambiado a un hash,ej:
+# {:si => {:condicion => '=', :valor => 3}, :sicontinuar => {:decir => "hola", :nocontinuar => {:decir => "haa"}}}
+#y luego cambiado a el fortmo XML de plivo.
+
 
 module IVRLang
   
@@ -66,7 +72,7 @@ module IVRLang
     end
     
     rule :command_list do
-      (space.maybe >> (si_command | decir_command | contactar_command | reproducirlocal_command | reproducir_command  | registrar_command | colgar_command)).repeat
+      (space.maybe >> (si_command | decir_command | correoe_command | contactar_command | reproducirlocal_command | reproducir_command  | registrar_command | colgar_command)).repeat
     end
     
     rule :no_command do
@@ -81,6 +87,10 @@ module IVRLang
     
     rule :command_options do
       (space >> match("[a-zA-Z0-9]").repeat(1).as(:name) >> match("[=]") >> (integer | string).as(:value)).repeat.as(:options)
+    end
+
+    rule :correoe_command do
+      str("EnviarCorreoe").as(:command) >> space >> string.as(:arg) >> command_options.maybe >> line_end.maybe
     end
     
     rule :contactar_command do
@@ -171,6 +181,19 @@ module IVRLang
         v = {:decir => x.to_s.gsub(/^\"|\"$/,"")}
       }
 
+      rule(:command => "EnviarCorreoe", :arg => simple(:x), :options => subtree(:o)){
+        v = {:correoe => x.to_s.gsub(/^\"|\"$/,"")}
+        o.each{|option|
+          option_value = option[:value].to_s.gsub(/^\"|\"$/,"")
+          case option[:name].to_s
+          when "plantilla" #nombre de recurso
+            r = Resource.where(:campaign_id => campaign_id, :type_file => 'correoe', :name => option_value).first
+            v[:plantilla] = r.file
+          end
+        }
+        v
+      }
+
       rule(:command => "Contactar", :arg => simple(:x), :options => subtree(:o)){
         v = {:contactar => x.to_s.gsub(/^\"|\"$/,""), :codecs => "", :digitar => "", :duracion => "", :intentos => "0"}
         o.each{|option|
@@ -207,6 +230,98 @@ module IVRLang
       }
     end
     transform.apply(p.parse(str))
+  end
+  
+  #Utilidades para el Helper de plivo
+  #en el procesamiento de las llamadas
+  module Helper
+
+    #
+    #Procesa el mensajes tomado en pasos
+    #para ir creando dinamicamente el XML para plivo.
+    def process_call_step(xml, step)
+      if step[:si]
+        vr = false
+        last_step = {}
+        @call_sequence.reverse.each do |call_step|
+          #print call_step
+          if call_step[:result]
+            last_step = call_step
+            break
+          end
+        end
+        begin
+          case step[:si][:condicion]
+          when "="
+            vr = true if step[:si][:valor].to_s.gsub(/^\"|\"$/,"").strip() == last_step[:result].to_s.gsub(/^\"|\"$/,"").strip()
+          end
+        rescue
+        end
+        
+        #se elimina la secuencia {:si..} y se reemplaza por su continuacion
+        #quedando al final una sola sequencia [...]
+        if vr == true
+          cu = @call_sequence
+          cu.slice!(cu.size - 1, 1)
+          step[:sicontinuar].each { |v| cu << v}
+          @plivocall.update_call_sequence(cu)
+          step[:sicontinuar].each { |v| 
+            return false unless process_call_step(xml, v)
+          }
+        else
+          cu = @call_sequence
+          cu.slice!(cu.size - 1, 1)
+          #se guarda el ultimo resultado
+          cu << {:result => last_step[:result].to_s} unless last_step[:result]
+          step[:nocontinuar].each { |v| cu << v}
+          @plivocall.update_call_sequence(cu)
+          step[:nocontinuar].each { |v| 
+            return false unless process_call_step(xml, v) 
+          }
+        end
+      elsif step[:colgar]
+        if step[:segundos] > 0
+          xml.Hangup :reason => step[:razon], :schedule => step[:segundos]
+        elsif not step[:razon].to_s.empty?
+          xml.Hangup :reason => step[:razon]
+        else
+          xml.Hangup
+        end
+      elsif step[:audio]
+        local_resource = Rails.root.join(step[:audio])
+        audio = @plivo.app_url.to_s + '/resources/audio/' + File.basename(step[:audio].to_s)
+        xml.Play "${http_get(%s)}" % audio.to_s
+      elsif step[:audio_local]
+        xml.Play step[:audio_local]
+      elsif step[:decir]
+        xml.Speak step[:decir]
+      elsif step[:correoe]
+        #@todo este proceso no deberia ir aqui..pero entonces donde?
+        #envia correo-e
+        Delayed::Job.enqueue ::MailerJob.new(step[:correoe], File.read(Rails.root.join(step[:plantilla])), @plivocall.id), :queue => 'correoe'
+
+        xml.Wait :length => 1
+      elsif step[:contactar]
+        xml.Dial :action => @plivo.app_url.to_s + continue_sequence_client_plivo_path(@plivocall.uuid), :callbackUrl => @plivo.app_url.to_s + contact_client_plivo_path(@plivocall.id) do 
+          xml.Number step[:contactar], :gateways => step[:pasarela], :gatewayCodecs => step[:codec], :sendDigits => step[:digitar], :gatewayTimeouts => step[:duracion], :gatewayRetries => step[:intentos]
+        end
+        return false
+      elsif step[:register]
+        case step[:register]
+        when :digits
+          xml.GetDigits :action => @plivo.app_url.to_s + get_digits_client_plivo_path(@plivocall.uuid), :retries => step[:options][:retries], :timeout => step[:options][:timeout], :numDigits => step[:options][:numDigits], :validDigits => step[:options][:validDigits] do
+            if step[:options][:audio]
+              xml.Play step[:options][:audio]
+            end
+            if step[:options][:decir]
+              xml.Speak step[:options][:decir]
+            end
+          end
+        end
+        return false
+      end
+      return true
+    end
   end
   
 end
