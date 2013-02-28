@@ -10,7 +10,8 @@ class PlivoCall < ActiveRecord::Base
   REJECTED_ENUMERATION = ['INVALID_NUMBER_FORMAT', 'CHAN_NOT_IMPLEMENTED', 'INCOMPATIBLE_DESTINATION'] #ni modo de llamar
   INVALID_ENUMERATION = ['INVALID_NUMBER_FORMAT'] #ni modo de llamar
   attr_accessible :data, :uuid, :status, :hangup_enumeration, :call_id, :created_at, :plivo_id, :step, :number, :bill_duration, :call, :end, :id, :updated_at
-
+  
+  liquid_methods :hangup_enumeration, :number, :bill_duration, :created_at, :end
 
   belongs_to :call
   belongs_to :plivo

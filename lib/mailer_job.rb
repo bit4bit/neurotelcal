@@ -26,6 +26,7 @@ class MailerJob
   def perform
     @plivocall = PlivoCall.find(@plivocall_id)
     Rails.logger.debug('sending email to %s' % to)
+    Rails.logger.debug('plivocall %d ' % @plivocall.id)
     CallMailer.message_email(@to, @content, @plivocall).deliver
     
   end
