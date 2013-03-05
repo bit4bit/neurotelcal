@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121111151122) do
+ActiveRecord::Schema.define(:version => 20130305190710) do
 
   create_table "archives", :force => true do |t|
     t.datetime "from_at"
@@ -222,12 +222,13 @@ ActiveRecord::Schema.define(:version => 20121111151122) do
     t.string   "caller_name",      :default => "Neurotelcal"
     t.integer  "campaign_id"
     t.integer  "channels",         :default => 100
-    t.datetime "created_at",                                            :null => false
-    t.datetime "updated_at",                                            :null => false
+    t.datetime "created_at",                                                                                         :null => false
+    t.datetime "updated_at",                                                                                         :null => false
     t.string   "phonenumber",      :default => "0000000000"
     t.boolean  "enable",           :default => true
     t.text     "dial_plan"
     t.text     "dial_plan_desc"
+    t.string   "extra_dial",       :default => "leg_delay_start=1,bridge_early_media=true,hangup_after_bridge=true"
   end
 
   create_table "resources", :force => true do |t|

@@ -50,7 +50,10 @@
   <b>Channels:</b>
   <%= @plivo.channels %>
 </p>
-
+<p>
+  <b><%= I18n.t('plivo.l.extra_dial')%>:</b>
+  <%= @plivo.extra_dial %>
+</p>
 <p>
   <b><%= I18n.t('plivo.l.dial_plan')%></b>
   <%= simple_format(@plivo.dial_plan)%>
