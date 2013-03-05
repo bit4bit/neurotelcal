@@ -132,7 +132,7 @@ class Plivo < ActiveRecord::Base
     return false if message.nil?
 
     #http://wiki.freeswitch.org/wiki/Channel_Variables#monitor_early_media_ring
-    extra_dial_string = "leg_delay_start=1,bridge_early_media=true,hangup_after_bridge=true" 
+    extra_dial_string = self.extra_dial
     
     phonenumber_client = client.phonenumber
     #el cliente tiene multiples numeros para ubicarle
