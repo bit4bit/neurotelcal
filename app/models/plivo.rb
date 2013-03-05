@@ -14,7 +14,7 @@ end
 
 
 class Plivo < ActiveRecord::Base
-  attr_accessible :app_url, :api_url, :auth_token, :campaign_id, :sid, :status, :gateways, :caller_name, :gateway_timeouts, :gateway_retries, :gateway_codecs, :channels, :phonenumber, :enable
+  attr_accessible :app_url, :api_url, :auth_token, :campaign_id, :sid, :status, :gateways, :caller_name, :gateway_timeouts, :gateway_retries, :gateway_codecs, :channels, :phonenumber, :enable, :extra_dial
   attr_accessible :created_at, :updated_at
   #Plan de marcado, indica como se debe usar
   #los gateway del plivo para el numero a marcar
@@ -38,7 +38,7 @@ class Plivo < ActiveRecord::Base
   def verificar_conexion
     begin
       plivor = PlivoHelper::Rest.new(self.api_url, self.sid, self.auth_token)
-      extra_dial_string = "leg_delay_start=1,bridge_early_media=true,hangup_after_bridge=true" 
+      extra_dial_string = self.extra_dial
       call_params = {
         'From' => self.caller_name,
         'To' => '',

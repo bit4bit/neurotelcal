@@ -63,6 +63,7 @@ es:
         enable: 'Activo?'
         dial_plan: 'Plan de llamado'
         dial_plan_desc: 'Descripcion del plan'
+        extra_dial: 'ExtraFreeswitch'
   back: 'Atrás'	
   edit: 'Editar'
   show: 'Mostrar'
@@ -200,6 +201,7 @@ es:
       enable: 'Activo?'
       dial_plan: 'Plan de llamado'
       dial_plan_desc: 'Descripcion del plan'
+      extra_dial: 'ExtraVarsFreeswitch'
     index:
       title: 'Listando Plivo'
     new:
