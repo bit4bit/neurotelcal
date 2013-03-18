@@ -18,8 +18,8 @@
 
 <h1><%= I18n.t('report.export.title')%></h1>
 <%= form_tag('/reports/export_csv') do %>
-<%= label_tag(I18n.t('entity.index.title'))%>
-<%= select_tag('campaign', options_from_collection_for_select(@campaigns, 'id', 'name'))%>
+<%= label_tag(I18n.t('campaign.index.title'))%>
+<%= select_tag('campaign', options_from_collection_for_select(@campaigns, 'id', 'deep_name'))%>
 <br />
 <%= label_tag(I18n.t('report.l.start'))%>
 <%= select_datetime(Time.now - 30.days, :prefix => 'start')%>

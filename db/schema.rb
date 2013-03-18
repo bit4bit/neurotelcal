@@ -14,14 +14,12 @@
 ActiveRecord::Schema.define(:version => 20130305190710) do
 
   create_table "archives", :force => true do |t|
-    t.datetime "from_at"
-    t.datetime "to_at"
     t.integer  "version"
+    t.string   "name"
     t.datetime "created_at",                     :null => false
     t.datetime "updated_at",                     :null => false
     t.boolean  "processing",  :default => false
     t.integer  "campaign_id"
-    t.string   "name"
   end
 
   create_table "calendars", :force => true do |t|
@@ -99,7 +97,6 @@ ActiveRecord::Schema.define(:version => 20130305190710) do
     t.boolean  "calling",       :default => false
     t.boolean  "error",         :default => false
     t.string   "error_msg",     :default => ""
-    t.integer  "retries",       :default => 0
     t.integer  "calls",         :default => 0
     t.datetime "last_call_at"
     t.integer  "calls_faileds", :default => 0
@@ -185,7 +182,7 @@ ActiveRecord::Schema.define(:version => 20130305190710) do
   create_table "notifications", :force => true do |t|
     t.integer  "user_id"
     t.text     "msg"
-    t.text     "type_msg"
+    t.string   "type_msg"
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
   end

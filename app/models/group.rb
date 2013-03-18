@@ -6,6 +6,15 @@ class Group < ActiveRecord::Base
   has_many :message, :order => 'priority DESC', :conditions => 'processed = 0', :dependent => :delete_all
   belongs_to :campaign
 
+  def deep_name
+    new_name = ""
+    if campaign
+      new_name = campaign.deep_name + " -> "
+    end
+    new_name += name
+    return new_name
+  end
+  
   def id_messages_share_clients
     message.all.map {|m| m.id }
   end

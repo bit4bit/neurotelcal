@@ -21,6 +21,15 @@ class Campaign < ActiveRecord::Base
   has_many :plivo, :dependent => :delete_all, :conditions => 'enable = 1'
   has_many :group, :dependent => :delete_all
   belongs_to :entity
+
+  def deep_name
+    new_name = ""
+    if entity
+      new_name = entity.name + " -> "
+    end
+    new_name += name
+    return new_name
+  end
   
   def pause?
     #Se reconsulta para obtener ultimo estado
