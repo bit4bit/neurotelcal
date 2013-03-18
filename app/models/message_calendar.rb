@@ -31,8 +31,13 @@ class MessageCalendar < ActiveRecord::Base
   def channels_cannot_be_greater_than_plivo_channels
     if message
       if message.group.campaign.plivo.all.size > 0
-        total_channels_plivos = message.group.campaign.plivo.all.size > 1 ? message.group.campaign.plivo.all.inject {|s,v| s.channels.to_i + v.channels.to_i} : message.group.campaign.plivo.first.channels.to_i
-
+        total_channels_plivos = 0
+        if message.group.campaign.plivo.all.size > 1
+          message_group.campaign.plivo.all.each {|p| total_channels_plivos += p.channels}
+        else
+          total_channels_plivos = message.group.campaign.plivo.first.channels.to_i
+        end
+        
         if channels > total_channels_plivos
           errors.add(:channels, 'Ha superado por %d el limite de canales del plivo o plivos de la Campaña %d' % [channels, total_channels_plivos])
         end
