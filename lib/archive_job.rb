@@ -45,7 +45,6 @@ class ArchiveJob < Struct.new(:archive_id, :action)
         c = Campaign.from_xml(e)
         begin c.group.each{|g| g.save(:validate => false) if g.id?}  ;rescue; end
         begin c.resource.each{|r| r.save(:validate => false) if r.id?} ;rescue; end
-        begin c.plivo.each{|p| p.save(:validate => false) if p.id?} ;rescue; end
         begin c.entity.each{|e| e.save(:validate => false) if e.id?} ;rescue; end
       when :call
         c = Call.from_xml(e)
@@ -64,6 +63,11 @@ class ArchiveJob < Struct.new(:archive_id, :action)
   
   def archive
     archive = Archive.find(self.archive_id)
+    if not archive.campaign
+      Rails.logger.debug("Archiving not have campaign\n")
+      return false
+    end
+    
     Rails.logger.debug("Archiving Campaign %s" % archive.campaign.name)
     messages_id = archive.campaign.group.map{|g| g.id_messages_share_clients}.flatten
     calls = Call.where(:message_id => messages_id)
@@ -74,6 +78,9 @@ class ArchiveJob < Struct.new(:archive_id, :action)
     Zlib::GzipWriter.open(archive.path) do |gz|
       gz.write "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
       gz.write "<archive created_at=\"%s\" campaign=\"%s\">\n" % [archive.created_at, archive.campaign.name]
+      #@attention esto puede causar consumo de mucha memoria
+      #ya que al parecer to_xml carga todos los registros en memoria
+      #para luego pasalos a xml..(no he probado esto)
       gz.write archive.campaign.to_xml :skip_instruct => true, :include => {
         :resource => {}, 
         :plivo => {},
@@ -89,7 +96,7 @@ class ArchiveJob < Struct.new(:archive_id, :action)
       gz.write "</call>\n"
       gz.write "</archive>"
     end
-    archive.update_column(:processing, false)
+
 
 
     #elimina todo lo archivado
@@ -97,12 +104,13 @@ class ArchiveJob < Struct.new(:archive_id, :action)
     archive.campaign.group.each{|g| g.message.each{|m| m.message_calendar.delete_all}; g.message.delete_all}
     archive.campaign.group.delete_all
     archive.campaign.resource.delete_all
-    archive.campaign.plivo.delete_all
     archive.campaign.destroy
+    calls = Call.where(:message_id => messages_id)
     calls.each do |call|
       call.plivo_call.destroy
       call.destroy
     end
+    archive.update_column(:processing, false)
   end
   
   

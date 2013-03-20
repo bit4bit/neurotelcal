@@ -428,5 +428,5 @@ class Campaign < ActiveRecord::Base
     need_channels = 0 if need_channels < 0
     return need_channels.to_i
   end
-  
+
 end

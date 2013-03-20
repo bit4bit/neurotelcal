@@ -71,6 +71,7 @@ Neurotelcal::Application.routes.draw do
   resources :resources
 
   resources :campaigns do
+    delete 'destroy_deep'
     put 'change_status'
     put 'status_start'
     put 'status_pause'
