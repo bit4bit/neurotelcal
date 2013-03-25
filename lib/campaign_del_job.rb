@@ -1,4 +1,3 @@
-<%
 # Copyright (C) 2012 Bit4Bit <bit4bit@riseup.net>
 #
 #
@@ -14,18 +13,33 @@
 #
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-%>
 
-<h1><%= I18n.t('report.export.title')%></h1>
-<%= form_tag('/reports/export_csv') do %>
-<%= label_tag(I18n.t('campaign.index.title'))%>
-<%= select_tag('campaign', options_from_collection_for_select(@campaigns, 'id', 'deep_name'))%>
-<br />
-<%= label_tag(I18n.t('report.l.start'))%>
-<%= select_datetime(Time.now - 30.days, :prefix => 'start')%>
-<%= label_tag(I18n.t('report.l.end'))%>
-<%= select_datetime(Time.now, :prefix => 'end')%>
-<br />
-<%= submit_tag(I18n.t('defaults.generate'))%>
-<% end %>
+class CampaignDelJob
+  attr_accessor :campaign_id
+  
+  def initialize(campaign_id)
+    self.campaign_id = campaign_id
+  end
+  
+  def perform
+    campaign = Campaign.find(campaign_id)
+    
+    group = Group.where(:campaign_id => campaign.id)
+    group.each{|g| g.message.each{|m| 
+        calls = Call.where(:message_id => m.id)
+        calls.each do |call|
+          call.plivo_call.delete if call.plivo_call
+          call.delete
+        end
+        m.message_calendar.delete_all if m.message_calendar
 
+      }; 
+      g.message.delete_all
+    }
+
+    campaign.group.delete_all
+    campaign.resource.delete_all
+    campaign.destroy
+  end
+
+end

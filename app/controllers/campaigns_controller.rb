@@ -99,13 +99,21 @@ class CampaignsController < ApplicationController
   def destroy
     @campaign = Campaign.find(params[:id])
     @campaign.destroy
-
     respond_to do |format|
       format.html { redirect_to campaigns_url }
       format.json { head :no_content }
     end
   end
 
+  def destroy_deep
+    @campaign = Campaign.find(params[:campaign_id])
+    Delayed::Job.enqueue ::CampaignDelJob.new(@campaign.id), :queue => 'destroy_campaign'
+    respond_to do |format|
+      format.html { redirect_to campaigns_url }
+      format.json { head :no_content }
+    end
+  end
+  
   #PUT
   def status_start
     @campaign = Campaign.find(params[:campaign_id])

@@ -16,7 +16,7 @@
   </div>
   <div class="field">
     Campaña<br />
-    <%= f.select :campaign_id, options_for_select(@campaigns, @plivo.campaign_id) %>
+    <%= f.select :campaign_id, options_from_collection_for_select(@campaigns, 'id', 'deep_name', @plivo.campaign_id) %>
   </div>
 
   <div class="field">

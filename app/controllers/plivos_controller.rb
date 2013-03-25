@@ -47,7 +47,7 @@ class PlivosController < ApplicationController
   # GET /plivos/new.json
   def new
     @plivo = Plivo.new
-    @campaigns = Campaign.all.map {|u| [u.name, u.id] }
+    @campaigns = Campaign.all
 
     respond_to do |format|
       format.html # new.html.erb

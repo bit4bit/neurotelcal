@@ -8,6 +8,7 @@ require 'ronela_lenguaje'
 
 #jobs
 require 'campaign_job'
+require 'campaign_del_job'
 require 'archive_job'
 require 'cdr_job'
 require 'mailer_job'
