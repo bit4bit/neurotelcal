@@ -33,7 +33,7 @@ class MessageCalendar < ActiveRecord::Base
       if message.group.campaign.plivo.all.size > 0
         total_channels_plivos = 0
         if message.group.campaign.plivo.all.size > 1
-          message_group.campaign.plivo.all.each {|p| total_channels_plivos += p.channels}
+          message.group.campaign.plivo.all.each {|p| total_channels_plivos += p.channels}
         else
           total_channels_plivos = message.group.campaign.plivo.first.channels.to_i
         end

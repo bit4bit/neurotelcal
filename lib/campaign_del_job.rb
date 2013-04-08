@@ -25,20 +25,23 @@ class CampaignDelJob
     campaign = Campaign.find(campaign_id)
     
     group = Group.where(:campaign_id => campaign.id)
-    group.each{|g| g.message.each{|m| 
+    group.each{|g| 
+      g.client.destroy_all
+      messages = Message.where(:group_id => g.id)
+      messages.each{|m| 
         calls = Call.where(:message_id => m.id)
         calls.each do |call|
-          call.plivo_call.delete if call.plivo_call
-          call.delete
+          call.plivo_call.destroy if call.plivo_call
+          call.destroy
         end
-        m.message_calendar.delete_all if m.message_calendar
+        m.message_calendar.destroy if m.message_calendar
 
-      }; 
-      g.message.delete_all
+      } 
+      g.message.destroy
     }
 
-    campaign.group.delete_all
-    campaign.resource.delete_all
+    campaign.group.destroy_all
+    campaign.resource.destroy_all
     campaign.destroy
   end
 

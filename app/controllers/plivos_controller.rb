@@ -58,7 +58,7 @@ class PlivosController < ApplicationController
   # GET /plivos/1/edit
   def edit
     @plivo = Plivo.find(params[:id])
-    @campaigns = Campaign.all.map {|u| [u.name, u.id] }
+    @campaigns = Campaign.all
   end
 
   # POST /plivos
