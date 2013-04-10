@@ -15,6 +15,9 @@
     <%= f.input :enable %>
   </div>
   <div class="field">
+    <%= f.input :priority, :input_html => { :size => 2, :maxlength => 2} %>
+  </div>
+  <div class="field">
     Campaña<br />
     <%= f.select :campaign_id, options_from_collection_for_select(@campaigns, 'id', 'deep_name', @plivo.campaign_id) %>
   </div>

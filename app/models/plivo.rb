@@ -14,7 +14,7 @@ end
 
 
 class Plivo < ActiveRecord::Base
-  attr_accessible :app_url, :api_url, :auth_token, :campaign_id, :sid, :status, :gateways, :caller_name, :gateway_timeouts, :gateway_retries, :gateway_codecs, :channels, :phonenumber, :enable, :extra_dial
+  attr_accessible :app_url, :api_url, :auth_token, :campaign_id, :sid, :status, :gateways, :caller_name, :gateway_timeouts, :gateway_retries, :gateway_codecs, :channels, :phonenumber, :enable, :extra_dial, :priority
   attr_accessible :created_at, :updated_at
   #Plan de marcado, indica como se debe usar
   #los gateway del plivo para el numero a marcar
@@ -30,8 +30,8 @@ class Plivo < ActiveRecord::Base
   validates :gateway_retries, :gateway_timeouts, :numericality => true
   validate :validate_dial_plan
 
-  before_save :verificar_conexion
-  before_save :verificar_conexion_app
+  #before_save :verificar_conexion
+  #before_save :verificar_conexion_app
 
   #Realiza prueba de conexion
   #al servidor plivo

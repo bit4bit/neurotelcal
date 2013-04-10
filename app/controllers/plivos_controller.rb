@@ -24,7 +24,7 @@ class PlivosController < ApplicationController
   # GET /plivos
   # GET /plivos.json
   def index
-    @plivos = Plivo.all
+    @plivos = Plivo.order('priority ASC').all
     @campaigns = Campaign.all.map {|u| [u.name, u.id] }
     respond_to do |format|
       format.html # index.html.erb
@@ -58,7 +58,7 @@ class PlivosController < ApplicationController
   # GET /plivos/1/edit
   def edit
     @plivo = Plivo.find(params[:id])
-    @campaigns = Campaign.all.map {|u| [u.name, u.id] }
+    @campaigns = Campaign.all
   end
 
   # POST /plivos
@@ -68,6 +68,8 @@ class PlivosController < ApplicationController
     @campaigns = Campaign.all.map {|u| [u.name, u.id] }
 
     respond_to do |format|
+      params[:plivo][:extra_dial].strip!
+      params[:plivo][:gateways].strip!
       if @plivo.save
         format.html { redirect_to @plivo, :notice => 'Plivo was successfully created.' }
         format.json { render :json => @plivo, :status => :created, :location => @plivo }
@@ -82,9 +84,11 @@ class PlivosController < ApplicationController
   # PUT /plivos/1.json
   def update
     @plivo = Plivo.find(params[:id])
-    @campaigns = Campaign.all.map {|u| [u.name, u.id] }
+    @campaigns = Campaign.all
 
     respond_to do |format|
+      params[:plivo][:extra_dial].strip!
+      params[:plivo][:gateways].strip!
       if @plivo.update_attributes(params[:plivo])
         format.html { redirect_to @plivo, :notice => 'Plivo was successfully updated.' }
         format.json { head :no_content }

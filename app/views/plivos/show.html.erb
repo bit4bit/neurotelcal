@@ -6,6 +6,10 @@
 <p id="notice"><%= notice %></p>
 
 <p>
+  <b><%= I18n.t('plivo.l.priority')%>:</b>
+  <%= @plivo.priority%>
+</p>
+<p>
   <b><%= I18n.t('plivo.l.caller_name')%>:</b>
   <%= @plivo.caller_name%>
 <p>
