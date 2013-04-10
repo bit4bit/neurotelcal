@@ -64,6 +64,7 @@ es:
         dial_plan: 'Plan de llamado'
         dial_plan_desc: 'Descripcion del plan'
         extra_dial: 'ExtraFreeswitch'
+        priority: 'Prioridad'
   back: 'Atrás'	
   edit: 'Editar'
   show: 'Mostrar'
@@ -203,6 +204,7 @@ es:
       dial_plan: 'Plan de llamado'
       dial_plan_desc: 'Descripcion del plan'
       extra_dial: 'ExtraVarsFreeswitch'
+      priority: 'Prioridad'
     index:
       title: 'Listando Plivo'
     new:

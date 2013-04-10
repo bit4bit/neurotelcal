@@ -24,7 +24,7 @@ class PlivosController < ApplicationController
   # GET /plivos
   # GET /plivos.json
   def index
-    @plivos = Plivo.all
+    @plivos = Plivo.order('priority ASC').all
     @campaigns = Campaign.all.map {|u| [u.name, u.id] }
     respond_to do |format|
       format.html # index.html.erb

@@ -15,6 +15,7 @@ capybara-*.html
 /public/resources/*
 /coverage/
 /spec/tmp
+/db/schema.rb
 **.orig
 rerun.txt
 pickle-email-*.html
