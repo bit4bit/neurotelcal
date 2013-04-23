@@ -17,13 +17,16 @@
 %>
 <table>
   <tr>
+    <th></th>
     <th><%= I18n.t('defaults.campaign')%></th>
     <th><%= I18n.t('defaults.message')%></th>
     <th><%= I18n.t('defaults.client')%></th>
     <th><%= I18n.t('report.l.status')%></th>
   </tr>
+  <% counter = 0 %>
   <% @calls.each do |call| %>
   <tr>
+    <td><%= counter += 1 %></td>
     <td><%= call.client.campaign.name%></td>
     <td><%= call.message.name%></td>
     <td><%= call.client.phonenumber%></td>
