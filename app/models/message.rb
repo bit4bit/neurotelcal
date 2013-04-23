@@ -30,6 +30,10 @@ class Message < ActiveRecord::Base
     return false
   end
   
+  def total_calls_done
+    return Call.where(:message_id => self.id, :hangup_enumeration => PlivoCall::ANSWER_ENUMERATION).count
+  end
+  
   def time_to_process_calendar?
     message_calendar.each{|mc| 
       next unless mc.time_to_process?

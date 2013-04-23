@@ -165,6 +165,7 @@ es:
       retries: 'Reintentos'
       priority: 'Prioridad'
       max_clients: 'Maximo clientes'
+      calls_done: 'Constestadas'
       notes: 'Anotaciones'
       prefix: 'Prefijo Adicional'
     index:

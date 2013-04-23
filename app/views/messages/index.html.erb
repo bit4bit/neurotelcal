@@ -9,6 +9,7 @@
     <th><%= I18n.t('message.l.call_end')%></th>
     <th><%= I18n.t('message.l.retries')%></th>
     <th><%= I18n.t('message.l.max_clients')%></th>
+    <th><%= I18n.t('message.l.calls_done')%></th>
     <th><%= I18n.t('message.l.prefix')%></th>
     <th></th>
     <th></th>
@@ -17,12 +18,17 @@
   </tr>
 
 <% @messages.each do |message| %>
+<% if message.total_calls_done > message.max_clients %>
+  <tr class="message-calls-done">
+    <% else %>
   <tr>
+    <% end%>
     <td><%= message.name %></td>
     <td><%= message.call %></td>
     <td><%= message.call_end %></td>
     <td><%= message.retries %></td>
     <td><%= message.max_clients %></td>
+    <td><%= message.total_calls_done %></td>
     <td><%= message.prefix %></td>
     <td><%= link_to I18n.t('defaults.message_calendar'), message_calendars_path(:message_id => message) %></td>
     <td><%= link_to I18n.t('show'), message %><br />
