@@ -59,13 +59,11 @@ class Campaign < ActiveRecord::Base
   end
   
   def active_channels
-    return plivo.first.channels if plivo.all.size == 1
-    return plivo.all.size > 1 ? plivo.all.inject{|s,v| s.channels + v.channels} : 0
+    return plivo.all.map{|p| p.channels}.reduce{|s,v| s + v}
   end
 
   def using_channels
-    return plivo.first.using_channels if plivo.all.size == 1
-    return plivo.all.size > 1 ? plivo.all.inject{|s,v| s.using_channels + v.using_channels} : 0
+    return plivo.all.map{|p| p.using_channels}.reduce{|s,v| s + v}
   end
   
   def total_calls_today

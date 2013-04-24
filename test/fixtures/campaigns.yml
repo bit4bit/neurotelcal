@@ -1,4 +1,5 @@
 one:
+  id: 1
   description: Campain test
   name: testCampain
   status: 2
