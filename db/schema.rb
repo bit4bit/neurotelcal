@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130305190710) do
+ActiveRecord::Schema.define(:version => 20130410124826) do
 
   create_table "archives", :force => true do |t|
     t.integer  "version"
@@ -206,6 +206,7 @@ ActiveRecord::Schema.define(:version => 20130305190710) do
     t.integer  "bill_duration",      :default => 0
   end
 
+  add_index "plivo_calls", ["call_id"], :name => "index_call_id"
   add_index "plivo_calls", ["end", "plivo_id"], :name => "end"
   add_index "plivo_calls", ["end", "plivo_id"], :name => "index_plivo_calls_on_end_and_plivo_id"
   add_index "plivo_calls", ["end"], :name => "index_plivo_calls_on_end"
@@ -231,6 +232,7 @@ ActiveRecord::Schema.define(:version => 20130305190710) do
     t.text     "dial_plan"
     t.text     "dial_plan_desc"
     t.string   "extra_dial",       :default => "leg_delay_start=1,bridge_early_media=true,hangup_after_bridge=true"
+    t.integer  "priority",         :default => 0
   end
 
   create_table "resources", :force => true do |t|
