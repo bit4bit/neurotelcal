@@ -114,6 +114,7 @@ class Campaign < ActiveRecord::Base
       return 0
     end
   end
+
   
   
   #Se verifica si se puede llamara a un cliente
@@ -179,7 +180,7 @@ class Campaign < ActiveRecord::Base
     if distributor
       plivos_to_call = plivos_from_distributor(client)
       if plivos_to_call.nil?
-        raise PlivoNotFound, "There is not plivo server for distributor"
+        return false
       end
     else
       plivos_to_call = self.plivo.all
