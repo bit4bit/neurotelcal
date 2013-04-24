@@ -2,8 +2,7 @@
   <%= f.error_notification %>
 
   <div class="form-inputs">
-    <%= f.association :campaign %>
-    <%= f.association :plivo %>
+    <%= f.select :plivo_id, options_from_collection_for_select(@plivos, 'id', 'caller_name', @distributor.campaign_id) %>
     <%= f.input :filter %>
     <%= f.input :description %>
   </div>

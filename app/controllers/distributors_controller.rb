@@ -2,7 +2,15 @@ class DistributorsController < ApplicationController
   # GET /distributors
   # GET /distributors.json
   def index
-    @distributors = Distributor.all
+    if params[:campaign_id]
+      @campaign_id = params[:campaign_id].to_i
+      session[:campaign_id] = @campaign_id
+    else
+      @campaign_id = session[:campaign_id]
+    end
+    @campaign = Campaign.find(@campaign_id)
+
+    @distributors = Distributor.where(:campaign_id => @campaign_id).all
 
     respond_to do |format|
       format.html # index.html.erb
@@ -25,7 +33,7 @@ class DistributorsController < ApplicationController
   # GET /distributors/new.json
   def new
     @distributor = Distributor.new
-
+    @plivos = Plivo.where(:campaign_id => session[:campaign_id])
     respond_to do |format|
       format.html # new.html.erb
       format.json { render json: @distributor }
@@ -35,12 +43,15 @@ class DistributorsController < ApplicationController
   # GET /distributors/1/edit
   def edit
     @distributor = Distributor.find(params[:id])
+    @plivos = Plivo.where(:campaign_id => session[:campaign_id])
   end
 
   # POST /distributors
   # POST /distributors.json
   def create
+    params[:distributor][:campaign_id] = session[:campaign_id]
     @distributor = Distributor.new(params[:distributor])
+    @plivos = Plivo.where(:campaign_id => session[:campaign_id])
 
     respond_to do |format|
       if @distributor.save
@@ -57,6 +68,7 @@ class DistributorsController < ApplicationController
   # PUT /distributors/1.json
   def update
     @distributor = Distributor.find(params[:id])
+    @plivos = Plivo.where(:campaign_id => session[:campaign_id])
 
     respond_to do |format|
       if @distributor.update_attributes(params[:distributor])

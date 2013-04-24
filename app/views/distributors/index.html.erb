@@ -1,11 +1,10 @@
-<h1>Listing distributors</h1>
+<h1>Listing distributors for <%= @campaign.name %></h1>
 
 <table>
   <tr>
-    <th>Campaign</th>
-    <th>Plivo</th>
-    <th>Filter</th>
     <th>Description</th>
+    <th>Filter</th>
+    <th>Plivo</th>
     <th></th>
     <th></th>
     <th></th>
@@ -13,13 +12,12 @@
 
 <% @distributors.each do |distributor| %>
   <tr>
-    <td><%= distributor.campaign %></td>
-    <td><%= distributor.plivo %></td>
     <td><%= distributor.filter %></td>
     <td><%= distributor.description %></td>
-    <td><%= link_to 'Show', distributor %></td>
-    <td><%= link_to 'Edit', edit_distributor_path(distributor) %></td>
-    <td><%= link_to 'Destroy', distributor, confirm: 'Are you sure?', method: :delete %></td>
+    <td><%= distributor.plivo.caller_name %></td>
+    <td><%= link_to I18n.t('show'), distributor %></td>
+    <td><%= link_to I18n.t('edit'), edit_distributor_path(distributor) %></td>
+    <td><%= link_to I18n.t('destroy'), distributor, confirm: I18n.t('are_you_sure'), method: :delete %></td>
   </tr>
 <% end %>
 </table>

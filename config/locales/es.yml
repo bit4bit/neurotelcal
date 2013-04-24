@@ -109,6 +109,7 @@ es:
     calls_answer_today: 'Ll. Cont'
     calls_not_answer_today: 'Ll. No Cont'
     probability_complete: '% Probalidad'
+    distributors: 'Distribuidor'
   clients:
     fullname: 'Nombre completo'
   campaign:
