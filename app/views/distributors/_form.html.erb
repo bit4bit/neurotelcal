@@ -1,0 +1,14 @@
+<%= simple_form_for(@distributor) do |f| %>
+  <%= f.error_notification %>
+
+  <div class="form-inputs">
+    <%= f.association :campaign %>
+    <%= f.association :plivo %>
+    <%= f.input :filter %>
+    <%= f.input :description %>
+  </div>
+
+  <div class="form-actions">
+    <%= f.button :submit %>
+  </div>
+<% end %>

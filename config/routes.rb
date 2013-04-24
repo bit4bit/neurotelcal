@@ -1,4 +1,6 @@
 Neurotelcal::Application.routes.draw do
+  resources :distributors
+
   get "notification/index"
 
   get "monitor/index"

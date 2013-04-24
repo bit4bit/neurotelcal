@@ -1,0 +1,25 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Campaign:</b>
+  <%= @distributor.campaign %>
+</p>
+
+<p>
+  <b>Plivo:</b>
+  <%= @distributor.plivo %>
+</p>
+
+<p>
+  <b>Filter:</b>
+  <%= @distributor.filter %>
+</p>
+
+<p>
+  <b>Description:</b>
+  <%= @distributor.description %>
+</p>
+
+
+<%= link_to 'Edit', edit_distributor_path(@distributor) %> |
+<%= link_to 'Back', distributors_path %>

@@ -1,0 +1,29 @@
+<h1>Listing distributors</h1>
+
+<table>
+  <tr>
+    <th>Campaign</th>
+    <th>Plivo</th>
+    <th>Filter</th>
+    <th>Description</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @distributors.each do |distributor| %>
+  <tr>
+    <td><%= distributor.campaign %></td>
+    <td><%= distributor.plivo %></td>
+    <td><%= distributor.filter %></td>
+    <td><%= distributor.description %></td>
+    <td><%= link_to 'Show', distributor %></td>
+    <td><%= link_to 'Edit', edit_distributor_path(distributor) %></td>
+    <td><%= link_to 'Destroy', distributor, confirm: 'Are you sure?', method: :delete %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New Distributor', new_distributor_path %>
