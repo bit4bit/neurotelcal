@@ -1,0 +1,11 @@
+1:
+  campaign_id: 1
+  group_id: 1
+  phonenumber: 2222222
+  fullname: 2222222
+
+2:
+  campaign_id: 1
+  group_id: 1
+  phonenumber: 123456789
+  fullname: 123456789
