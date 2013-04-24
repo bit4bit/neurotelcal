@@ -20,6 +20,7 @@ class Campaign < ActiveRecord::Base
   has_many :resource, :dependent => :delete_all
   has_many :plivo, :dependent => :delete_all, :conditions => 'enable = 1', :order => 'priority ASC'
   has_many :group, :dependent => :delete_all
+  has_many :distributor, :dependent => :delete_all
   belongs_to :entity
 
   def deep_name
@@ -157,11 +158,36 @@ class Campaign < ActiveRecord::Base
     return true
   end
   
+  def plivos_from_distributor(client)
+    plivos_to_call = []
+    if distributor
+      distributor.each do |d|
+        next if d.filter.empty?
+        if client.phonenumber =~ Regexp.new(d.filter)
+          plivos_to_call << d.plivo
+        end
+      end
+      return plivos_to_call
+    end
+    return nil
+  end
+  
   #Campaign llama cliente, buscando un espacio disponible entre sus servidores plivos
   def call_client(client, message, message_calendar = nil)
     raise PlivoNotFound, "There is not plivo server, first add one" unless self.plivo.exists?
     called = false
-    self.plivo.all.each { |plivo|
+    plivos_to_call = []
+    if distributor
+      plivos_to_call = plivos_from_distributor(client)
+      if plivos_to_call.nil?
+        raise PlivoNotFound, "There is not plivo server for distributor"
+      end
+    else
+      plivos_to_call = self.plivo.all
+    end
+    
+
+    plivos_to_call.each { |plivo|
       begin
         called = plivo.call_client(client, message, message_calendar)
         break
@@ -234,7 +260,13 @@ class Campaign < ActiveRecord::Base
     logger.debug('process: total messages today %d' % total_messages_today)
 
     id_groups_to_process.uniq!
-    clients = Client.where(:group_id => id_groups_to_process, :callable => true).order('priority DESC, callable DESC, created_at ASC')
+    if distributor
+      clients = Client.where(:group_id => id_groups_to_process, :callable => true).where(["phonenumber REGEXP ?", Regexp.new(distributor.map{|d| d.filter}.join("|")).source]).order('priority DESC, callable DESC, created_at ASC')
+    else
+      clients = Client.where(:group_id => id_groups_to_process, :callable => true).order('priority DESC, callable DESC, created_at ASC')      
+    end
+    
+
 
     #end if not have client
     if clients.empty?
