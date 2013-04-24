@@ -165,6 +165,7 @@ class Campaign < ActiveRecord::Base
         next if d.filter.empty?
         if client.phonenumber =~ Regexp.new(d.filter)
           plivos_to_call << d.plivo
+          logger.debug("process: find distributor %s for client" % [d.description])
         end
       end
       return plivos_to_call
