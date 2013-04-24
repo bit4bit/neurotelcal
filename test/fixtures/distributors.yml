@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  campaign: 
+  plivo: 
+  filter: MyString
+  description: MyString
+
+two:
+  campaign: 
+  plivo: 
+  filter: MyString
+  description: MyString
