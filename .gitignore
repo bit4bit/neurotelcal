@@ -9,6 +9,8 @@ capybara-*.html
 /log/
 /archives
 /archives/*
+/archive/
+/archive/*
 /tmp
 /db/*.sqlite3
 /public/system/*
@@ -30,3 +32,4 @@ pickle-email-*.html
 **.#
 *~
 **.pid
+**.out
