@@ -31,10 +31,10 @@ class MonitorController < ApplicationController
 
   def channels_status
     if session[:monitor]
-      messages = Message.where(:group_id => Group.where(:campaign_id => session[:monitor_campaign_id])).all
+      messages = Message.where(:group_id => Group.where(:campaign_id => session[:monitor_campaign_id])).select('id').all
       @calls = Call.where(:terminate => nil, :message_id => messages)
     else
-      @calls = Call.where(:terminate => nil)      
+        @calls = Call.where(:terminate => nil)      
     end
 
     respond_to do |format|
