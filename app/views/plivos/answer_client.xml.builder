@@ -5,7 +5,7 @@ xml.Response do
     unless plivocall.nil?
       @plivocall = plivocall
       @plivocall.step += 1
-      Rails.cache.write(:plivocall_id => @plivocall.id, @plivocall)
+      Rails.cache.write({:plivocall_id => @plivocall.id}, @plivocall)
     else
       @plivocall.next_step      
     end
