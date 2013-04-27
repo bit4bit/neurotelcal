@@ -238,7 +238,7 @@ class PlivosController < ApplicationController
     Rails.cache.write({:plivocall_id => params["AccountSID"]}, @plivocall, :expires_in => 60.seconds)
 
     #@trash
-    #@plivo = @plivocall.plivo
+    @plivo = @plivocall.plivo
     #actualiza estado de llamada
     call = Rails.cache.read(:call_id => @plivocall.call_id)
     if call.nil?
