@@ -159,7 +159,7 @@ class Campaign < ActiveRecord::Base
   
   def plivos_from_distributor(client)
     plivos_to_call = []
-    if distributor.count 
+    if distributor.count  > 0
       distributor.each do |d|
         next if d.filter.empty?
         if client.phonenumber =~ Regexp.new(d.filter)
@@ -177,7 +177,7 @@ class Campaign < ActiveRecord::Base
     raise PlivoNotFound, "There is not plivo server, first add one" unless self.plivo.exists?
     called = false
     plivos_to_call = []
-    if distributor.count
+    if distributor.count > 0
       plivos_to_call = plivos_from_distributor(client)
       if plivos_to_call.nil?
         return false
@@ -260,7 +260,7 @@ class Campaign < ActiveRecord::Base
     logger.debug('process: total messages today %d' % total_messages_today)
 
     id_groups_to_process.uniq!
-    if distributor.count
+    if distributor.count > 0
       clients = Client.where(:group_id => id_groups_to_process, :callable => true).where(["phonenumber REGEXP ?", Regexp.new(distributor.map{|d| d.filter}.join("|")).source]).order('priority DESC, callable DESC, created_at ASC')
     else
       clients = Client.where(:group_id => id_groups_to_process, :callable => true).order('priority DESC, callable DESC, created_at ASC')      
