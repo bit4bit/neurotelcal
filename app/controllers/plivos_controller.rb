@@ -196,7 +196,10 @@ class PlivosController < ApplicationController
     @plivo = @plivocall.plivo
     #actualiza estado de llamada
     call = Rails.cache.read(:call_id => @plivocall.call_id)
-    call = Call.find(@plivocall.call_id) if call.nil?
+    if call.nil?
+      call = Call.find(@plivocall.call_id) if call.nil?
+    end
+    
     
     call.client.update_column(:calling, true)
     call.enter_listen = Time.now
