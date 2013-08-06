@@ -117,24 +117,17 @@ class PlivosController < ApplicationController
   def contact_client
     logger.debug('contact_client')
     logger.debug(params)
-    cached = true
+
     #@todo esto es una aberracion pero funciona..
     #se almacena estado de cuelgue de la llamada
     if params['DialBLegHangupCause']
-      @plivocall = Rails.cache.read(:plivocall_id => params['id'])
-      if @plivocall.nil?
-        @plivocall = PlivoCall.find(params['id'])
-        cached = false
-      end
-      
+      @plivocall = PlivoCall.find(params['id'])
       @call_sequence = @plivocall.call_sequence
       @call_sequence[@plivocall.step-1][:result] = params['DialBLegHangupCause']
       @plivocall.data = @call_sequence.to_yaml
-      @plivocall.save(:validate => false) unless cached
-      #unless @plivocall.save(:validate => false)
-      #  logger.error('plivos: error fallo actualizar digitos de plivo call %d digito %s' % [@plivocall.id, params['Digits']])
-      #end
-      Rails.cache.write({:plivocall_id => params['id']}, @plivocall, :expires_in => 60.seconds)
+      unless @plivocall.save(:validate => false)
+        logger.error('plivos: error fallo actualizar digitos de plivo call %d digito %s' % [@plivocall.id, params['Digits']])
+      end
     end
     
   end
@@ -143,23 +136,15 @@ class PlivosController < ApplicationController
   def continue_sequence_client
     logger.debug('continue_sequence_client')
     logger.debug(params)
-    cached = true
-    @plivocall = Rails.cache.read(:plivocall_id => params["AccountSID"])
-    if @plivocall.nil?
-      @plivocall = PlivoCall.where(:id => params["AccountSID"]).first
-      cached = false
-    end
-    
+    @plivocall = PlivoCall.where(:id => params["AccountSID"]).first
     @call_sequence = @plivocall.call_sequence
     @plivo = @plivocall.plivo
     #actualiza estado de llamada
-    call = Rails.cache.read(:call_id => params["AccountSID"])
-    call = Call.find(@plivocall.call_id) if call.nil?
+    call = Call.find(@plivocall.call_id)
     call.client.update_column(:calling, true)
     call.enter_listen = Time.now
     call.status = @plivocall.status
-    call.save unless cached
-    Rails.cache.write({:call_id => @plivocall.call_id}, call, :expires_in => 60.seconds)
+    call.save
 
     respond_to do |format|
       format.xml { render 'answer_client' }
@@ -170,42 +155,29 @@ class PlivosController < ApplicationController
     logger.debug('get_digits')
     logger.debug(params)
     salir = false
-    cached = true
-    @plivocall = Rails.cache.read(:plivocall_id => params["AccountSID"])
-    if @plivocall.nil?
-      @plivocall = PlivoCall.where(:id => params["AccountSID"]).first
-      cached = false
-    end
-      
-
-
+    #@plivocall = PlivoCall.where(:uuid => params["id"]).first
+    @plivocall = PlivoCall.where(:id => params["AccountSID"]).first
     @call_sequence = @plivocall.call_sequence
     @plivocall.status = params['CallStatus']
     #almacena resultado de esta peticion
     @call_sequence[@plivocall.step-1][:result] = params['Digits']
+
+    
     @plivocall.data = @call_sequence.to_yaml
-    Rails.cache.write({:plivocall_id => params["AccountSID"]}, @plivocall, :expires_in => 60.seconds)
-    @plivocall.save(:validate => false) unless cached
-    #@trash
-    #unless @plivocall.save(:validate => false)
-     # logger.error('plivos: error fallo actualizar digitos de plivo call %d digito %s' % [@plivocall.id, params['Digits']])
-    #end
+    unless @plivocall.save(:validate => false)
+      logger.error('plivos: error fallo actualizar digitos de plivo call %d digito %s' % [@plivocall.id, params['Digits']])
+    end
     
 
 
     @plivo = @plivocall.plivo
     #actualiza estado de llamada
-    call = Rails.cache.read(:call_id => @plivocall.call_id)
-    if call.nil?
-      call = Call.find(@plivocall.call_id) if call.nil?
-    end
-    
-    
+    call = Call.find(@plivocall.call_id)
     call.client.update_column(:calling, true)
     call.enter_listen = Time.now
     call.status = @plivocall.status
-    call.save unless cached
-    Rails.cache.write({:call_id => @plivocall.call_id}, call, :expires_in => 60.seconds)
+    call.save
+
 
 
     respond_to do |format|
@@ -225,37 +197,22 @@ class PlivosController < ApplicationController
     logger.debug('answer')
     logger.debug(params)
     salir = false
-    cached = true
-    @plivocall = Rails.cache.read(:plivocall_id => params["AccountSID"])
-    if @plivocall.nil?
-      @plivocall = PlivoCall.where(:id => params["AccountSID"]).first 
-      cached = false
-    end
-    
-
+    @plivocall = PlivoCall.where(:id => params["AccountSID"]).first
     @call_sequence = @plivocall.call_sequence
     #actualiza estado
     @plivocall.uuid = params["CallUUID"]
     @plivocall.status = "answered"
-    @plivocall.save unless cached
-    Rails.cache.write({:plivocall_id => params["AccountSID"]}, @plivocall, :expires_in => 60.seconds)
+    @plivocall.save
 
-    #@trash
     @plivo = @plivocall.plivo
     #actualiza estado de llamada
-    call = Rails.cache.read(:call_id => @plivocall.call_id)
-    if call.nil?
-      call = Call.find(@plivocall.call_id)
-      logger.debug('process: omiting cache')
-    end
-    
+    call = Call.find(@plivocall.call_id)
     call.enter_listen = Time.now
     call.status = @plivocall.status
     call.client.update_column(:calling, true)
-    call.save unless cached
-    Rails.cache.write({:call_id => @plivocall.call_id}, call, :expires_in => 60.seconds)
-    #@trash
-    #logger.debug('Trying first plivo from campaign to url ' + @plivo.app_url)
+    call.save
+    
+    logger.debug('Trying first plivo from campaign to url ' + @plivo.app_url)
     respond_to do |format|
       format.xml
     end
@@ -265,19 +222,15 @@ class PlivosController < ApplicationController
     logger.debug('hangup_client:')
     logger.debug(params)
 
-
-    plivocall = Rails.cache.read(:plivocall_id => params["AccountSID"])
-    if plivocall.nil?
-      plivocall = PlivoCall.where(:id => params["AccountSID"]).first      
-    else
-      Rails.cache.delete(:plivocall_id => params["AccountSID"])
-    end
-
-
-
+    plivocall = PlivoCall.where(:id => params["AccountSID"]).first
     plivocall.uuid = params["CallUUID"]
     plivocall.status = params["CallStatus"]
 
+    #22 julio 2013
+    #@todo llamando por el asterisk retorna NORMAL_CLEARING y BILLDURATION 0 para no poder llamar
+    if params["HangupCause"] and params["HangupCause"] == "NORMAL_CLEARING" and params["BillDuration"] and params["BillDuration"] == 0
+      params["HangupCause"] = "NORMAL_TEMPORARY_FAILURE"
+    end
     plivocall.hangup_enumeration = params["HangupCause"] if params["HangupCause"]
     plivocall.bill_duration = params["BillDuration"] if params["BillDuration"]
     plivocall.end = true
@@ -285,12 +238,8 @@ class PlivosController < ApplicationController
 
 
     
-    call = Rails.cache.read(:call_id => plivocall.call_id)
-    if call.nil?
-      call = Call.find(plivocall.call_id)
-    else
-      Rails.cache.delete(:call_id => plivocall.call_id)
-    end
+
+    call = Call.find(plivocall.call_id)
    
     call.terminate = Time.now
     call.completed_p = true
@@ -345,22 +294,17 @@ class PlivosController < ApplicationController
     logger.debug('ringing')
     logger.debug(params)
     
-
     plivocall = PlivoCall.where(:id => params["AccountSID"]).first
     plivocall.uuid = params["CallUUID"]
     plivocall.status = params["CallStatus"]
     plivocall.save
-    
+
     #se notifica que porfin se contesto
     call = Call.find(plivocall.call_id)
     call.status = plivocall.status
     call.client.update_column(:calling, true)
     call.save
 
-
-    #se guarda cache
-    Rails.cache.write({:plivocall_id => params["AccountSID"]}, plivocall, :expires_in => 60.seconds)
-    Rails.cache.write({:call_id => plivocall.call_id}, call, :expires_in => 60.seconds)
 
     respond_to do |format|
       format.xml
@@ -393,8 +337,10 @@ class PlivosController < ApplicationController
       @message.save(:validate => false)
       @message.reload
       @campaign.call_client!(@client, @message)
+    rescue PlivoChannelFull => e
+      flash[:error] = 'No hay canales disponibles'
     rescue PlivoCannotCall => e
-      flash[:notice] = 'No hay canales disponibles:' + e.message
+      flash[:error] = e.message
     rescue Errno::ECONNREFUSED => e
       flash[:error] = 'No se pudo conectar al/los plivo de la campana'
     rescue Exception => e
