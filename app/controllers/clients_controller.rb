@@ -136,8 +136,9 @@ class ClientsController < ApplicationController
     errors = []
     count = 0
     override = params[:override] || false
+
     begin
-      Notification.new(:msg => "uploading clients %s" % params[:list_clients].tempfile.to_s, :type_msg => 'clients', :user_id => session[:user_id]).save
+      Notification.new(:msg => "uploading clients %s" % params[:list_clients].original_filename, :type_msg => 'clients', :user_id => session[:user_id]).save
       tinit = Time.now
       ::CSV.parse(params[:list_clients].tempfile) do |row|
         total_readed += 1
