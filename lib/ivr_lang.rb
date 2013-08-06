@@ -325,7 +325,14 @@ module IVRLang
         when :digits
           xml.GetDigits :action => @plivo.app_url.to_s + get_digits_client_plivo_path(@plivocall.uuid), :retries => step[:options][:retries], :timeout => step[:options][:timeout], :numDigits => step[:options][:numDigits], :validDigits => step[:options][:validDigits] do
             if step[:options][:audio]
-              xml.Play step[:options][:audio]
+              #si no se indica raiz (/) se asume que es un recurso
+              if step[:options][:audio].size > 1 and step[:options][:audio].to_s[0] != "/" and Resource.where(:name => step[:options][:audio]).exists?
+                local_resource = Resource.where(:name => step[:options][:audio]).first
+                audio = @plivo.app_url.to_s + '/resources/audio/' + File.basename(local_resource.file)
+                xml.Play "${http_get(%s)}" % audio.to_s
+              else
+                xml.Play step[:options][:audio]
+              end
             end
             if step[:options][:decir]
               xml.Speak step[:options][:decir]
