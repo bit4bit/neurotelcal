@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
 es:
+  'true': 'Si'
+  false: 'No'
+  enable: 'Activar'
+  disable: 'Desactivar'
   appname: 'NeuroTelCal'
   appdescription: 'Automarcador'
   activerecord:

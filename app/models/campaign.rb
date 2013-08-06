@@ -20,7 +20,7 @@ class Campaign < ActiveRecord::Base
   has_many :resource, :dependent => :delete_all
   has_many :plivo, :dependent => :delete_all, :conditions => 'enable = 1', :order => 'priority ASC'
   has_many :group, :dependent => :delete_all
-  has_many :distributor, :dependent => :delete_all
+  has_many :distributor,:dependent => :delete_all, :conditions => 'active = 1'
   belongs_to :entity
 
   def deep_name

@@ -65,7 +65,7 @@ class PlivosController < ApplicationController
   # POST /plivos.json
   def create
     @plivo = Plivo.new(params[:plivo])
-    @campaigns = Campaign.all.map {|u| [u.name, u.id] }
+    @campaigns = Campaign.all
 
     respond_to do |format|
       params[:plivo][:extra_dial].strip!

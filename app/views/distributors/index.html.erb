@@ -2,9 +2,12 @@
 
 <table>
   <tr>
+    <th>Active</th>
     <th>Description</th>
     <th>Filter</th>
     <th>Plivo</th>
+    <th></th>
+    <th></th>
     <th></th>
     <th></th>
     <th></th>
@@ -12,9 +15,12 @@
 
 <% @distributors.each do |distributor| %>
   <tr>
+    <td><%= I18n.t(distributor.active) %></td>
     <td><%= distributor.filter %></td>
     <td><%= distributor.description %></td>
     <td><%= distributor.plivo.caller_name %></td>
+    <td><%= link_to I18n.t('enable'), distributor_enable_path(distributor) %></td>
+    <td><%= link_to I18n.t('disable'), distributor_disable_path(distributor) %></td>
     <td><%= link_to I18n.t('show'), distributor %></td>
     <td><%= link_to I18n.t('edit'), edit_distributor_path(distributor) %></td>
     <td><%= link_to I18n.t('destroy'), distributor, confirm: I18n.t('are_you_sure'), method: :delete %></td>
