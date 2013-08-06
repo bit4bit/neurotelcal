@@ -45,7 +45,7 @@ class MessageCalendarsController < ApplicationController
 
     respond_to do |format|
       if @message_calendar.save
-        format.html { redirect_to @message_calendar, notice: 'Message calendar was successfully created.' }
+        format.html { redirect_to message_calendars_path(:message_id => @message_calendar.message.id), notice: 'Message calendar was successfully created.' }
         format.json { render json: @message_calendar, status: :created, location: @message_calendar }
       else
         format.html { render action: "new" }
