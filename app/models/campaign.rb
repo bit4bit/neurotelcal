@@ -20,7 +20,7 @@ class Campaign < ActiveRecord::Base
   has_many :resource, :dependent => :delete_all
   has_many :plivo, :dependent => :delete_all, :conditions => 'enable = 1', :order => 'priority ASC'
   has_many :group, :dependent => :delete_all
-  has_many :distributor, :dependent => :delete_all
+  has_many :distributor,:dependent => :delete_all, :conditions => 'active = 1'
   belongs_to :entity
 
   def deep_name
@@ -59,13 +59,11 @@ class Campaign < ActiveRecord::Base
   end
   
   def active_channels
-    return plivo.first.channels if plivo.all.size == 1
-    return plivo.all.size > 1 ? plivo.all.inject{|s,v| s.channels + v.channels} : 0
+    return plivo.all.map{|p| p.channels}.reduce{|s,v| s + v}
   end
 
   def using_channels
-    return plivo.first.using_channels if plivo.all.size == 1
-    return plivo.all.size > 1 ? plivo.all.inject{|s,v| s.using_channels + v.using_channels} : 0
+    return plivo.all.map{|p| p.using_channels}.reduce{|s,v| s + v}
   end
   
   def total_calls_today
@@ -116,6 +114,7 @@ class Campaign < ActiveRecord::Base
       return 0
     end
   end
+
   
   
   #Se verifica si se puede llamara a un cliente
@@ -160,7 +159,7 @@ class Campaign < ActiveRecord::Base
   
   def plivos_from_distributor(client)
     plivos_to_call = []
-    if distributor
+    if distributor.count  > 0
       distributor.each do |d|
         next if d.filter.empty?
         if client.phonenumber =~ Regexp.new(d.filter)
@@ -178,10 +177,10 @@ class Campaign < ActiveRecord::Base
     raise PlivoNotFound, "There is not plivo server, first add one" unless self.plivo.exists?
     called = false
     plivos_to_call = []
-    if distributor
+    if distributor.count > 0
       plivos_to_call = plivos_from_distributor(client)
       if plivos_to_call.nil?
-        raise PlivoNotFound, "There is not plivo server for distributor"
+        return false
       end
     else
       plivos_to_call = self.plivo.all
@@ -191,6 +190,8 @@ class Campaign < ActiveRecord::Base
     plivos_to_call.each { |plivo|
       begin
         called = plivo.call_client(client, message, message_calendar)
+
+        
         break
       rescue PlivoChannelFull => e
         logger.debug("Plivo id %d full trying next plivo" % plivo.id)
@@ -209,7 +210,7 @@ class Campaign < ActiveRecord::Base
   end
   
 
-  
+  #@todo separa esto del modelo
   def process(daemonize = false)
     process_by_client(daemonize)
   end
@@ -261,7 +262,7 @@ class Campaign < ActiveRecord::Base
     logger.debug('process: total messages today %d' % total_messages_today)
 
     id_groups_to_process.uniq!
-    if distributor
+    if distributor.count > 0
       clients = Client.where(:group_id => id_groups_to_process, :callable => true).where(["phonenumber REGEXP ?", Regexp.new(distributor.map{|d| d.filter}.join("|")).source]).order('priority DESC, callable DESC, created_at ASC')
     else
       clients = Client.where(:group_id => id_groups_to_process, :callable => true).order('priority DESC, callable DESC, created_at ASC')      
@@ -282,6 +283,10 @@ class Campaign < ActiveRecord::Base
       next if client_processing.calling?
       next if client_processing.error?
 
+      while using_channels >= active_channels
+        sleep 1
+        logger.debug('process: all channels using waiting for.')
+      end
       #si no hay grupos para procesar se espera
       #lo ideal es mantener cargada la cola de clientes procesados
       return false if not need_process_groups?
@@ -329,6 +334,8 @@ class Campaign < ActiveRecord::Base
           #si esta sobre el limite se omite mensaje
           #logger.debug('process: message over process? %s' % message.over_limit_process_channels?(use_extra_channels).to_s)
           #logger.debug('process: count channels %d' % count_channels_messages[message.id])
+          
+
           
           if message.over_limit_process_channels?(use_extra_channels) or (count_channels_messages[message.id] > 0 and count_channels_messages[message.id] >= message.total_channels_today() + use_extra_channels)
             wait_messages << message unless wait_messages.include?(message)

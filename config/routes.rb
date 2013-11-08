@@ -1,5 +1,8 @@
 Neurotelcal::Application.routes.draw do
-  resources :distributors
+  resources :distributors do
+    get 'enable'
+    get 'disable'
+  end
 
   get "notification/index"
 

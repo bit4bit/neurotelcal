@@ -55,7 +55,7 @@ class DistributorsController < ApplicationController
 
     respond_to do |format|
       if @distributor.save
-        format.html { redirect_to @distributor, notice: 'Distributor was successfully created.' }
+        format.html { redirect_to distributors_path(:campaign_id => session[:campaign_id]), notice: 'Distributor was successfully created.' }
         format.json { render json: @distributor, status: :created, location: @distributor }
       else
         format.html { render action: "new" }
@@ -92,4 +92,28 @@ class DistributorsController < ApplicationController
       format.json { head :no_content }
     end
   end
+
+
+  #GET
+  def disable
+    @distributor = Distributor.find(params[:distributor_id])
+    @distributor.active = false
+    @distributor.save
+    respond_to do |format|
+      format.html { redirect_to distributors_url }
+      format.json { head :no_content }
+    end
+  end
+
+  #GET
+  def enable
+    @distributor = Distributor.find(params[:distributor_id])
+    @distributor.active = true
+    @distributor.save
+    respond_to do |format|
+      format.html { redirect_to distributors_url }
+      format.json { head :no_content }
+    end
+  end
+  
 end

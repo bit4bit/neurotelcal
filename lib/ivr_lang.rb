@@ -264,7 +264,14 @@ module IVRLang
           cu = @call_sequence
           cu.slice!(cu.size - 1, 1)
           step[:sicontinuar].each { |v| cu << v}
-          @plivocall.update_call_sequence(cu)
+          cplivocall = Rails.cache.read(:plivocall_id => @plivocall.id)
+          unless cplivocall.nil?
+            @plivocall.data = cu.to_yaml
+            Rails.cache.write({:plivocall_id => cplivocall.id}, @plivocall)
+          else
+            @plivocall.update_call_sequence(cu)
+          end
+          
           step[:sicontinuar].each { |v| 
             return false unless process_call_step(xml, v)
           }
@@ -274,7 +281,14 @@ module IVRLang
           #se guarda el ultimo resultado
           cu << {:result => last_step[:result].to_s} unless last_step[:result]
           step[:nocontinuar].each { |v| cu << v}
-          @plivocall.update_call_sequence(cu)
+          cplivocall = Rails.cache.read(:plivocall_id => @plivocall.id)
+          unless cplivocall.nil?
+            @plivocall.data = cu.to_yaml
+            Rails.cache.write({:plivocall_id => cplivocall.id}, @plivocall)
+          else
+            @plivocall.update_call_sequence(cu)
+          end
+
           step[:nocontinuar].each { |v| 
             return false unless process_call_step(xml, v) 
           }
@@ -311,7 +325,14 @@ module IVRLang
         when :digits
           xml.GetDigits :action => @plivo.app_url.to_s + get_digits_client_plivo_path(@plivocall.uuid), :retries => step[:options][:retries], :timeout => step[:options][:timeout], :numDigits => step[:options][:numDigits], :validDigits => step[:options][:validDigits] do
             if step[:options][:audio]
-              xml.Play step[:options][:audio]
+              #si no se indica raiz (/) se asume que es un recurso
+              if step[:options][:audio].size > 1 and step[:options][:audio].to_s[0] != "/" and Resource.where(:name => step[:options][:audio]).exists?
+                local_resource = Resource.where(:name => step[:options][:audio]).first
+                audio = @plivo.app_url.to_s + '/resources/audio/' + File.basename(local_resource.file)
+                xml.Play "${http_get(%s)}" % audio.to_s
+              else
+                xml.Play step[:options][:audio]
+              end
             end
             if step[:options][:decir]
               xml.Speak step[:options][:decir]

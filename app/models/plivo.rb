@@ -208,7 +208,8 @@ class Plivo < ActiveRecord::Base
     call.hangup_enumeration = nil
     call.message_calendar_id = message_calendar.id unless message_calendar.nil?
     call.save
-    
+
+
     sequence = message.description_to_call_sequence('!client_fullname' => client.fullname, '!client_id' => client.id)
     
     #Se registra la llamada iniciada de plivo

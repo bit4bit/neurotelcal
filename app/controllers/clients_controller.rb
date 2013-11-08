@@ -129,14 +129,16 @@ class ClientsController < ApplicationController
   
   def create_upload_massive
     @groups = Group.where(:campaign_id => session[:campaign_id])
-
+    print params
     total_uploaded = 0
     total_readed = 0
     total_wrong = 0
     errors = []
     count = 0
     override = params[:override] || false
+
     begin
+      Notification.new(:msg => "uploading clients %s" % params[:list_clients].original_filename, :type_msg => 'clients', :user_id => session[:user_id]).save
       tinit = Time.now
       ::CSV.parse(params[:list_clients].tempfile) do |row|
         total_readed += 1
@@ -154,7 +156,9 @@ class ClientsController < ApplicationController
         end
       end
       tend = Time.now
-      flash[:notice] = 'Uploaded %d and wrongs %d clients with total %d readed in %d seconds ' % [total_uploaded, total_wrong,  total_readed, (tend - tinit)]
+      msg = 'Uploaded %d and wrongs %d clients with total %d readed in %d seconds ' % [total_uploaded, total_wrong,  total_readed, (tend - tinit)]
+      Notification.new(:msg => msg, :type_msg => 'clients', :user_id => session[:user_id]).save
+      flash[:notice] = msg
     rescue Exception => e
       if params[:list_clients].nil?
         flash[:error] = I18n.t('not_uploaded_file')

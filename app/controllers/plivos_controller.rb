@@ -65,7 +65,7 @@ class PlivosController < ApplicationController
   # POST /plivos.json
   def create
     @plivo = Plivo.new(params[:plivo])
-    @campaigns = Campaign.all.map {|u| [u.name, u.id] }
+    @campaigns = Campaign.all
 
     respond_to do |format|
       params[:plivo][:extra_dial].strip!
@@ -226,6 +226,11 @@ class PlivosController < ApplicationController
     plivocall.uuid = params["CallUUID"]
     plivocall.status = params["CallStatus"]
 
+    #22 julio 2013
+    #@todo llamando por el asterisk retorna NORMAL_CLEARING y BILLDURATION 0 para no poder llamar
+    if params["HangupCause"] and params["HangupCause"] == "NORMAL_CLEARING" and params["BillDuration"] and params["BillDuration"] == 0
+      params["HangupCause"] = "NORMAL_TEMPORARY_FAILURE"
+    end
     plivocall.hangup_enumeration = params["HangupCause"] if params["HangupCause"]
     plivocall.bill_duration = params["BillDuration"] if params["BillDuration"]
     plivocall.end = true
@@ -332,8 +337,10 @@ class PlivosController < ApplicationController
       @message.save(:validate => false)
       @message.reload
       @campaign.call_client!(@client, @message)
+    rescue PlivoChannelFull => e
+      flash[:error] = 'No hay canales disponibles'
     rescue PlivoCannotCall => e
-      flash[:notice] = 'No hay canales disponibles'
+      flash[:error] = e.message
     rescue Errno::ECONNREFUSED => e
       flash[:error] = 'No se pudo conectar al/los plivo de la campana'
     rescue Exception => e
