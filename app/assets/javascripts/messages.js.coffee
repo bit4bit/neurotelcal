@@ -465,6 +465,7 @@ class IVR
                 return action
                 
         addAction: (action) ->
+                self = @
                 @actions.push(action)
                 @deleteLastAction()
                 gui = action.gui()
@@ -472,13 +473,19 @@ class IVR
                 close.html(' <b>X</b> ')
                 close.attr('title','Delete')
                 close.click ->
+                        self.actions.splice($.inArray(action, self.actions), 1)
                         gui.remove()
                 close.appendTo(gui)
                 action.guiConfig()
                 
                 gui.appendTo(@root)
+                @update()
                 @createLastAction().appendTo(@root)
 
+        update: ->
+                description_field = $('#message_description')
+                description_field.text(@toNeurotelcal())
+                
         toNeurotelcal: ->
                 out = ''
                 for action in @actions
