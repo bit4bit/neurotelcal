@@ -34,6 +34,7 @@ class Action
         guiConfig: ->
                 item = $('<li>')
                 item.text('nada guiConfig')
+                @ivr.update()
                 @assignAction(item)
                 
         #Item para para el menu en el ivr
@@ -93,7 +94,7 @@ class AddAction extends Action
         guiConfig: ->
                 item = $('<li>')
                 item.text('nada guiConfig')
-                
+                @ivr.update()
         #Item para para el menu en el ivr
         # esto debe ser <li>..</li>
         gui: ->
@@ -147,7 +148,9 @@ class HangupAction extends Action
                 for time in [0..10]
                         input.append($('<option>').text(time))
                 dialog.append(input)
-                dialog.dialog({modal:true})
+                on_close = ->
+                        self.ivr.update()
+                dialog.dialog({modal:true, close: on_close})
         gui: ->
                 self = @
                 item = $('<li>')
@@ -211,6 +214,7 @@ class PlaybackAction extends Action
                         self.label.html('<b>Reproducir:</b> ' + self.resource)
                 dialog.append(select)
                 on_close = ->
+                        self.ivr.update()
                         if !self.validate()
                                 self.guiConfig()
                         return undefined
@@ -338,6 +342,7 @@ class SurveyIVR extends Action
                 dialog.append(sel_tries)
 
                 on_close = (event,ui) ->
+                        self.ivr.update()
                         if !self.validate()
                                 self.configure()
                         return true
@@ -475,6 +480,7 @@ class IVR
                 close.click ->
                         self.actions.splice($.inArray(action, self.actions), 1)
                         gui.remove()
+                        self.update()
                 close.appendTo(gui)
                 action.guiConfig()
                 
@@ -484,7 +490,8 @@ class IVR
 
         update: ->
                 description_field = $('#message_description')
-                description_field.text(@toNeurotelcal())
+                #@hack ya al creado
+                description_field.text($.ivr.toNeurotelcal())
                 
         toNeurotelcal: ->
                 out = ''
@@ -494,16 +501,3 @@ class IVR
 $ ->
         $.ivr = new IVR
         $.ivr.initializeRoot()
-
-        description_field = $('#message_description').parent()
-        out = $('<div>')
-        description_field.append(out)
-        out.css('width','100%')
-        out.css('height','300px')
-        out.css('border', '1px solid black')
-        out.css('background-color', '#FFFFFF')
-        test = $('<a>',{href:'#'})
-        test.text('PROBAR')
-        test.click ->
-                out.html(out.html() + '<br />====<br />' + $.ivr.toNeurotelcal().replace('\n','<br/>'))
-        description_field.append(test)
