@@ -15,6 +15,9 @@
 class Action
         constructor: (@ivr) ->
 
+        copy: ->
+                new Action(@ivr)
+                
         assignAction: (item) ->
                 $.data(item[0], 'action', @)
                 return item
@@ -27,6 +30,7 @@ class Action
                 @assignAction(item)
         #Data para presentar al configurar
         #Usualmente muestra dialog model
+        # al agregarse al ivr se muestra inmediatamente
         guiConfig: ->
                 item = $('<li>')
                 item.text('nada guiConfig')
@@ -48,21 +52,29 @@ class Action
         parseWord: ->
                 ''
 
-
+        #Retorna bool indicando si es valido
+        # sino llama $.ivr.addError(this, 'mensaje') para
+        # mostrar mensaje de error
+        validate: ->
+                true
+                
 #Esta accion
 #se encarga de ser una accion parar agregar
 #otras acciones.
 class AddAction extends Action
+        copy: ->
+                new AddAction(@ivr)
+                
         cbAddAction: ->
                 self = @
                 dialog = $('<div>')
                 menu = $('<ul>')
 
-                for action in @ivr.actions
+                for action in @ivr.actionsAllowed
                         item = action.guiItem()
                         item.click ->
                                 sel_action = $.data(this, 'action')
-                                sel_action.ivr.addAction(sel_action)
+                                sel_action.ivr.addAction(sel_action.copy())
 
                                 dialog.remove()
                         menu.append(item)
@@ -107,7 +119,10 @@ class AddAction extends Action
 class HangupAction extends Action
         commandName: 'Colgar'
         timeElapsed: 0
-        
+
+        copy: ->
+                new HangupAction(@ivr)
+                
         guiItem: ->
                 item = $('<li>')
                 a = $('<a>',{href:'#'})
@@ -122,6 +137,7 @@ class HangupAction extends Action
                 self = @
                 dialog = $('<div>')
                 label = $('<label>',{for:"time_elapsed"})
+                label.html('<b>Seg.</b>')
                 dialog.append(label)
                 input = $('<select>')
                 input.change ->
@@ -144,9 +160,25 @@ class HangupAction extends Action
                         self.configure()
                 item.append(config)
 
+        toNeurotelcal: ->
+                #@todo estado??
+                'Colgar segundos="' + @timeElapsed + '"\n'
+                
 class PlaybackAction extends Action
         @resource: undefined
-        
+
+        validate: ->
+                self = @
+                if @resource == undefined || @resource == "" || @resource == '----'
+                        ret = ->
+                                self.guiConfig()
+                        @ivr.showError(ret, "Debe escoger el recurso")
+                        return false
+                return true
+                
+        copy: ->
+                new PlaybackAction(@ivr)
+                
         parseWord: ->
                 'Reproducir'
 
@@ -160,10 +192,13 @@ class PlaybackAction extends Action
         guiConfig:(item) ->
                 self = @
                 dialog = $('<div>',{title:'Playback Config'})
-                resources = []
+                label = $('<label>',{for:'playback'})
+                label.html('<b>Recurso</b>')
+                dialog.append(label)
+                resources = ['----']
                 $('#resources div').each (index, value) ->
                         resources.push($(value).html())
-                select = $('<select>')
+                select = $('<select>', {name:'playback'})
                 for resource in resources
                         if resource == self.resource
                                 select.append($('<option selected>').text(resource))
@@ -173,35 +208,94 @@ class PlaybackAction extends Action
                         if $(this).val() == ''
                                 self.resource = undefined
                         self.resource = $(this).val()
-                        item.html('<b>Reproducir:</b> ' + self.resource)
+                        self.label.html('<b>Reproducir:</b> ' + self.resource)
                 dialog.append(select)
-                dialog.dialog({modal:true})
+                on_close = ->
+                        if !self.validate()
+                                self.guiConfig()
+                        return undefined
+                dialog.dialog({modal:true, close: on_close})
                 
         gui: ->
                 self = @
                 item = $('<li>')
-                a = $('<a>',{href:'#'})
-                a.html('<b>Reproducir:</b> sin archivo seleccionado')
-                a.click ->
+                @label = $('<a>',{href:'#'})
+                @label.html('<b>Reproducir:</b> sin archivo seleccionado')
+                @label.click ->
                         self.guiConfig($(this))
-                item.append(a)
+                item.append(@label)
                 @assignAction(item)
 
-
+        toNeurotelcal: ->
+                'Reproducir "' + @resource + '"\n'
+                
 class SurveyIVR extends Action
         @uuid: 0
         commandName: 'SurveyIVR'
         digits: []
-        duration: undefined
-        tries: undefined
-        
+        duration: 5
+        tries: 1
+        resource: ""
+        option: undefined
+
+        validate: ->
+                self = @
+                if @option == undefined
+                        ret = ->
+                                self.guiConfig()
+                        @ivr.showError(ret, "No hay opcion para el cliente presionar (Debe escoger) ")
+                        return false
+                return true
+                
+        copy: ->
+                new SurveyIVR(@ivr)
+
+        guiConfig: ->
+                @configure()
+                
         configure: ->
                 self = @
                 dialog = $('<div>')
+                
+                #SELECCION RECURSO
+                label = $('<label>', {for:'resource'})
+                label.html('<b>Recurso</b>')
+                dialog.append(label)
+                sel_resource = $('<select>', {name:'resource'})
+                dialog.append(sel_resource)
+                resources = []
+                $('#resources div').each (index, value) ->
+                        resources.push($(value).html())
+                for resource in resources
+                        if resource == self.resource
+                                sel_resource.append($('<option selected>').text(resource))
+                        else
+                                sel_resource.append($('<option>').text(resource))
+                sel_resource.click ->
+                        self.resource = $(this).val()
 
+                #SELECCION OPCION ESPERADA
+
+                label = $('<label>', {for:'option'})
+                label.html('<b>Debe Escoger</b>')
+                dialog.append(label)
+                digits = ['0','1', '2', '3', '4', '5', '6', '7', '8', '9', '#']
+                sel_option = $('<select>',{name:'option'})
+                dialog.append(sel_option)
+                sel_option.click ->
+                        self.option = $(this).val()
+                        self.digits = [self.option] #??
+                for digit in digits
+                        if @option == digit
+                                sel_option.append($('<option selected="selected">').text(digit))
+                        else
+                                sel_option.append($('<option>').text(digit))
+                                   
+                #SELECCION DIGITO
+                # se omite se
                 label = $('<label>', {for:'digit'})
                 label.text('Digitos')
-                dialog.append(label)
+                #dialog.append(label)
                 sel_digit = $('<select>',{name:"digit", multiple:'multiple'})
                 sel_digit.change ->
                         self.digits = $(this).val()
@@ -212,7 +306,7 @@ class SurveyIVR extends Action
                                 sel_digit.append($('<option selected="selected">').text(digit))
                         else
                                 sel_digit.append($('<option>').text(digit))
-                dialog.append(sel_digit)
+                #dialog.append(sel_digit)
 
                 label = $('<label>', {for:'duration'})
                 label.text('Duracion')
@@ -242,7 +336,13 @@ class SurveyIVR extends Action
                         else
                                 sel_tries.append($('<option>').text(trie))
                 dialog.append(sel_tries)
-                dialog.dialog({modal:true})
+
+                on_close = (event,ui) ->
+                        if !self.validate()
+                                self.configure()
+                        return true
+                        
+                dialog.dialog({modal:true, close: on_close })
                 
         guiItem: ->
                 item = $('<li>')
@@ -289,15 +389,38 @@ class SurveyIVR extends Action
                 col_no.append(ivr_no)
 
                 @assignAction(item)
+
+        toNeurotelcal: ->
+                out = ''
+                out += 'Registrar digitos cantidad=' + @digits.length + ' audio="' + @resource + '"' + ' duracion=' + @duration + ' intentos=' + @tries + '\n'
+                out += 'Si =' + @option + '\n' + @ivr_yes.toNeurotelcal() + '\n' + 'No' +' \n' + @ivr_no.toNeurotelcal() + '\n' + 'Fin\n'
+                out
                 
 class IVR
         constructor: () ->
-                @actions = [
+                @errors = []
+                @actions = []
+                @actionsAllowed = [
                         new PlaybackAction(@)
                         new SurveyIVR(@)
                         new HangupAction(@)
                         ]
+
+        clearErrors: ->
+                @errors = []
                 
+        showError: (ret, msg) ->
+                #dialog = $('<div>')
+
+                gerror = $('<span>')
+                gerror.css('backgrund-color', 'red')
+                gerror.html(msg)
+                #dialog.append(gerror)
+                alert(gerror.html())
+                #dialog.dialog({modal:true, close: ret})
+
+                
+
         initializeRoot: ->
                 @uid = 'ivr-root'
                 #el campo donde se escribe el mensaje actualmente
@@ -311,7 +434,7 @@ class IVR
                 @ivr.css("border", "1px solid black")
                 @ivr.css("background-color", "#FFFFFF")
 
-                description_field.css('display', 'none')
+                #description_field.css('display', 'none')
 
                 @initialize()
 
@@ -342,6 +465,7 @@ class IVR
                 return action
                 
         addAction: (action) ->
+                @actions.push(action)
                 @deleteLastAction()
                 gui = action.gui()
                 close = $('<a>',{href:'#'})
@@ -350,12 +474,29 @@ class IVR
                 close.click ->
                         gui.remove()
                 close.appendTo(gui)
-
+                action.guiConfig()
                 
                 gui.appendTo(@root)
                 @createLastAction().appendTo(@root)
-                
+
+        toNeurotelcal: ->
+                out = ''
+                for action in @actions
+                        out += action.toNeurotelcal()
+                out
 $ ->
         $.ivr = new IVR
         $.ivr.initializeRoot()
 
+        description_field = $('#message_description').parent()
+        out = $('<div>')
+        description_field.append(out)
+        out.css('width','100%')
+        out.css('height','300px')
+        out.css('border', '1px solid black')
+        out.css('background-color', '#FFFFFF')
+        test = $('<a>',{href:'#'})
+        test.text('PROBAR')
+        test.click ->
+                out.html(out.html() + '<br />====<br />' + $.ivr.toNeurotelcal().replace('\n','<br/>'))
+        description_field.append(test)
