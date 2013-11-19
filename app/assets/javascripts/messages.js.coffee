@@ -82,6 +82,10 @@ class Action
         # mostrar mensaje de error
         validate: ->
                 true
+
+        #Permite asignar valores de configuracion
+        # a la accion
+        set: ->
                 
 #Esta accion
 #se encarga de ser una accion parar agregar
@@ -170,7 +174,10 @@ class HangupAction extends Action
                         self.label.html(self.guiLabel())
 
                 for time in [0..10]
-                        input.append($('<option>').text(time))
+                        if self.timeElapsed == time
+                                input.append($('<option selected="selected">').text(time))
+                        else
+                                input.append($('<option>').text(time))
                 dialog.append(input)
                 on_close = ->
                         self.ivr.update()
@@ -186,7 +193,11 @@ class HangupAction extends Action
                 config.click ->
                         self.configure()
                 item.append(config)
-
+                
+        set: (sec) ->
+                @timeElapsed  = sec
+                @label.html(@guiLabel())
+                
         toNeurotelcal: ->
                 #@todo estado??
                 'Colgar segundos="' + @timeElapsed + '"\n'
@@ -218,6 +229,9 @@ class PlaybackAction extends Action
                 item.append(a)
                 @assignAction(a)
                 
+        _guiLabel: ->
+                '<b>' + $.i18n._("playback_action") + ':</b> ' + @resource
+                
         guiConfig:(item) ->
                 self = @
                 dialog = $('<div>',{title: $.i18n._('playback_config_title')})
@@ -228,7 +242,9 @@ class PlaybackAction extends Action
                 $('#resources div').each (index, value) ->
                         resources.push($(value).html())
                 select = $('<select>', {name:'playback'})
+
                 for resource in resources
+
                         if resource == self.resource
                                 select.append($('<option selected>').text(resource))
                         else
@@ -237,7 +253,7 @@ class PlaybackAction extends Action
                         if $(this).val() == ''
                                 self.resource = undefined
                         self.resource = $(this).val()
-                        self.label.html('<b>' + $.i18n._("playback_action") + ':</b> ' + self.resource)
+                        self.label.html(self._guiLabel())
                 dialog.append(select)
                 on_close = ->
                         self.ivr.update()
@@ -255,7 +271,11 @@ class PlaybackAction extends Action
                         self.guiConfig($(this))
                 item.append(@label)
                 @assignAction(item)
-
+                
+        set: (resource) ->
+                @resource = resource
+                @label.html(@_guiLabel())
+                
         toNeurotelcal: ->
                 'Reproducir "' + @resource + '"\n'
                 
@@ -526,6 +546,100 @@ class IVR
                 for action in @actions
                         out += action.toNeurotelcal()
                 out
+
+
+
+#Se encarga de construir el IVR
+# apartir del comando,argumento,variables del lenguage
+# Neurotelcal
+class IVRBuilder
+        ivrs: []
+        constructor: (@ivr) ->
+                @ivrs.push(@ivr)
+                @on_yes = false
+                @on_no = false
+                @depth = 0 #aumenta si esta en Si
+                
+        build: (command, argument, vars) ->
+                ivr_working = @ivrs[@depth]
+                if @on_yes
+                        ivr_working = @ivrs[@depth].ivr_yes
+                else if @on_no
+                        ivr_working = @ivrs[@depth].ivr_no
+                switch command
+                        when "Reproducir"
+                                @buildPlayback(ivr_working, argument.replace(/\"/g,''))
+                        when "Colgar"
+                                @buildHangup(ivr_working, parseInt(vars["segundos"]))
+                        when "Registrar"
+                                @buildSurveyIVR(ivr_working, vars)
+                        when "Si"
+                                @depth += 1
+                                @on_yes = true
+                                @ivrs[@depth].option = parseInt(vars[""])
+                                @ivrs[@depth].digits.push(parseInt(vars[""]))
+                        when "No"
+                                @on_yes = false
+                                @on_no = true
+                        when "Fin"
+                                @on_no = false
+                                @depth -= 1
+        buildPlayback: (ivr, resource) ->
+                resource = resource
+                action = new PlaybackAction(ivr)
+                config = action.guiConfig
+                action.guiConfig = ->
+                ivr.addAction(action)
+                action.guiConfig = config
+                action.set(resource)
+                
+        buildHangup: (ivr, seg) ->
+                seg = parseInt(seg)
+                seg = 0 if isNaN(seg)
+                action = new HangupAction(ivr)
+                ivr.addAction(action)
+                action.set(parseInt(seg))
+
+        buildSurveyIVR: (ivr, vars) ->
+                tivr = new SurveyIVR(ivr)
+                config = tivr.guiConfig
+                tivr.guiConfig = ->
+                ivr.addAction(tivr)
+                tivr.guiConfig = config
+                tivr.tries = parseInt(vars["intentos"])
+                tivr.duration = parseInt(vars["duracion"])
+                tivr.resource = vars["audio"]
+                @ivrs.push(tivr)
+
+#IVRParse lee cadena de texto y actualiza ivr
+# agregando las actions
+class IVRParse
+        constructor: (@ivr) ->
+                @builder = new IVRBuilder(@ivr)
+                
+        parse: (text) ->
+                for line in text.split('\n')
+                        continue if line.replace(" ").length == 0
+
+                        tokens = line.split(' ')
+
+                        command = tokens.shift()
+                        variables = {}
+                        argument = ""
+
+                        if tokens[0] != undefined && tokens[0].indexOf('=') == -1
+                                argument = tokens.shift()
+                                
+                        for token in tokens
+                                variable = token.split("=")
+                                variables[variable[0]] = variable[1].replace(/\"/g,"")
+                        @builder.build(command, argument, variables)
+
 $ ->
         $.ivr = new IVR
         $.ivr.initializeRoot()
+
+        if $('#message_description').text().length > 0
+                parser = new IVRParse($.ivr)
+                parser.parse($('#message_description').text())
+                $.ivr.update()
