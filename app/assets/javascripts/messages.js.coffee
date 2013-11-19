@@ -92,7 +92,7 @@ class AddAction extends Action
                 
         cbAddAction: ->
                 self = @
-                dialog = $('<div>',{title:"add_action_title"})
+                dialog = $('<div>',{title:$.i18n._("add_action_title")})
                 menu = $('<ul>')
 
                 for action in @ivr.actionsAllowed

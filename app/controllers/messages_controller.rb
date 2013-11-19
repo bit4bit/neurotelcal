@@ -71,6 +71,7 @@ class MessagesController < ApplicationController
   # GET /messages/1/edit
   def edit
     @message = Message.where(:group_id => session[:group_id]).find(params[:id])
+    @resources = @message.group.campaign.resource.all
   end
 
   # POST /messages
@@ -78,6 +79,7 @@ class MessagesController < ApplicationController
   def create
     @message = Message.new(params[:message])
     @message.group_id = session[:group_id]
+    @resources = @message.group.campaign.resource.all
 
     respond_to do |format|
       if @message.save
@@ -95,6 +97,7 @@ class MessagesController < ApplicationController
   def update
     @message = Message.find(params[:id])
     @message.group_id = session[:group_id]
+    @resources = @message.group.campaign.resource.all
     respond_to do |format|
       if @message.update_attributes(params[:message])
         format.html { redirect_to @message, :notice => 'Message was successfully updated.' }
