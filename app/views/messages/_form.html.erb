@@ -1,3 +1,8 @@
+<div id="resources" style="display:none">
+  <% @resources.each do |r| %>
+  <div><%= r.name%></div>
+  <% end %>
+</div>
 <%= simple_form_for(@message) do |f| %>
   <% if @message.errors.any? %>
     <div id="error_explanation">
@@ -18,7 +23,9 @@
   <div class="field">
     <%= f.input :name %>
   </div>
-  <div class="field">
+  <div id="ivr">
+  </div>
+  <div class="field description-ivr">
     <%= f.label :description %><br />
     <%= f.text_area :description %>
   </div>

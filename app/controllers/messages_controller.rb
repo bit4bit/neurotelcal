@@ -60,7 +60,7 @@ class MessagesController < ApplicationController
   def new
     @message = Message.new
     @message.group_id = session[:group_id]
-
+    @resources = @message.group.campaign.resource.all
 
     respond_to do |format|
       format.html # new.html.erb
