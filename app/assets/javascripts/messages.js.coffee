@@ -12,6 +12,30 @@
 #IVR
 #sin accion [agregar] -> al agregar se puede escoger
 
+translation =
+        "configure": "configurar"
+        "add": "agregar"
+        "delete": "Eliminar"
+        "resource": "Recurso"
+        "hangup_title": "Colgar"
+        "hangup": "Colgar"
+        "hangup a call": "Colgar llamada"
+        "add_action_title": "Gestor de acciones"
+        "playback_action": "Reproducir"
+        "playback_err_select_resource": "Debe escoger recurso"
+        "playback_action_desc": "reproduce archivo de audio"
+        "playback_config_title": "Reproducir"
+        "playback_action_without_resource": "sin recurso seleccionado"
+        "surveyivr_action": "Encuestar"
+        "surveyivr_action_desc": "Realize encuesta"
+        "surveyivr_err_not_option": "(Debe escoger) una opcion esperada ser presionada por el cliente"
+        "surveyivr_err_not_resource": "Debe escoger un audio"
+        "surveyivr_choose_one": "Debe escoger"
+        "surveyivr_digit": "Digitos"
+        "surveyivr_duration": "Duracion"
+        "surveyivr_tries": "Intentos"
+$.i18n.setDictionary(translation)
+
 class Action
         constructor: (@ivr) ->
 
@@ -68,7 +92,7 @@ class AddAction extends Action
                 
         cbAddAction: ->
                 self = @
-                dialog = $('<div>')
+                dialog = $('<div>',{title:"add_action_title"})
                 menu = $('<ul>')
 
                 for action in @ivr.actionsAllowed
@@ -118,7 +142,7 @@ class AddAction extends Action
         
 
 class HangupAction extends Action
-        commandName: 'Colgar'
+        commandName: $.i18n._('hangup')
         timeElapsed: 0
 
         copy: ->
@@ -127,7 +151,7 @@ class HangupAction extends Action
         guiItem: ->
                 item = $('<li>')
                 a = $('<a>',{href:'#'})
-                a.html('<b>'+@commandName+':</b> Hangup call')
+                a.html('<b>'+@commandName+':</b>' + $.i18n._('hangup a call'))
                 item.append(a)
                 @assignAction(item)
 
@@ -136,7 +160,7 @@ class HangupAction extends Action
                 
         configure: ->
                 self = @
-                dialog = $('<div>')
+                dialog = $('<div>',{title:$.i18n._('hangup_title')})
                 label = $('<label>',{for:"time_elapsed"})
                 label.html('<b>Seg.</b>')
                 dialog.append(label)
@@ -158,7 +182,7 @@ class HangupAction extends Action
                 @label.html(@guiLabel())
                 item.append(@label)
                 config = $('<a>', {href:'#'})
-                config.html(' configurar ')
+                config.html(' ' + $.i18n._('configure') + ' ')
                 config.click ->
                         self.configure()
                 item.append(config)
@@ -168,6 +192,8 @@ class HangupAction extends Action
                 'Colgar segundos="' + @timeElapsed + '"\n'
                 
 class PlaybackAction extends Action
+        commandName: $.i18n._("playback_action")
+        
         @resource: undefined
 
         validate: ->
@@ -175,7 +201,7 @@ class PlaybackAction extends Action
                 if @resource == undefined || @resource == "" || @resource == '----'
                         ret = ->
                                 self.guiConfig()
-                        @ivr.showError(ret, "Debe escoger el recurso")
+                        @ivr.showError(ret, $.i18n._("playback_err_select_resource"))
                         return false
                 return true
                 
@@ -188,13 +214,13 @@ class PlaybackAction extends Action
         guiItem: ->
                 item = $('<li>')
                 a = $('<a>',{href:'#'})
-                a.html('<b>Playback audio: </b> this option allow playback audio')
+                a.html('<b>' + $.i18n._('playback_action') + ': </b> ' + $.i18n._('playback_action_desc'))
                 item.append(a)
                 @assignAction(a)
                 
         guiConfig:(item) ->
                 self = @
-                dialog = $('<div>',{title:'Playback Config'})
+                dialog = $('<div>',{title: $.i18n._('playback_config_title')})
                 label = $('<label>',{for:'playback'})
                 label.html('<b>Recurso</b>')
                 dialog.append(label)
@@ -211,7 +237,7 @@ class PlaybackAction extends Action
                         if $(this).val() == ''
                                 self.resource = undefined
                         self.resource = $(this).val()
-                        self.label.html('<b>Reproducir:</b> ' + self.resource)
+                        self.label.html('<b>' + $.i18n._("playback_action") + ':</b> ' + self.resource)
                 dialog.append(select)
                 on_close = ->
                         self.ivr.update()
@@ -224,7 +250,7 @@ class PlaybackAction extends Action
                 self = @
                 item = $('<li>')
                 @label = $('<a>',{href:'#'})
-                @label.html('<b>Reproducir:</b> sin archivo seleccionado')
+                @label.html('<b>' + $.i18n._('playback_action') + ':</b>' + $.i18n._('playback_action_without_resource'))
                 @label.click ->
                         self.guiConfig($(this))
                 item.append(@label)
@@ -235,7 +261,7 @@ class PlaybackAction extends Action
                 
 class SurveyIVR extends Action
         @uuid: 0
-        commandName: 'SurveyIVR'
+        commandName: $.i18n._("surveyivr_action")
         digits: []
         duration: 5
         tries: 1
@@ -244,10 +270,12 @@ class SurveyIVR extends Action
 
         validate: ->
                 self = @
-                if @option == undefined
-                        ret = ->
-                                self.guiConfig()
-                        @ivr.showError(ret, "No hay opcion para el cliente presionar (Debe escoger) ")
+                ret = ->
+                        self.guiConfig()
+                if @resource == undefined || @resource == ''
+                        @ivr.showError(ret, $.i18n._("surveyivr_err_not_resource"))
+                if @option == undefined || @option == ''
+                        @ivr.showError(ret, $.i18n._("surveyivr_err_not_option"))
                         return false
                 return true
                 
@@ -263,11 +291,11 @@ class SurveyIVR extends Action
                 
                 #SELECCION RECURSO
                 label = $('<label>', {for:'resource'})
-                label.html('<b>Recurso</b>')
+                label.html('<b>' + $.i18n._('resource') + '</b>')
                 dialog.append(label)
                 sel_resource = $('<select>', {name:'resource'})
                 dialog.append(sel_resource)
-                resources = []
+                resources = ['']
                 $('#resources div').each (index, value) ->
                         resources.push($(value).html())
                 for resource in resources
@@ -281,9 +309,9 @@ class SurveyIVR extends Action
                 #SELECCION OPCION ESPERADA
 
                 label = $('<label>', {for:'option'})
-                label.html('<b>Debe Escoger</b>')
+                label.html('<b>' + $.i18n._('surveyivr_choose_one') + '</b>')
                 dialog.append(label)
-                digits = ['0','1', '2', '3', '4', '5', '6', '7', '8', '9', '#']
+                digits = ['', '0','1', '2', '3', '4', '5', '6', '7', '8', '9', '#']
                 sel_option = $('<select>',{name:'option'})
                 dialog.append(sel_option)
                 sel_option.click ->
@@ -298,13 +326,13 @@ class SurveyIVR extends Action
                 #SELECCION DIGITO
                 # se omite se
                 label = $('<label>', {for:'digit'})
-                label.text('Digitos')
+                label.text($.i18n._("surveyivr_digit"))
                 #dialog.append(label)
                 sel_digit = $('<select>',{name:"digit", multiple:'multiple'})
                 sel_digit.change ->
                         self.digits = $(this).val()
 
-                digits = ['0','1', '2', '3', '4', '5', '6', '7', '8', '9', '#']
+                digits = ['', '0','1', '2', '3', '4', '5', '6', '7', '8', '9', '#']
                 for digit in digits
                         if $.inArray(digit, self.digits) >= 0
                                 sel_digit.append($('<option selected="selected">').text(digit))
@@ -313,13 +341,13 @@ class SurveyIVR extends Action
                 #dialog.append(sel_digit)
 
                 label = $('<label>', {for:'duration'})
-                label.text('Duracion')
+                label.text($.i18n._('surveyivr_duration'))
                 dialog.append(label)
                 sel_duration = $('<select>',{name:"duration"})
                 sel_duration.change ->
                         self.duration = parseInt($(this).val())
                 durations = [5..15]
-
+                self.duration = durations[0]
                 for duration in durations
                         if parseInt(self.duration) == parseInt(duration)
                                 sel_duration.append($('<option selected="selected">').text(duration))
@@ -328,7 +356,7 @@ class SurveyIVR extends Action
                 dialog.append(sel_duration)
 
                 label = $('<label>', {for:'tries'})
-                label.text('Intentos')
+                label.text($.i18n._('surveyivr_tries'))
                 dialog.append(label)
                 sel_tries = $('<select>',{name:"tries"})
                 sel_tries.change ->
@@ -352,7 +380,7 @@ class SurveyIVR extends Action
         guiItem: ->
                 item = $('<li>')
                 a = $('<a>',{href:'#'})
-                a.html('<b>SurveyIVR:</b>Do surveys')
+                a.html('<b>' + @commandName + ':</b>' + $.i18n._('surveyivr_action_desc'))
                 item.append(a)
                 @assignAction(item)
 
