@@ -3,6 +3,11 @@
   <div><%= r.name%></div>
   <% end %>
 </div>
+
+<div id="resource_upload">
+  <%= render "resources/form" %>
+</div>
+
 <%= simple_form_for(@message) do |f| %>
   <% if @message.errors.any? %>
     <div id="error_explanation">
