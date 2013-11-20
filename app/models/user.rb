@@ -11,5 +11,7 @@ class User < ActiveRecord::Base
   attr_accessible :admin, :name
   attr_accessible :monitor, :monitor_campaign_id, :admin
   attr_reader :password
+  validates :name, :presence => true, :uniqueness => true
+  validates :password, :confirmation => true
 
 end

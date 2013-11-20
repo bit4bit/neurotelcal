@@ -7,6 +7,7 @@
       <%= f.input :admin %>
       <%= f.input :monitor %><%= f.input :monitor_campaign_id, :collection => @campaigns %>
       <%= f.input :name, :input_html => { :size => 30 } %>
+      <%= f.input :email%>
       <%= f.input :password, :input_html => { :size => 30 } %>
       <%= f.input :password_confirmation, :input_html => {:size => 30}%>
     </div>
