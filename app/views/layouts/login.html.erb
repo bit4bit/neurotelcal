@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title><%= t('appname')%></title>
+  <%= stylesheet_link_tag "blueprint/screen", :media => "screen" %>
+  <%= stylesheet_link_tag "blueprint/print", :media => "print" %>
+  <%= stylesheet_link_tag "blueprint/plugins/link-icons/screen", :media => "screen, projection" %>
+  <%= stylesheet_link_tag "blueprint/plugins/buttons/screen", :media => "screen, projection" %>
+  <%= stylesheet_link_tag "campaigns", :media => "screen" %>
+  <%= javascript_include_tag "application" %>
+  <%= stylesheet_link_tag "jquery-ui" %>
+  <%= csrf_meta_tags %>
+</head>
+<body>
+
+  <div class="container">
+    <embed style="width:400px; height:150px;" src="/logo.svg" type="image/svg+xml" />
+    <% if notice %>
+    <p class="alert alert-notice"><%= notice %></p>
+    <% end %>
+    <% if alert %>
+    <p class="alert alert-error"><%= alert %></p>
+    <% end %>
+    
+    <div id="main">
+
+      <%= yield %>
+    </div>
+  </div>
+
+</body>
+</html>

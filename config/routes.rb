@@ -1,4 +1,6 @@
 Neurotelcal::Application.routes.draw do
+  devise_for :users
+
   resources :distributors do
     get 'enable'
     get 'disable'
@@ -47,7 +49,8 @@ Neurotelcal::Application.routes.draw do
   resources :users
 
   get 'plivos/report'
-  resources :plivos do
+  resources(:plivos, constraints: WhitelistPlivoConstraint.new) do
+
     member do
       get 'call_client'
       post 'docall_client'

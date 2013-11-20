@@ -20,7 +20,9 @@ require 'plivohelper'
     
 class PlivosController < ApplicationController
   skip_before_filter :verify_authenticity_token
-
+  #omite authenticacion de acciones
+  #el control se hace por IP mirar config/initializer/whitelist_plivo_constrains.rb
+  before_filter :authenticate_user!, except: [:contact_client, :continue_sequence_client, :get_digits_client, :answer_client, :hangup_client, :ringing_client]
   # GET /plivos
   # GET /plivos.json
   def index
