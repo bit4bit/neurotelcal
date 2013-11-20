@@ -85,6 +85,8 @@ class MessagesController < ApplicationController
     @message = Message.new(params[:message])
     @message.group_id = session[:group_id]
     @resources = @message.group.campaign.resource.where(:type_file => "audio").all
+    @resource = Resource.new(params[:resource])
+    @resource.campaign_id = session[:campaign_id]
 
     respond_to do |format|
       if @message.save
@@ -103,6 +105,9 @@ class MessagesController < ApplicationController
     @message = Message.find(params[:id])
     @message.group_id = session[:group_id]
     @resources = @message.group.campaign.resource.all
+    @resource = Resource.new(params[:resource])
+    @resource.campaign_id = session[:campaign_id]
+
     respond_to do |format|
       if @message.update_attributes(params[:message])
         format.html { redirect_to @message, :notice => 'Message was successfully updated.' }
