@@ -19,7 +19,7 @@
       <ul>
 	<li><%= link_to I18n.t('menu.monitor'), monitor_index_path%></li>
 	<li><%= link_to I18n.t('menu.reports'), monitor_cdr_path%></li>
-	<li><%= link_to I18n.t('menu.quit'), logout_path, :method => :delete %></li>
+	<li><%= link_to I18n.t('menu.quit'), destroy_operators_user_session_path, :method => :delete %></li>
       </ul>
       <ul>
 	<%= yield :sub_menu %>
