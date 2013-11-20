@@ -265,6 +265,7 @@ class PlaybackAction extends Action
                                 dialog.remove()
                                 self.resource = $(this).val()
                                 self.label.html(self._guiLabel())
+                                self.ivr.update() #@bug despues de crear se necesita
                 dialog.append(select)
                 dialog.append('<br>')
                 resource_upload = $('<a>', {href:'#'})
@@ -277,12 +278,8 @@ class PlaybackAction extends Action
                         drl.dialog
                                 modal:true
                                 close: ->
-                                        self.guiConfig()
                                         dialog.remove()
-                                        
-                #resource_upload = $('#resource_upload')
-                #dialog.append(resource_upload)
-                #resource_upload.show()
+                                        self.guiConfig()
 
                 on_close = ->
                         self.ivr.update()
@@ -445,7 +442,23 @@ class SurveyIVR extends Action
                                         item_dialog.prop('disabled', true)
                                 else
                                         item_dialog.prop('disabled', false)
-                                
+
+
+                dialog.append('<br>')
+                resource_upload = $('<a>', {href:'#'})
+                resource_upload.html('<b>' + $.i18n._('playback_action_resource_upload') + '</b>')
+                dialog.append(resource_upload)
+                dialog.append('<br>')
+                resource_upload.click ->
+                        drl = $('#resource_upload')
+
+                        drl.dialog
+                                modal:true
+                                close: ->
+                                        dialog.remove()
+                                        self.guiConfig()
+
+
                 on_close = (event,ui) ->
                         self.ivr.update()
                         if !self.validate()
