@@ -17,7 +17,7 @@
 #  * implementar *guiConfig* *gui*
 #  * agregar a IVR::actions
 translation =
-        "configure_advance": "Plan de marcado avanzado"
+        "configure_advance": "Cambia interfaz del IVR"
         "configure": "configurar"
         "add": "agregar"
         "delete": "Eliminar"
@@ -31,6 +31,7 @@ translation =
         "playback_action_desc": "reproduce archivo de audio"
         "playback_config_title": "Reproducir"
         "playback_action_without_resource": "sin recurso seleccionado"
+        "playback_action_resource_upload": "Agregar Recurso"
         "surveyivr_action": "Encuestar"
         "surveyivr_action_desc": "Realize encuesta"
         "surveyivr_err_not_option": "(Debe escoger) una opcion esperada ser presionada por el cliente"
@@ -265,6 +266,24 @@ class PlaybackAction extends Action
                                 self.resource = $(this).val()
                                 self.label.html(self._guiLabel())
                 dialog.append(select)
+                dialog.append('<br>')
+                resource_upload = $('<a>', {href:'#'})
+                resource_upload.html('<b>' + $.i18n._('playback_action_resource_upload') + '</b>')
+                dialog.append(resource_upload)
+                dialog.append('<br>')
+                resource_upload.click ->
+                        drl = $('#resource_upload')
+
+                        drl.dialog
+                                modal:true
+                                close: ->
+                                        self.guiConfig()
+                                        dialog.remove()
+                                        
+                #resource_upload = $('#resource_upload')
+                #dialog.append(resource_upload)
+                #resource_upload.show()
+
                 on_close = ->
                         self.ivr.update()
                         if !self.validate()
@@ -703,4 +722,21 @@ $ ->
                 parser = new IVRParse($.ivr)
                 parser.parse($('#message_description').text())
                 $.ivr.update()
+
+        $('#resource_upload').hide()
+        $('#resource_upload form').ajaxForm
+                dataType: 'json'
+                error: (xhr, status, error, form) ->
+                        data = JSON.parse(xhr.responseText)
+                        msg = ''
+                        for k in Object.keys(data)
+                                msg += '*' + k + ': ' + data[k] + '\n'
+                        alert(msg)
+                        form.clearForm()
+                success: (data, status, xhr, form) ->
+                        r = $('<div>')
+                        r.text(data.name)
+                        $('div#resources').append(r)
+                        form.clearForm()
+                        form.parent().dialog('close')
 

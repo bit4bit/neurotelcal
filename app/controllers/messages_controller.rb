@@ -64,6 +64,8 @@ class MessagesController < ApplicationController
     @message = Message.new
     @message.group_id = session[:group_id]
     @resources = @message.group.campaign.resource.all
+    @resource = Resource.new(params[:resource])
+    @resource.campaign_id = session[:campaign_id]
 
     respond_to do |format|
       format.html # new.html.erb
@@ -75,6 +77,9 @@ class MessagesController < ApplicationController
   def edit
     @message = Message.where(:group_id => session[:group_id]).find(params[:id])
     @resources = @message.group.campaign.resource.all
+    @resource = Resource.new(params[:resource])
+    @resource.campaign_id = session[:campaign_id]
+
   end
 
   # POST /messages
@@ -82,7 +87,7 @@ class MessagesController < ApplicationController
   def create
     @message = Message.new(params[:message])
     @message.group_id = session[:group_id]
-    @resources = @message.group.campaign.resource.all
+    @resources = @message.group.campaign.resource.where(:type_file => "audio").all
 
     respond_to do |format|
       if @message.save
