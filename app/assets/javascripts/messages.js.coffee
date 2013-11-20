@@ -17,7 +17,7 @@
 #  * implementar *guiConfig* *gui*
 #  * agregar a IVR::actions
 translation =
-        "configure_advance": "Plan de marcado avanzado"
+        "configure_advance": "Cambia interfaz del IVR"
         "configure": "configurar"
         "add": "agregar"
         "delete": "Eliminar"
