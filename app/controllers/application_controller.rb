@@ -17,38 +17,24 @@
 
 
 class ApplicationController < ActionController::Base
-  before_filter :authorize
+  before_filter :authenticate_user!
+  #before_filter :authorize
   layout :auto_layout
   protect_from_forgery
 
   private
   
   def auto_layout
+    if !user_signed_in?
+      return "login"
+    end
+    
     if session[:admin] == false and session[:monitor] == true
       return "monitoring"
     end
     return "application"    
   end
   
-  #Sistema rudimentario de control de acceso
-  def authorize_monitor
-    url_authorize = Rails.application.routes.recognize_path request.original_url
-    #@todo mejorar esto
-    url_valids = [
-                  {:controller => 'monitor', :action => 'index'},
-                  {:controller => 'monitor', :action => 'campaigns_status'},
-                  {:controller => 'monitor', :action => 'channels_status'},
-                  {:controller => 'monitor', :action => 'cdr'},
-                  {:controller => 'sessions', :action => 'new'},
-                  {:controller => 'sessions', :action => 'destroy'}
-                 ]
-    if not url_valids.include?(url_authorize)
-      redirect_to login_url, :notice => 'Acceso no autorizado'
-    else
-      return false
-    end
-    return true
-  end
   
   def authorize
  
@@ -69,11 +55,6 @@ class ApplicationController < ActionController::Base
       return
     end
 
-    if session[:monitor]
-      authorize_monitor
-      return
-    end
-    
     if not session[:admin]
       redirect_to login_url, :notice => "No autorizado/a"
       return

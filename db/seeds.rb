@@ -7,4 +7,4 @@
 #   Mayor.create(:name => 'Emanuel', :city => cities.first)
 
 
-User.create(:name => 'admin', :password => 'admin', :admin => true);
+User.create!(:name => 'admin', :email => 'admin@localhost.localhost', :password => 'neurotelcal', :password_confirmation => 'neurotelcal', :admin => true);

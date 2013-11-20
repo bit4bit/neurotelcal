@@ -17,6 +17,13 @@
     <div id="menu">
       <span id="app"><%= t('appname')%>. <%= t('appdescription')%>
 	</span>
+      <span>
+	<% if user_signed_in? %>
+	Logged in as <strong><%= current_user.email %></strong>.
+	<% else %>
+	<%= link_to "Login", new_user_session_path, :class => 'navbar-link'  %>
+	<% end %>
+      </span>
       <ul>
 	<li><%= link_to I18n.t('menu.monitor'), monitor_index_path%></li>
 	<li><%= link_to I18n.t('menu.entity'), entities_path%></li>
@@ -27,7 +34,9 @@
 	<li><%= link_to I18n.t('menu.tools'), tools_path %></li>
 	<li><%= link_to t('menu.about'), page_about_path%></li>
 	<li><%= link_to I18n.t('menu.notifications'), notification_index_path%></li>
-	<li><%= link_to I18n.t('menu.quit'), logout_path, :method => :delete %></li>
+	<% if user_signed_in? %>
+	<li><%= link_to I18n.t('menu.quit'), destroy_user_session_path, method: :delete, :class => 'navbar-link'  %></li>
+	<% end %>
       </ul>
       <ul>
 	<%= yield :sub_menu %>
