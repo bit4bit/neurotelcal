@@ -1,11 +1,11 @@
 
-class Operators::OperatorController < Operators::ApplicationController
-  layout "monitoring"
+class Operators::MonitorController < Operators::ApplicationController
+
   def index
   end
 
   def cdr
-    if session[:monitor]
+    if current_operators_user[:monitor]
       messages = Message.where(:group_id => Group.where(:campaign_id => session[:monitor_campaign_id])).all
       @calls = Call.paginate :page => params[:page], :conditions => ["message_id IN (?) ", messages]
     else

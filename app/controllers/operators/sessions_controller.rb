@@ -1,7 +1,7 @@
 class Operators::SessionsController < Devise::SessionsController
 
   def after_sign_in_path_for(resource)
-    operators_operator_index_url
+    operators_monitor_index_url
   end
 
   def after_sign_out_path_for(resource)

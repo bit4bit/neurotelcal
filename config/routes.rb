@@ -1,10 +1,10 @@
 Neurotelcal::Application.routes.draw do
   namespace :operators do
     devise_for :users, controllers: { sessions: 'operators/sessions'}
-    get "operator/index"
-    get "operator/cdr"
-    get "operator/channels_status"
-    get "operator/campaigns_status"
+    get "monitor/index"
+    get "monitor/cdr"
+    get "monitor/channels_status"
+    get "monitor/campaigns_status"
   end
   
   devise_for :users

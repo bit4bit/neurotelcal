@@ -15,6 +15,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 class Operators::ApplicationController < ActionController::Base
   before_filter :authenticate_operators_user!
+  layout "operator"
 end
 
 
