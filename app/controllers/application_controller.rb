@@ -18,13 +18,17 @@
 
 class ApplicationController < ActionController::Base
   before_filter :authenticate_user!
-  #before_filter :authorize
+  before_filter :authorize_admin
   layout :auto_layout
   protect_from_forgery
 
   private
   
   def auto_layout
+    if operators_user_signed_in?
+      return "operator"
+    end
+
     if !user_signed_in?
       return "login"
     end
@@ -32,33 +36,33 @@ class ApplicationController < ActionController::Base
     if session[:admin] == false and session[:monitor] == true
       return "monitoring"
     end
+    
     return "application"    
   end
   
   
-  def authorize
- 
-    if request.remote_ip == '127.0.0.1' or request.remote_ip == '0.0.0.0' or request.local?
-      logger.debug("Direct access to 127.0.0.1")
-      return
+  def authorize_admin
+    if user_signed_in?
+      if current_user.monitor
+        sign_out current_user
+        session.clear
+        redirect_to new_operators_user_session_path
+      end
     end
-
-    #Permisos de servidor plivo
-    if not Plivo.where('api_url LIKE ?', '%'+request.remote_ip+'%').empty?
-      logger.debug("Direct access to "+request.remote_ip)
-      return
-    end
-
-    #Permisos session
-    if not User.find_by_id(session[:user_id])
-      redirect_to login_url, :notice => "Ingrese primero"
-      return
-    end
-
-    if not session[:admin]
-      redirect_to login_url, :notice => "No autorizado/a"
-      return
-    end
-
   end
+
+  protected
+  def require_user_or_operator!
+    unless user_signed_in? or operators_user_signed_in?
+      redirect_to root_path, :alert => "Access denied"
+    end
+  end
+  
 end
+
+
+
+
+
+
+

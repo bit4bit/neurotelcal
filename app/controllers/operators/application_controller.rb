@@ -14,8 +14,21 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 class Operators::ApplicationController < ActionController::Base
+  skip_before_filter :authorize_admin
   before_filter :authenticate_operators_user!
+  before_filter :configure
   layout "operator"
+
+  private
+  def configure
+    session[:campaign_id] = current_operators_user.monitor_campaign_id
+  end
+    
 end
+
+
+
+
+
 
 

@@ -34,12 +34,12 @@ class SessionsController < ApplicationController
       session[:admin] = user.admin 
       logger.debug(session)
       if session[:monitor] == true and session[:admin] == false
-        redirect_to monitor_index_path
+        redirect_to operators_operator_index_path
       else
         redirect_to campaigns_url
       end
     else
-      redirect_to login_url, :alert => "Invalido combinación usuario/contraseña"
+      redirect_to session_url, :alert => "Invalido combinación usuario/contraseña"
     end
   end
 

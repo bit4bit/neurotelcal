@@ -5,6 +5,8 @@ Neurotelcal::Application.routes.draw do
     get "monitor/cdr"
     get "monitor/channels_status"
     get "monitor/campaigns_status"
+    resources :operator
+    resources :resources
   end
   
   devise_for :users

@@ -16,9 +16,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-class ResourcesController < ApplicationController
-  skip_before_filter :authenticate_user!, :authorize_admin
-  before_filter :require_user_or_operator!
+class Operators::ResourcesController < Operators::ApplicationController
 
   #Valores por defecto
   def initialize(*args)
@@ -84,8 +82,8 @@ class ResourcesController < ApplicationController
 
     respond_to do |format|
       if @resource.save
-        format.html { redirect_to @resource, :notice => 'Resource was successfully created.' }
-        format.json { render :json => @resource, :status => :created, :location => @resource }
+        format.html { redirect_to operators_resources_path, :notice => 'Resource was successfully created.' }
+        format.json { render :json => @resource, :status => :created, :location => operators_resource_path(@resource) }
       else
         format.html { render :action => "new" }
         format.json { render :json => @resource.errors, :status => :unprocessable_entity }
@@ -124,7 +122,7 @@ class ResourcesController < ApplicationController
     @resource.destroy
 
     respond_to do |format|
-      format.html { redirect_to resources_url }
+      format.html { redirect_to operators_resources_url }
       format.json { head :no_content }
     end
   end

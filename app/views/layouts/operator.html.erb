@@ -8,6 +8,7 @@
   <%= stylesheet_link_tag "blueprint/plugins/buttons/screen", :media => "screen, projection" %>
   <%= stylesheet_link_tag "campaigns", :media => "screen" %>
   <%= javascript_include_tag "application" %>
+  <%= stylesheet_link_tag "jquery-ui" %>
   <%= csrf_meta_tags %>
 </head>
 <body>
@@ -18,6 +19,8 @@
 	</span>
       <ul>
 	<li><%= link_to I18n.t('menu.monitor'), operators_monitor_index_path%></li>
+	<li><%= link_to I18n.t('defaults.resources'), resources_path%></li>
+	<li><%= link_to I18n.t('menu.campaigns'), operators_operator_index_path%></li>
 	<li><%= link_to I18n.t('menu.reports'), operators_monitor_cdr_path%></li>
 	<li><%= link_to I18n.t('menu.quit'), destroy_operators_user_session_path, :method => :delete %></li>
       </ul>

@@ -1,4 +1,7 @@
 class MessageCalendarsController < ApplicationController
+  skip_before_filter :authenticate_user!, :authorize_admin
+  before_filter :require_user_or_operator!
+
   # GET /message_calendars
   # GET /message_calendars.json
   def index

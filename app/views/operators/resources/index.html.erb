@@ -1,4 +1,5 @@
-<%= link_to I18n.t('resource.new.title'), new_resource_path, :class => "button" %>
+<%= link_to I18n.t('back'), operators_operator_index_path, :class => "button negative" %>
+<%= link_to I18n.t('resource.new.title'), new_operators_resource_path, :class => "button" %>
 <h1><%= I18n.t('resource.index.title')%><br /><%= I18n.t('defaults.campaign')%> <%= @campaign.name %></h1>
 
 <table>
@@ -18,9 +19,9 @@
     <td>
       <a href="<%= resource.file[6..-1]%>"><%= resource.name_file %> </a>
     </td>
-    <td><%= link_to I18n.t('show'), resource %></td>
-    <td><%= link_to I18n.t('edit'), edit_resource_path(resource) %></td>
-    <td><%= link_to I18n.t('destroy'), resource, :confirm => I18n.t('are_you_sure'), :method => :delete %></td>
+    <td><%= link_to I18n.t('show'), operators_resource_path(resource) %></td>
+    <td><%= link_to I18n.t('edit'), edit_operators_resource_path(resource) %></td>
+    <td><%= link_to I18n.t('destroy'), operators_resource_path(resource), :confirm => I18n.t('are_you_sure'), :method => :delete %></td>
   </tr>
 <% end %>
 </table>

@@ -17,6 +17,9 @@
 
 
 class MessagesController < ApplicationController
+  skip_before_filter :authenticate_user!, :authorize_admin
+  before_filter :require_user_or_operator!
+
   # GET /messages
   # GET /messages.json
   def index

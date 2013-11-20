@@ -2,7 +2,7 @@
 require 'digest'
 
 class Resource < ActiveRecord::Base
-  TYPES = ["audio", "documento", "correoe"]
+  TYPES = ["audio", "correoe"]
 
   attr_accessible :campaign_id, :file, :name, :type_file, :created_at, :updated_at
 
