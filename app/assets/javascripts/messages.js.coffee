@@ -11,8 +11,13 @@
 #de acciones.ej
 #IVR
 #sin accion [agregar] -> al agregar se puede escoger
-
+#
+# Para crear una nueva action
+#  * Heredar de *Action*
+#  * implementar *guiConfig* *gui*
+#  * agregar a IVR::actions
 translation =
+        "configure_advance": "Plan de marcado avanzado"
         "configure": "configurar"
         "add": "agregar"
         "delete": "Eliminar"
@@ -34,6 +39,9 @@ translation =
         "surveyivr_digit": "Digitos"
         "surveyivr_duration": "Duracion"
         "surveyivr_tries": "Intentos"
+        "surveyivr_only_conditional": "Solo bifuracion"
+        "surveyivr_only_conditional_help": "Active si desea continuar el IVR superior, tomara el la respuesta del cliente del IVR superior"
+        "surveyivr_digit_help":"Seleccion los digitos permitidos por el cliente, esto es usado para crear un IVR mas complejo. Usar creando mas Encuestas de solo bifurcacion"
 $.i18n.setDictionary(translation)
 
 class Action
@@ -173,7 +181,7 @@ class HangupAction extends Action
                         self.timeElapsed = parseInt($(this).val())
                         self.label.html(self.guiLabel())
 
-                for time in [0..10]
+                for time in [0..60] by 5
                         if self.timeElapsed == time
                                 input.append($('<option selected="selected">').text(time))
                         else
@@ -250,10 +258,12 @@ class PlaybackAction extends Action
                         else
                                 select.append($('<option>').text(resource))
                 select.change ->
-                        if $(this).val() == ''
+                        if $(this).val() == '' || $(this).val() == '----'
                                 self.resource = undefined
-                        self.resource = $(this).val()
-                        self.label.html(self._guiLabel())
+                        else
+                                dialog.remove()
+                                self.resource = $(this).val()
+                                self.label.html(self._guiLabel())
                 dialog.append(select)
                 on_close = ->
                         self.ivr.update()
@@ -287,14 +297,17 @@ class SurveyIVR extends Action
         tries: 1
         resource: ""
         option: undefined
-
+        only_conditional: false
+        
         validate: ->
                 self = @
+
                 ret = ->
                         self.guiConfig()
-                if @resource == undefined || @resource == ''
+                        
+                if @resource == undefined || @resource == ''  && !@only_conditional
                         @ivr.showError(ret, $.i18n._("surveyivr_err_not_resource"))
-                if @option == undefined || @option == ''
+                if @option == undefined || @option == '' 
                         @ivr.showError(ret, $.i18n._("surveyivr_err_not_option"))
                         return false
                 return true
@@ -326,6 +339,7 @@ class SurveyIVR extends Action
                 sel_resource.click ->
                         self.resource = $(this).val()
 
+                dialog.append($('<br>'))
                 #SELECCION OPCION ESPERADA
 
                 label = $('<label>', {for:'option'})
@@ -338,16 +352,16 @@ class SurveyIVR extends Action
                         self.option = $(this).val()
                         self.digits = [self.option] #??
                 for digit in digits
-                        if @option == digit
+                        if parseInt(@option) == parseInt(digit)
                                 sel_option.append($('<option selected="selected">').text(digit))
                         else
                                 sel_option.append($('<option>').text(digit))
-                                   
+
+                dialog.append($('<br>'))
                 #SELECCION DIGITO
-                # se omite se
-                label = $('<label>', {for:'digit'})
+                label = $('<label>', {for:'digit', title:$.i18n._('surveyivr_digit_help')})
                 label.text($.i18n._("surveyivr_digit"))
-                #dialog.append(label)
+                dialog.append(label)
                 sel_digit = $('<select>',{name:"digit", multiple:'multiple'})
                 sel_digit.change ->
                         self.digits = $(this).val()
@@ -358,8 +372,9 @@ class SurveyIVR extends Action
                                 sel_digit.append($('<option selected="selected">').text(digit))
                         else
                                 sel_digit.append($('<option>').text(digit))
-                #dialog.append(sel_digit)
-
+                dialog.append(sel_digit)
+                dialog.append($('<br>'))
+                #SEL DURACION
                 label = $('<label>', {for:'duration'})
                 label.text($.i18n._('surveyivr_duration'))
                 dialog.append(label)
@@ -388,7 +403,30 @@ class SurveyIVR extends Action
                         else
                                 sel_tries.append($('<option>').text(trie))
                 dialog.append(sel_tries)
+                dialog.append($('<br>'))
+                #DIGITOS VALIDOS
+                
+                #SOLO BIFURCACION
+                label = $('<label>', {for:'only_conditional', title: $.i18n._('surveyivr_only_conditional_help')})
+                label.text($.i18n._('surveyivr_only_conditional'))
+                dialog.append(label)
+                check_conditional = $('<input>', {type:"checkbox", name:'only_conditional'})
+                check_conditional.attr('checked', @only_conditional)
+                dialog.append(check_conditional)
+                items_dialog = [sel_resource, sel_digit, sel_duration, sel_tries]
+                for item_dialog in items_dialog
+                        if @only_conditional
+                                item_dialog.prop('disabled',true)
+                                
+                check_conditional.change ->
+                        self.only_conditional = this.checked
 
+                        for item_dialog in items_dialog 
+                                if this.checked
+                                        item_dialog.prop('disabled', true)
+                                else
+                                        item_dialog.prop('disabled', false)
+                                
                 on_close = (event,ui) ->
                         self.ivr.update()
                         if !self.validate()
@@ -444,9 +482,19 @@ class SurveyIVR extends Action
                 @assignAction(item)
 
         toNeurotelcal: ->
+                digitosValidos = ""
+                if @digits
+                        digitosValidos = @digits.join('')
+                else
+                        digitosValidos = '' + @option
+                
                 out = ''
-                out += 'Registrar digitos cantidad=' + @digits.length + ' audio="' + @resource + '"' + ' duracion=' + @duration + ' intentos=' + @tries + '\n'
+                out += 'Registrar digitos cantidad=' + @digits.length + ' audio="' + @resource + '"' + ' duracion=' + @duration + ' intentos=' + @tries + ' digitosValidos="' + digitosValidos + '" \n' if !@only_conditional
+                out = out.trim()
+                out += '\n'
                 out += 'Si =' + @option + '\n' + @ivr_yes.toNeurotelcal() + '\n' + 'No' +' \n' + @ivr_no.toNeurotelcal() + '\n' + 'Fin\n'
+                out = out.trim()
+                out += '\n'
                 out
                 
 class IVR
@@ -524,14 +572,16 @@ class IVR
                 gui = action.gui()
                 close = $('<a>',{href:'#'})
                 close.html(' <b>X</b> ')
-                close.attr('title','Delete')
+                close.attr('title', $.i18n._('delete'))
+                close.css('color','red')
                 close.click ->
                         self.actions.splice($.inArray(action, self.actions), 1)
                         gui.remove()
                         self.update()
-                close.appendTo(gui)
+                        
+                #close.appendTo(gui.first())
+                ($(gui.children()[0])).before(close)
                 action.guiConfig()
-                
                 gui.appendTo(@root)
                 @update()
                 @createLastAction().appendTo(@root)
@@ -638,8 +688,19 @@ class IVRParse
 $ ->
         $.ivr = new IVR
         $.ivr.initializeRoot()
-
+        p = $('#message_description').parent()
+        advance = $('<a>', {href:'#'})
+        advance.html('<b>' + $.i18n._('configure_advance') + '</b>')
+        advance.click ->
+                $('#message_description').toggle()
+                $('#message_help').toggle()
+                $.ivr.ivr.toggle()
+        p.append($('<br>'))
+        p.append(advance)
+        $('#message_description').hide()
+        $('#message_help').hide()
         if $('#message_description').text().length > 0
                 parser = new IVRParse($.ivr)
                 parser.parse($('#message_description').text())
                 $.ivr.update()
+

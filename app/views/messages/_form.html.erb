@@ -15,7 +15,9 @@
       </ul>
     </div>
   <% end %>
-  <%= render "messages/ayuda" %>
+  <div id="messages_help">
+    <%= render "messages/ayuda" %>
+  </div>
   <div class="field">
     <b>Grupo</b><br />
     <%= @message.group.name %>
@@ -23,11 +25,12 @@
   <div class="field">
     <%= f.input :name %>
   </div>
-  <div id="ivr">
-  </div>
+
   <div class="field description-ivr">
     <%= f.label :description %><br />
     <%= f.text_area :description %>
+    <div id="ivr">
+    </div>
   </div>
 
   <div class="field">
