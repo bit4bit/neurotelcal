@@ -17,11 +17,8 @@ class Operators::MonitorController < Operators::ApplicationController
   end
   
   def campaigns_status
-    if session[:monitor]
-      @campaigns = Campaign.where(:id => session[:monitor_campaign_id])
-    else
-      @campaigns = Campaign.all
-    end
+    @campaigns = Campaign.where(:id => session[:campaign_id])
+    
     
     respond_to do |format|
       format.html { render :layout => nil }
