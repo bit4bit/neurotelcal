@@ -27,8 +27,12 @@
       <%= link_to I18n.t('defaults.messages'), messages_path(:group_id => group)%>
     </td>
     <td><%= link_to I18n.t('show'), group %></td>
-    <td><%= link_to I18n.t('edit'), edit_group_path(group) %><br />
-<%= link_to I18n.t('destroy'), group, :confirm => I18n.t('are_you_sure'), :method => :delete %></td>
+    <td>
+<%= link_to I18n.t('defaults.clients'), operators_clients_path(:group_id => group)%><br />
+      <%= link_to I18n.t('edit'), edit_group_path(group) %><br />
+<%= link_to I18n.t('destroy'), group, :confirm => I18n.t('are_you_sure'), :method => :delete %><br />
+
+</td>
    
     
   </tr>

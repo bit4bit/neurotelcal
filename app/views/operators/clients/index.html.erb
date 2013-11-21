@@ -1,0 +1,32 @@
+<%= link_to I18n.t('back'), operators_operator_index_path, :class => "button negative" %>
+<%= link_to I18n.t('client.new.title'), new_operators_client_path, :class => "button" %>
+<%= link_to I18n.t('client.upload_massive.title'), new_upload_massive_operators_clients_path, :class => "button" %>
+
+<h1><%= I18n.t('client.index.title')%> <%= I18n.t('defaults.campaign')%> <%= @campaign.name %></h1>
+
+<table>
+  <tr>
+    <th><%= I18n.t('client.l.name')%></th>
+    <th><%= I18n.t('client.l.phonenumber')%></th>
+    <th><%= I18n.t('client.l.group')%></th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @clients.each do |client| %>
+  <tr>
+    <td><%= client.fullname %></td>
+    <td><%= client.phonenumber %></td>
+    <td><%= client.group.name if client.group %></td>
+    <td><%= link_to I18n.t('show'), operators_client_path(client) %></td>
+    <td><%= link_to I18n.t('edit'), edit_operators_client_path(client) %></td>
+    <td><%= link_to I18n.t('destroy'), operators_client_path(client), :confirm => I18n.t('are_you_sure'), :method => :delete %></td>
+    </td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+<%= will_paginate @clients %>
+

@@ -1,0 +1,39 @@
+<%
+# Copyright (C) 2012 Bit4Bit <bit4bit@riseup.net>
+#
+#
+# This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%>
+<%= link_to I18n.t('back'), operators_clients_path, :class => "button negative" %>
+Importar desde CSV<br />
+Se omitiran los que estan en blanco.<br />
+<b>La primera columna debe ser el nombre y la segunda el telefono.</b><br />
+<% if flash[:notice] %>
+ <p class="notice"><%= flash[:notice]%></p>
+<% end %>
+<% if flash[:error] %>
+ <p class="error"><%= flash[:error]%></p>
+<% end %>
+
+<%= form_tag({:controller => 'operators/clients', :action => :create_upload_massive}, :multipart =>true) do %>
+    <%= label_tag('override')%>
+<%= check_box_tag('override')%><br />
+    <%= file_field_tag('list_clients')%>
+ <div class="field">
+    <%= label_tag :group_id %><br />
+    <%= select_tag :group_id, options_from_collection_for_select(@groups, 'id', 'name'), :prompt => "Seleccion Grupo" %>
+  </div>
+<%= submit_tag()%>
+<% end %>
+    

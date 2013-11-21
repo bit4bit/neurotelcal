@@ -1,0 +1,33 @@
+<%= form_for(@client, url: {controller: 'operators/clients'}) do |f| %>
+  <% if @client.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@client.errors.count, "error") %> prohibited this client from being saved:</h2>
+
+      <ul>
+      <% @client.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :fullname %><br />
+    <%= f.text_field :fullname %>
+  </div>
+  <div class="field">
+    <%= f.label :phonenumber %><br />
+    <%= f.text_field :phonenumber, {:title => 'Si el cliente tiene multiples numeros para ubicarle agregarlos separados por ,'} %>
+  </div>
+  <div class="field">
+    <b>Campaña</b><br />
+    <%= @client.campaign.name %>
+  </div>
+  <div class="field">
+    <%= f.label :group_id %><br />
+    <%= @group.name %>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

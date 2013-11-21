@@ -7,6 +7,10 @@ Neurotelcal::Application.routes.draw do
     get "monitor/channels_status"
     get "monitor/campaigns_status"
     get "operator/dashboard"
+    resources :clients do
+      get 'new_upload_massive', :on => :collection
+      post 'create_upload_massive', :on => :collection
+    end
     resources :operator
     resources :resources
   end
