@@ -295,6 +295,8 @@ class Campaign < ActiveRecord::Base
       sleep 1 while pause?
 
       self.group.all.each do |group_processing|
+        #se omite si esta detenido
+        break if group_processing.stop?
         #se termina en caso de forzado, y espera la ultima llamada
         return false if end?
 

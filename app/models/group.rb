@@ -30,4 +30,12 @@ class Group < ActiveRecord::Base
     client.where(:callable => false).count
   end
   
+  def stop?
+    self.status == 'stop'
+  end
+  
+  def start?
+    self.status == 'start'
+  end
+  
 end
