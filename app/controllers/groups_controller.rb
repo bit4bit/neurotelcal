@@ -116,10 +116,39 @@ class GroupsController < ApplicationController
     end
   end
 
+  def status_start
+    @group = Group.find(params[:group_id])
+    respond_to do |format| 
+      if @group.update_column(:status, 'start')
+        format.html { redirect_to :action => 'index', :notice => 'Grupo iniciado'}
+      else
+        format.html {redirect_to :action => 'index' }
+      end
+      
+    end
+  end
+  
+ def status_stop
+    @group = Group.find(params[:group_id])
+    respond_to do |format|
+      if @group.update_column(:status, 'stop')
+        format.html { redirect_to :action => 'index', :notice => 'Grupo detenido'}
+      else
+        format.html {redirect_to :action => 'index' }
+      end
+      
+    end
+  end
+
   private
   def validate_request_owner
     if params[:id] && session[:campaign_id]
       unless Group.where(:id => params[:id], :campaign_id => session[:campaign_id]).exists?
+        head :bad_request
+      end
+    end
+    if params[:group_id] && session[:campaign_id]
+      unless Group.where(:id => params[:group_id], :campaign_id => session[:campaign_id]).exists?
         head :bad_request
       end
     end

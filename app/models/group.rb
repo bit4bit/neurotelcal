@@ -3,6 +3,7 @@ class Group < ActiveRecord::Base
   attr_accessible :name, :campaign_id, :messages_share_clients
   attr_accessible :enable
   attr_accessible :created_at, :updated_at
+  attr_accessible :status
   has_many :client, :dependent => :delete_all, :order => 'priority DESC, callable DESC, created_at ASC'
   has_many :message, :order => 'priority DESC', :conditions => 'processed = 0', :dependent => :delete_all
   belongs_to :campaign

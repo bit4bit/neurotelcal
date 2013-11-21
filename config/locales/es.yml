@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 es:
+  stop: 'Detenida'
+  start: 'Iniciada'
+  end: 'Terminada'
   dashboard: 'Mi Perfil'
   'true': 'Si'
   false: 'No'
@@ -32,6 +35,7 @@ es:
         name: 'Nombre'
         messages_share_clients: 'Mensajes se comparten clientes?'
         enable: 'Activo?'
+        status: 'Estado'
       campaign:
         name: 'Nombre'
         description: 'Descripción'
@@ -145,6 +149,7 @@ es:
     l:
       name: 'Nombre'
       messages_share_clients: 'Mensajes se comparten clientes?'
+      status: 'Estado'
     index:
       title: 'Listando Grupos'
     edit:

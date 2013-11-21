@@ -79,7 +79,11 @@ Neurotelcal::Application.routes.draw do
     post 'answer_client', :defaults => { :format => 'xml' }, :on => :collection
   end
 
-  resources :groups
+  resources :groups do
+    put 'status_start'
+    put 'status_stop'
+  end
+  
 
   resources :clients do
     get 'new_upload_massive', :on => :collection
