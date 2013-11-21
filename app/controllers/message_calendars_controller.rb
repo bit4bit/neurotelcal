@@ -1,6 +1,7 @@
 class MessageCalendarsController < ApplicationController
   skip_before_filter :authenticate_user!, :authorize_admin
   before_filter :require_user_or_operator!
+  before_filter :validate_request_owner
 
   # GET /message_calendars
   # GET /message_calendars.json
@@ -84,4 +85,24 @@ class MessageCalendarsController < ApplicationController
       format.json { head :no_content }
     end
   end
+
+  private
+  def validate_request_owner
+    if params[:message_id] && session[:campaign_id]
+      unless Message.where(:id => params[:message_id], :group_id => Campaign.find(session[:campaign_id]).group.all).exists?
+        head :bad_request
+      end
+    end
+    
+    if params[:id] && session[:campaign_id]
+      unless Message.where(:id => params[:id], :group_id => Campaign.find(session[:campaign_id]).group.all).exists?
+        head :bad_request
+      end
+    end
+    
+  end
+  
 end
+
+
+

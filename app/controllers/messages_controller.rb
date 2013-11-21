@@ -19,12 +19,13 @@
 class MessagesController < ApplicationController
   skip_before_filter :authenticate_user!, :authorize_admin
   before_filter :require_user_or_operator!
-
+  before_filter :validate_request_owner
   # GET /messages
   # GET /messages.json
   def index
     #activo session[:campaign_id] para saber en cual campana se esta
-    
+    #valida que
+   
     if params[:group_id]
       group_id = params[:group_id]
       group = Group.find(group_id)
@@ -133,4 +134,29 @@ class MessagesController < ApplicationController
       format.json { head :no_content }
     end
   end
+
+  private
+  def validate_request_owner
+    if params[:group_id] && session[:campaign_id]
+      unless Group.where(:id => params[:group_id], :campaign_id => session[:campaign_id]).exists?
+        head :bad_request
+        return false
+      end
+    end
+    if params[:id] && session[:group_id]
+      unless Message.where(:id => params[:id], :group_id => session[:group_id]).exists?
+        head :bad_request
+        return false
+      end
+    end
+    
+    if params[:message_id] && session[:group_id]
+      unless Message.where(:id => params[:message_id], :group_id => session[:group_id]).exists?
+        head :bad_request
+        return false
+      end
+    end
+    
+  end
+  
 end

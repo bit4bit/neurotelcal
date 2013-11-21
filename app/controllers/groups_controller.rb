@@ -17,6 +17,7 @@
 
 
 class GroupsController < ApplicationController
+  before_filter :validate_request_owner
   # GET /groups
   # GET /groups.json
   def index
@@ -114,4 +115,14 @@ class GroupsController < ApplicationController
       format.json { head :no_content }
     end
   end
+
+  private
+  def validate_request_owner
+    if params[:id] && session[:campaign_id]
+      unless Group.where(:id => params[:id], :campaign_id => session[:campaign_id]).exists?
+        head :bad_request
+      end
+    end
+  end
+  
 end
