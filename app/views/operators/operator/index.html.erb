@@ -1,8 +1,9 @@
-<%= link_to I18n.t('group.new.title'), new_operators_operator_path, :class => "button" %>
-<h1><%= I18n.t('campaign.index.title')%> -<%= @campaign.name %>- </h1>
+<%= link_to I18n.t('group.new.title'), new_group_path, :class => "button" %>
+<h1><%= I18n.t('group.index.title')%> <%= @campaign.name %> </h1>
 
 <table>
   <tr>
+    <th><%= I18n.t('group.l.status')%></th>
     <th><%= I18n.t('group.l.name')%></th>
     <th><%= I18n.t('defaults.clients')%></th>
     <th><%= I18n.t('defaults.clients_answer')%></th>
@@ -13,15 +14,21 @@
 
 <% @groups.each do |group| %>
   <tr>
+    <td><%= I18n.t(group.status) %></td>
     <td><%= group.name %></td>
     <td><%= group.client.count %></td>
     <td><%= group.total_calls %></td>
     <td>
-      <%= link_to I18n.t('defaults.messages'), messages_path(:group_id => group)%>
+      <%= link_to I18n.t('campaign.l.START'), group_status_start_path(group), :method => :put, :class => 'campaign-status campaign-status-start' %>
+      <%= link_to I18n.t('campaign.l.END'), group_status_stop_path(group), :method => :put, :class => 'campaign-status campaign-status-end'%>
     </td>
 
-    <td><%= link_to I18n.t('edit'), edit_operators_operator_path(group) %><br />
-<%= link_to I18n.t('destroy'), operators_operator_path(group), :confirm => I18n.t('are_you_sure'), :method => :delete %></td>
+    <td>
+      <%= link_to I18n.t('defaults.messages'), messages_path(:group_id => group)%>
+    </td>
+    <td><%= link_to I18n.t('show'), group %></td>
+    <td><%= link_to I18n.t('edit'), edit_group_path(group) %><br />
+<%= link_to I18n.t('destroy'), group, :confirm => I18n.t('are_you_sure'), :method => :delete %></td>
    
     
   </tr>

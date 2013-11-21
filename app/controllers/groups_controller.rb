@@ -17,6 +17,8 @@
 
 
 class GroupsController < ApplicationController
+  skip_before_filter :authenticate_user!, :authorize_admin
+  before_filter :require_user_or_operator!
   before_filter :validate_request_owner
   # GET /groups
   # GET /groups.json
