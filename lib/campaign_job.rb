@@ -32,9 +32,11 @@ class CampaignJob
     end
     
     Rails.logger.debug("Processing campaign")
-    while campaign.need_process_groups?
+    #while campaign.need_process_groups?
+    while true
       campaign.process(true)
       break if campaign.end?
+      sleep 30
     end
     campaign.update_column(:status, Campaign::STATUS['END'])
     Rails.logger.debug("End processing campaign")
