@@ -2,6 +2,7 @@
 require 'digest'
 
 class Resource < ActiveRecord::Base
+  default_scope order('created_at DESC')
   TYPES = ["audio", "correoe"]
 
   attr_accessible :campaign_id, :file, :name, :type_file, :created_at, :updated_at

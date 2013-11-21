@@ -18,6 +18,7 @@
       <span id="app"><%= t('appname')%>. <%= t('appdescription')%>
 	</span>
       <ul>
+	<li><%= link_to I18n.t('dashboard'), operators_operator_dashboard_path%></li>
 	<li><%= link_to I18n.t('menu.monitor'), operators_monitor_index_path%></li>
 	<li><%= link_to I18n.t('defaults.resources'), resources_path%></li>
 	<li><%= link_to I18n.t('menu.campaigns'), operators_operator_index_path%></li>

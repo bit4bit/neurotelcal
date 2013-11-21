@@ -1,0 +1,16 @@
+<h1><%= I18n.t('operators.operator.dashboard.title')%></h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Disponible para llamar</th>
+      <th>Canales Disponibles</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><%= @campaign.start? ? I18n.t('true') :  I18n.t('false')%></td>
+      <td><%= @campaign.active_channels ? @campaign.active_channels : 0 %></td>
+    </tr>
+  </tbody>
+</table>

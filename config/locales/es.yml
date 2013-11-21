@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 es:
+  dashboard: 'Mi Perfil'
   'true': 'Si'
   false: 'No'
+  'false': 'No'
   enable: 'Activar'
   disable: 'Desactivar'
   appname: 'NeuroTelCal'
@@ -323,6 +325,10 @@ es:
       msg: 'Mensajes'
     index:
       title: 'Notificaciones'
+  operators:
+    operator:
+      dashboard:
+        title: 'Perfil'
   devise:
     shared:
       sign_in: 'Ingresar'

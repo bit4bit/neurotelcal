@@ -115,6 +115,10 @@ class Operators::OperatorController < Operators::ApplicationController
     end
   end
 
+  def dashboard
+    @campaign = Campaign.find(current_operators_user.monitor_campaign_id)
+  end
+  
   private
 
   #@todo si esto falla deberia quedar registro de la ip

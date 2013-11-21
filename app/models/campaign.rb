@@ -9,7 +9,7 @@
 #mirar Campaign#process.
 class Campaign < ActiveRecord::Base
   STATUS = { 'START' => 0, 'PAUSE' => 1, 'END' => 2}
-
+  default_scope order('created_at DESC')
 
 
   attr_accessible :description, :name, :status, :entity_id

@@ -1,6 +1,8 @@
 <%= link_to I18n.t('resource.new.title'), new_resource_path, :class => "button" %>
 <h1><%= I18n.t('resource.index.title')%><br /><%= I18n.t('defaults.campaign')%> <%= @campaign.name %></h1>
 
+<%= will_paginate @resources %>
+<br />
 <table>
   <tr>
     <th><%= I18n.t('resource.l.name')%></th>

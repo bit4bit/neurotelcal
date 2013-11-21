@@ -1,4 +1,5 @@
 class Group < ActiveRecord::Base
+  default_scope order('created_at DESC')
   attr_accessible :name, :campaign_id, :messages_share_clients
   attr_accessible :enable
   attr_accessible :created_at, :updated_at
