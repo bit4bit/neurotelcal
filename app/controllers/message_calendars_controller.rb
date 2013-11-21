@@ -65,7 +65,7 @@ class MessageCalendarsController < ApplicationController
 
     respond_to do |format|
       if @message_calendar.update_attributes(params[:message_calendar])
-        format.html { redirect_to @message_calendar, notice: 'Message calendar was successfully updated.' }
+        format.html { redirect_to essage_calendars_path(:message_id => @message_calendar.message.id), notice: 'Message calendar was successfully updated.' }
         format.json { head :no_content }
       else
         format.html { render action: "edit" }
@@ -90,12 +90,13 @@ class MessageCalendarsController < ApplicationController
   def validate_request_owner
     if params[:message_id] && session[:campaign_id]
       unless Message.where(:id => params[:message_id], :group_id => Campaign.find(session[:campaign_id]).group.all).exists?
+
         head :bad_request
       end
     end
     
     if params[:id] && session[:campaign_id]
-      unless Message.where(:id => params[:id], :group_id => Campaign.find(session[:campaign_id]).group.all).exists?
+      unless MessageCalendar.where(:id => params[:id], :message_id => Campaign.find(session[:campaign_id]).group.where(:id => session[:group_id]).map{|g| g.message.all}.flatten).exists?
         head :bad_request
       end
     end
