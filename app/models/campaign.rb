@@ -136,7 +136,7 @@ class Campaign < ActiveRecord::Base
   #::return:: boolean indicando si se pudo o no realizar la llamada
   def can_call_client?(client, message, message_calendar = nil)
     client.reload
-
+    logger.debug('process: can_call_client? %d' % client.id)
     #logger.debug('process: client %d calls_faileds %d' % [client.id, client.calls_faileds])
     return false if  client.calling 
     #el cliente ya fue llamadao y no nay necesida de volverle a llamar
@@ -147,10 +147,9 @@ class Campaign < ActiveRecord::Base
 
     #se vuelve a marcar desde la ultima marcacion
     if client.calls_faileds > message.retries
-      #logger.debug('process: client %d priority to seconds %d wait %d' % [client_fresh.id, client_fresh.priority_to_seconds_wait, (client_fresh.last_call_at + client_fresh.priority_to_seconds_wait) - Time.now])
-      if not (Time.now >= client.last_call_at + client.priority_to_seconds_wait)
-        return false
-      end
+      #if not (Time.now >= client.last_call_at + client.priority_to_seconds_wait)
+      #  return false
+     # end
     end
 
     
@@ -229,6 +228,8 @@ class Campaign < ActiveRecord::Base
     id_groups_to_process = [] 
     self.group.all.each do |group_processing|
       next unless group_processing.enable?
+      next unless group_processing.start?
+
       group_processing.message.all.each do |message|
         next if message.anonymous
         next unless message.time_to_process?
@@ -245,6 +246,7 @@ class Campaign < ActiveRecord::Base
     sleep 5
     if total_messages_today == 0
       logger.debug('process: nothing to process')
+      sleep 10
       return false
     end
 
@@ -263,9 +265,9 @@ class Campaign < ActiveRecord::Base
 
     id_groups_to_process.uniq!
     if distributor.count > 0
-      clients = Client.where(:group_id => id_groups_to_process, :callable => true).where(["phonenumber REGEXP ?", Regexp.new(distributor.map{|d| d.filter}.join("|")).source]).order('priority DESC, callable DESC, created_at ASC')
+      clients = Client.where(:group_id => id_groups_to_process, :callable => true, :calling => false, :error => false).where(["phonenumber REGEXP ?", Regexp.new(distributor.map{|d| d.filter}.join("|")).source]).order('priority DESC, callable DESC, created_at ASC')
     else
-      clients = Client.where(:group_id => id_groups_to_process, :callable => true).order('priority DESC, callable DESC, created_at ASC')      
+      clients = Client.where(:group_id => id_groups_to_process, :callable => true, :calling => false, :error => false).order('priority DESC, callable DESC, created_at ASC')      
     end
     
 
@@ -279,9 +281,10 @@ class Campaign < ActiveRecord::Base
     
     wait_messages = []
     clients.all.each do |client_processing|
-      next unless client_processing.callable?
-      next if client_processing.calling?
-      next if client_processing.error?
+      #@deprecated se paso a consulta sql anterior
+      #next unless client_processing.callable?
+      #next if client_processing.calling?
+      #next if client_processing.error?
 
       while using_channels >= active_channels
         sleep 1
@@ -295,17 +298,18 @@ class Campaign < ActiveRecord::Base
       sleep 1 while pause?
 
       self.group.all.each do |group_processing|
-        #se omite si esta detenido
-        break if group_processing.stop?
+
         #se termina en caso de forzado, y espera la ultima llamada
         return false if end?
-
+        #se omite si esta detenido
+        next unless group_processing.start?
+        next unless group_processing.enable?
         #se omite grupo si no es de cliente
         next unless client_processing.group_id == group_processing.id
-        next unless group_processing.enable?
+
         #si esta pausado no se realiza las llamadas
         sleep 1 while pause? 
-        
+        logger.debug('process: find group for process')
         group_processing.message.all.each do |message|
           
           #si es marcacion directa anonima
@@ -345,6 +349,7 @@ class Campaign < ActiveRecord::Base
           end          
           
           #se llama
+          logger.debug('process: calling client %d' % client_processing.id)
           if process_one_client(message, client_processing)
             count_channels_messages[message.id] += 1
             logger.debug('process: called client %d' % client_processing.id)
@@ -388,6 +393,7 @@ class Campaign < ActiveRecord::Base
       #se detiene marcacion si ya se realizaron todas las llamadas contestadas
       if Time.now >= message_calendar.start and  Time.now <= message_calendar.stop
         if message_calendar.max_clients > 0 and (Call.where(:message_calendar_id => message_calendar.id, :hangup_enumeration => PlivoCall::ANSWER_ENUMERATION).count + Call.where(:message_calendar_id => message_calendar.id, :terminate => nil).count) >= message_calendar.max_clients 
+          logger.debug('process: can not call the client %d finished de calendar or all clients for message calendar all called' % client.id)
           return false
         else
           if can_call_client?(client, message, message_calendar)

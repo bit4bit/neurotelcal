@@ -31,11 +31,13 @@ class Group < ActiveRecord::Base
   end
   
   def stop?
-    self.status == 'stop' || self.status == 'end'
+    r = Group.select('status').where(:id => self.id).first.status
+    r == 'stop' || r == 'end'
   end
   
   def start?
-    self.status == 'start'
+    r = Group.select('status').where(:id => self.id).first.status
+    r == 'start'
   end
   
 end

@@ -36,7 +36,7 @@ class CampaignJob
     while true
       campaign.process(true)
       break if campaign.end?
-      sleep 30
+      sleep 5
     end
     campaign.update_column(:status, Campaign::STATUS['END'])
     Rails.logger.debug("End processing campaign")
