@@ -31,7 +31,7 @@ class Group < ActiveRecord::Base
   end
   
   def stop?
-    self.status == 'stop'
+    self.status == 'stop' || self.status == 'end'
   end
   
   def start?
