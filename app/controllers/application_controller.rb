@@ -43,7 +43,7 @@ class ApplicationController < ActionController::Base
   
   def authorize_admin
     if user_signed_in?
-      if current_user.monitor
+      unless current_user.admin
         sign_out current_user
         session.clear
         redirect_to new_operators_user_session_path
