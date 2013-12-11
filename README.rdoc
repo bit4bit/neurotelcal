@@ -3,7 +3,7 @@ AutoMarcador, realize llamadas programadas con sencillo lenguaje para el IVR.
 Nota: este software aun esta en desarrollo puede contener cambios drasticos.
  
 ==Requerimientos
- * Rails 3
+ * Rails 3.2
  * Servidor freeswitch (modulos: mod_shout, mod_http_cache)
  * PlivoFramework/bit4bit conectado al servidor freeswitch
  * Acceso a puertos de Plivo.
