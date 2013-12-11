@@ -65,7 +65,7 @@ class MessageCalendarsController < ApplicationController
 
     respond_to do |format|
       if @message_calendar.update_attributes(params[:message_calendar])
-        format.html { redirect_to essage_calendars_path(:message_id => @message_calendar.message.id), notice: 'Message calendar was successfully updated.' }
+        format.html { redirect_to message_calendars_path(:message_id => @message_calendar.message.id), notice: 'Message calendar was successfully updated.' }
         format.json { head :no_content }
       else
         format.html { render action: "edit" }
