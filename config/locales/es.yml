@@ -128,6 +128,7 @@ es:
     distributors: 'Distribuidor'
   clients:
     fullname: 'Nombre completo'
+    not_override: 'Omitir si existe?'
   campaign:
     l:
      name: 'Nombre'

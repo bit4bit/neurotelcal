@@ -120,21 +120,21 @@ class Operators::ClientsController < Operators::ApplicationController
     @client.destroy
 
     respond_to do |format|
-      format.html { redirect_to clients_url }
+      format.html { redirect_to operators_clients_url }
       format.json { head :no_content }
     end
   end
 
   def new_upload_massive
-    @groups = Group.where(:campaign_id => session[:campaign_id])
-    
+    @group = Group.where(:campaign_id => session[:campaign_id], :id => session[:group_id]).first
     respond_to do |format|
       format.html 
     end
   end
   
   def create_upload_massive
-    @groups = Group.where(:campaign_id => session[:campaign_id])
+    @group = Group.where(:campaign_id => session[:campaign_id], :id => session[:group_id]).first
+
     print params
     total_uploaded = 0
     total_readed = 0
@@ -148,7 +148,8 @@ class Operators::ClientsController < Operators::ApplicationController
       tinit = Time.now
       ::CSV.parse(params[:list_clients].tempfile) do |row|
         total_readed += 1
-        data = {:fullname => row[0], :phonenumber => row[1], :campaign_id => session[:campaign_id], :group_id => params[:group_id]}
+        phonenumber = row[1].to_s.gsub(/[^0-9]+/,'')
+        data = {:fullname => row[0], :phonenumber => phonenumber, :campaign_id => session[:campaign_id], :group_id => session[:group_id]}
         if override
           next if Client.where(data).exists? #si existe se omite
         end
