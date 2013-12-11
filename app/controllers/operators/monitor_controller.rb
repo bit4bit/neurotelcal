@@ -5,12 +5,9 @@ class Operators::MonitorController < Operators::ApplicationController
   end
 
   def cdr
-    if current_operators_user[:monitor]
-      messages = Message.where(:group_id => Group.where(:campaign_id => session[:monitor_campaign_id])).all
-      @calls = Call.paginate :page => params[:page], :conditions => ["message_id IN (?) ", messages]
-    else
-      @calls = Call.paginate :page => params[:page]      
-    end
+    messages = Message.where(:group_id => Group.where(:campaign_id => session[:campaign_id])).all
+    
+    @calls = Call.paginate :page => params[:page], :conditions => ["message_id IN (?) ", messages]
     respond_to do |format|
       format.html
     end
