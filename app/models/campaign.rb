@@ -147,9 +147,9 @@ class Campaign < ActiveRecord::Base
 
     #se vuelve a marcar desde la ultima marcacion
     if client.calls_faileds > message.retries
-      #if not (Time.now >= client.last_call_at + client.priority_to_seconds_wait)
-      #  return false
-     # end
+      if not (Time.now >= client.last_call_at + client.priority_to_seconds_wait)
+        return false
+      end
     end
 
     
