@@ -1,6 +1,3 @@
-Use this README file to introduce your application and point to useful places in the API for learning more.
-Run "rake doc:app" to generate API documentation for your models, controllers, helpers, and libraries.
-
 =NEUROTELCAL
 Aplicativo de software para el despacho de llamadas programadas. Puede ser utilizado para recordacion de eventos, realizacion de publicidad....
 
@@ -10,13 +7,13 @@ Aplicativo de software para el despacho de llamadas programadas. Puede ser utili
  * Multi-subcampanas o grupos
  * Clientes
  * Multi-mensajes programables.
- * Sencillo IVR en espanol, con almacenamiento de respuestas.
+ * Sencillo IVR en espanol, con almacenamiento de respuestas e IVR Grafico.
  * Cuelgues programados.
  * Llamadas simultaneas sin colision.
  * Gestion automatica de canales para cumplir objetivos especificos; como por ejemplo alcanzar una cantidad de llamadas en un tiempo determinado.
 
 =REQUERIMIENTOS
-==Plivo
+==PlivoFramework
  * Se pasa a la version de bit4bit, por el uso de la variable BillDuration
 ==Ruby
  * Rails >= 3.2.8
