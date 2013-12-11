@@ -46,26 +46,26 @@ class Client < ActiveRecord::Base
   #a los clientes que contestaron y a los que no ir bajandole prioridad
   #http://wiki.freeswitch.org/wiki/Hangup_causes
   def update_priority_by_hangup_cause(cause)
+    priority = self.priority
     case cause
     when 'NORMAL_CLEARING'
-      self.priority += 200
+      priority += 200
     when 'ALLOTED_TIMEOUT'
-      self.priority -= 100
+      priority -= 100
     when 'NO_ANSWER'
-      self.priority -= 200
+      priority -= 200
     when 'USER_BUSY'
-      self.priority -= 300
+      priority -= 300
     when 'CALL_REJECTED'
-      self.priority -= 800
+      priority -= 800
     when 'UNALLOCATED_NUMBER '
-      self.priority -= 2000
+      priority -= 2000
     when 'NORMAL_TEMPORARY_FAILURE'
-      self.priority -= 10
+      priority -= 10
     else
-      self.priority -= 500
+      priority -= 500
     end
-
-    self.save()
+    self.update_attributes(:priority => priority)
   end
   
 end
