@@ -93,6 +93,7 @@ class MessagesController < ApplicationController
     @resource.campaign_id = session[:campaign_id]
 
     respond_to do |format|
+      @message.processed = false
       if @message.save
         format.html { redirect_to messages_path(:group_id => session[:group_id]), :notice => 'Message was successfully created.' }
         format.json { render :json => @message, :status => :created, :location => @message }
