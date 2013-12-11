@@ -209,7 +209,7 @@ class HangupAction extends Action
                 
         toNeurotelcal: ->
                 #@todo estado??
-                'Colgar segundos="' + @timeElapsed + '"\n'
+                'Colgar segundos=' + @timeElapsed + ' razon="normal"\n'
                 
 class PlaybackAction extends Action
         commandName: $.i18n._("playback_action")
@@ -337,7 +337,6 @@ class SurveyIVR extends Action
         configure: ->
                 self = @
                 dialog = $('<div>')
-                
                 #SELECCION RECURSO
                 label = $('<label>', {for:'resource'})
                 label.html('<b>' + $.i18n._('resource') + '</b>')
@@ -357,7 +356,6 @@ class SurveyIVR extends Action
 
                 dialog.append($('<br>'))
                 #SELECCION OPCION ESPERADA
-
                 label = $('<label>', {for:'option'})
                 label.html('<b>' + $.i18n._('surveyivr_choose_one') + '</b>')
                 dialog.append(label)
@@ -367,6 +365,7 @@ class SurveyIVR extends Action
                 sel_option.click ->
                         self.option = $(this).val()
                         self.digits = [self.option] #??
+
                 for digit in digits
                         if parseInt(@option) == parseInt(digit)
                                 sel_option.append($('<option selected="selected">').text(digit))
@@ -384,7 +383,7 @@ class SurveyIVR extends Action
 
                 digits = ['', '0','1', '2', '3', '4', '5', '6', '7', '8', '9', '#']
                 for digit in digits
-                        if $.inArray(digit, self.digits) >= 0
+                        if $.inArray(digit+'', self.digits) >= 0
                                 sel_digit.append($('<option selected="selected">').text(digit))
                         else
                                 sel_digit.append($('<option>').text(digit))
@@ -398,10 +397,11 @@ class SurveyIVR extends Action
                 sel_duration.change ->
                         self.duration = parseInt($(this).val())
                 durations = [5..60]
-                self.duration = durations[0]
+
                 for duration in durations
+
                         if parseInt(self.duration) == parseInt(duration)
-                                sel_duration.append($('<option selected="selected">').text(duration))
+                                sel_duration.append($('<option selected="selected">').text(self.duration))
                         else
                                 sel_duration.append($('<option>').text(duration))
                 dialog.append(sel_duration)
@@ -415,7 +415,7 @@ class SurveyIVR extends Action
                 tries = [1..5]
                 for trie in tries
                         if parseInt(self.tries) == parseInt(trie)
-                                sel_tries.append($('<option selected="selected">').text(trie))
+                                sel_tries.append($('<option selected="selected">').text(self.tries))
                         else
                                 sel_tries.append($('<option>').text(trie))
                 dialog.append(sel_tries)
@@ -519,9 +519,12 @@ class SurveyIVR extends Action
                         digitosValidos = @digits.join('')
                 else
                         digitosValidos = '' + @option
-                
+                cantidad = 0
+                if @digits.length > 0
+                        cantidad = 1
+
                 out = ''
-                out += 'Registrar digitos cantidad=' + @digits.length + ' audio="' + @resource + '"' + ' duracion=' + @duration + ' intentos=' + @tries + ' digitosValidos="' + digitosValidos + '" \n' if !@only_conditional
+                out += 'Registrar digitos cantidad=' + cantidad + ' audio="' + @resource + '"' + ' duracion=' + @duration + ' intentos=' + @tries + ' digitosValidos="' + digitosValidos + '" \n' if !@only_conditional
                 out = out.trim()
                 out += '\n'
                 out += 'Si =' + @option + '\n' + @ivr_yes.toNeurotelcal() + '\n' + 'No' +' \n' + @ivr_no.toNeurotelcal() + '\n' + 'Fin\n'
@@ -688,6 +691,9 @@ class IVRBuilder
                 tivr.guiConfig = ->
                 ivr.addAction(tivr)
                 tivr.guiConfig = config
+
+                tivr.digits = (''+vars["digitosValidos"]).split("")
+
                 tivr.tries = parseInt(vars["intentos"])
                 tivr.duration = parseInt(vars["duracion"])
                 tivr.resource = vars["audio"]
