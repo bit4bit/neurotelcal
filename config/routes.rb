@@ -68,8 +68,6 @@ Neurotelcal::Application.routes.draw do
   resources(:plivos, constraints: WhitelistPlivoConstraint.new) do
 
     member do
-      get 'call_client'
-      post 'docall_client'
       post 'answer_client', :defaults => { :format => 'xml' }
       post 'hangup_client', :defaults => { :format => 'xml' }
       post 'ringing_client', :defaults => { :format => 'xml' }
@@ -94,8 +92,14 @@ Neurotelcal::Application.routes.draw do
     post 'create_upload_massive', :on => :collection
   end
 
-  resources :messages
+  resources :messages do
 
+    member do
+      get 'call_client'
+      post 'docall_client'
+    end
+  end
+  
   resources :resources
 
   resources :campaigns do

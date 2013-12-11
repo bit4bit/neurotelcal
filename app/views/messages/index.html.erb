@@ -31,9 +31,12 @@
     <td><%= message.total_calls_done %></td>
     <td><%= message.prefix %></td>
     <td><%= link_to I18n.t('defaults.message_calendar'), message_calendars_path(:message_id => message) %></td>
-    <td><%= link_to I18n.t('show'), message %><br />
+    <td><%= link_to I18n.t('test'), call_client_message_path(message)%><br /> 
+      <%= link_to I18n.t('show'), message %><br />
     <%= link_to I18n.t('edit'), edit_message_path(message) %><br />
-    <%= link_to I18n.t('destroy'), message, :confirm => I18n.t('are_you_sure'), :method => :delete %></td>
+    <%= link_to I18n.t('destroy'), message, :confirm => I18n.t('are_you_sure'), :method => :delete %>
+    </td>
+    
   </tr>
 <% end %>
 </table>

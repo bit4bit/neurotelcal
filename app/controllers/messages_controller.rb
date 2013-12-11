@@ -15,7 +15,7 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
+require 'plivo'
 class MessagesController < ApplicationController
   skip_before_filter :authenticate_user!, :authorize_admin
   before_filter :require_user_or_operator!
@@ -135,6 +135,65 @@ class MessagesController < ApplicationController
     end
   end
 
+ 
+  #Muestra formulario para 
+  #realizar llamada
+  def call_client
+    @campaign = Campaign.find(session[:campaign_id])
+    @message = Message.find(params[:id])
+  end
+
+  def docall_client
+    @message = Message.find(params[:message][:id])
+    @campaign = Campaign.find(session[:campaign_id])
+    @client = Client.new()
+    @client.group_id = session[:group_id]
+    @client.campaign_id = session[:campaign_id]
+    @client.phonenumber = params[:phonenumber]
+    @client.fullname = params[:phonenumber].to_s + ':prueba'
+    @client.save!
+    flash[:notice] = '' unless flash[:notice].nil?
+    flash[:error] = '' unless flash[:notice].nil?
+
+    if @client.calling?
+      flash[:error] = 'Ya hay una en proceso'
+      return respond_to do |format|
+        format.html { render :action => 'call_client' }
+      end
+    end
+    
+
+    begin
+      params[:message][:id] = nil
+      params[:message][:name] = I18n.t('defaults.direct_message') + @client.object_id.to_s
+      params[:message][:call] = Time.now
+      params[:message][:call_end] = Time.now
+      params[:message][:anonymous] = true
+      params[:message][:retries] = 1
+      @test_message = @message.dup
+      @test_message.id = nil
+      @test_message.anonymous = true
+      @test_message.save(:validate => false)
+      @campaign.call_client!(@client, @test_message)
+    rescue ::PlivoChannelFull => e
+      flash[:error] = 'No hay canales disponibles'
+    rescue ::PlivoCannotCall => e
+      flash[:error] = e.message
+    rescue Errno::ECONNREFUSED => e
+      flash[:error] = 'No se pudo conectar al/los plivo de la campana'
+    rescue Exception => e
+      logger.debug(e)
+      flash[:error] = "error:" + e.class.to_s
+    end
+
+
+
+    respond_to do |format|
+      format.html { render :action => 'call_client' }
+    end
+  end
+
+  #PRIVATE
   private
   def validate_request_owner
     if params[:group_id] && session[:campaign_id]
@@ -158,7 +217,7 @@ class MessagesController < ApplicationController
     end
     
   end
-  
+ 
 end
 
 

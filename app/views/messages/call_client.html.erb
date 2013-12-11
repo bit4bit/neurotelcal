@@ -5,14 +5,10 @@
 <p class="error"><%= flash[:error]%></p>
 <% end %>
 
-<b>Client:</b><br />
-<%= @client.fullname %>
-<br />
-<b>PhoneNumber:</b><br />
-<%= @client.phonenumber %>
-<br />
 
 <%= form_tag({:action =>'docall_client'}) do |f| %>
+<%= label_tag I18n.t('phonenumber') %>
+<%= telephone_field_tag :phonenumber %>
   <% if not @message.nil? and @message.errors.any? %>
     <div id="error_explanation">
       <h2><%= pluralize(@message.errors.count, "error") %> prohibited this plivo from being saved:</h2>
@@ -24,14 +20,9 @@
       </ul>
     </div>
   <% end %>
-  <%= render "messages/ayuda" %>
   <%= hidden_field :message, :name, :value => "docall" %>
-  <div class="field">
-    <%= label_tag :message, :description %><br />
-    <%= text_area :message, :description %>
-  </div>
-  
+  <%= hidden_field :message, :id, :value => @message.id %>
   <div class="actions">
-    <%= submit_tag%>
+    <%= submit_tag I18n.t('test')%>
   </div>
 <% end %>

@@ -187,13 +187,6 @@ class PlivosController < ApplicationController
     end
   end
   
-  #Muestra formulario para 
-  #realizar llamada
-  def call_client
-    @campaign = Campaign.find(session[:campaign_id])
-    @client = Client.find(params[:id])
-    @message = Message.new(params[:message])
-  end
   
   def answer_client
     logger.debug('answer')
@@ -224,6 +217,7 @@ class PlivosController < ApplicationController
     logger.debug('hangup_client:')
     logger.debug(params)
 
+    
     plivocall = PlivoCall.where(:id => params["AccountSID"]).first
     plivocall.uuid = params["CallUUID"]
     plivocall.status = params["CallStatus"]
@@ -238,7 +232,18 @@ class PlivosController < ApplicationController
     plivocall.end = true
     plivocall.save
 
-
+    #SE ELIMINAN LOS DE PRUEBA
+    if plivocall.call.message.anonymous == true
+      plivocall.call.client.destroy
+      plivocall.call.message.destroy
+      plivocall.call.destroy
+      plivocall.destroy
+      respond_to do |format|
+        format.xml
+      end
+      return
+    end
+    
     
 
     call = Call.find(plivocall.call_id)
@@ -287,6 +292,7 @@ class PlivosController < ApplicationController
     call.client.increment!(:calls)
     #se da por sentado que no se necesita mas el plivo
 
+  
     respond_to do |format|
       format.xml
     end
@@ -313,50 +319,7 @@ class PlivosController < ApplicationController
     end
   end
 
-  def docall_client
-    @campaign = Campaign.find(session[:campaign_id])
-    @client = Client.find(params[:id])
-    flash[:notice] = '' unless flash[:notice].nil?
-    flash[:error] = '' unless flash[:notice].nil?
-
-    if @client.calling?
-      flash[:error] = 'Ya hay una en proceso'
-      return respond_to do |format|
-        format.html { render :action => 'call_client' }
-      end
-    end
-    
-
-    begin
-      params[:message][:id] = nil
-      params[:message][:name] = I18n.t('defaults.direct_message') + @client.object_id.to_s
-      params[:message][:call] = Time.now
-      params[:message][:call_end] = Time.now
-      params[:message][:anonymous] = true
-      params[:message][:retries] = 1
-      @message = Message.new(params[:message])
-      @message.group_id = @client.group.id
-      @message.save(:validate => false)
-      @message.reload
-      @campaign.call_client!(@client, @message)
-    rescue PlivoChannelFull => e
-      flash[:error] = 'No hay canales disponibles'
-    rescue PlivoCannotCall => e
-      flash[:error] = e.message
-    rescue Errno::ECONNREFUSED => e
-      flash[:error] = 'No se pudo conectar al/los plivo de la campana'
-    rescue Exception => e
-      logger.debug(e)
-      flash[:error] = "error:" + e.class.to_s
-    end
-
-
-
-    respond_to do |format|
-      format.html { render :action => 'call_client' }
-    end
-  end
-
+  
   #++++++++REPORTES
   def report
     @plivocalls = PlivoCall.paginate :page => params[:page], :order => "created_at DESC"
