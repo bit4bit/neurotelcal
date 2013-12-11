@@ -263,7 +263,6 @@ class Campaign < ActiveRecord::Base
     
     logger.debug('process: total messages today %d' % total_messages_today)
 
-    id_groups_to_process.uniq!
     if distributor.count > 0
       clients = Client.where(:group_id => id_groups_to_process, :callable => true, :calling => false, :error => false).where(["phonenumber REGEXP ?", Regexp.new(distributor.map{|d| d.filter}.join("|")).source]).order('priority DESC, callable DESC, created_at ASC')
     else
@@ -295,7 +294,7 @@ class Campaign < ActiveRecord::Base
       return false if not need_process_groups?
       
 
-      sleep 1 while pause?
+      sleep 5 while pause?
 
       self.group.all.each do |group_processing|
 
