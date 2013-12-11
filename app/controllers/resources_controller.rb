@@ -17,9 +17,9 @@
 
 
 class ResourcesController < ApplicationController
-  skip_before_filter :authenticate_user!, :authorize_admin
-  before_filter :require_user_or_operator!
-  before_filter :validate_request_owner
+  skip_before_filter :authenticate_user!, :authorize_admin, except: [:audio]
+  before_filter :require_user_or_operator!, except: [:audio]
+  before_filter :validate_request_owner, except: [:audio]
 
   #Valores por defecto
   def initialize(*args)

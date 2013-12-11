@@ -12,7 +12,6 @@ Neurotelcal::Application.routes.draw do
       post 'create_upload_massive', :on => :collection
     end
     resources :operator
-    resources :resources
   end
   
   devise_for :users
@@ -101,7 +100,10 @@ Neurotelcal::Application.routes.draw do
     end
   end
   
-  resources :resources
+  resources :resources do
+    get 'audio', on: :collection, constraints: WhitelistPlivoConstraint.new
+  end
+  
 
   resources :campaigns do
     delete 'destroy_deep'
