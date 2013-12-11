@@ -320,7 +320,6 @@ module PlivoHelper
         req.set_form_data(params)
       end
       req.basic_auth(@id, @token)
-      req.read_timeout = 5
       return http.request(req)
     end
   end
