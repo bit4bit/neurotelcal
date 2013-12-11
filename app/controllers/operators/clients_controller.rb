@@ -28,11 +28,15 @@ class Operators::ClientsController < Operators::ApplicationController
     end
     
     @campaign_id = session[:campaign_id]
-    
 
     @campaign = Campaign.find(@campaign_id)
 
-    @clients = Client.where(:campaign_id => @campaign_id, :group_id => group_id).paginate :page => params[:page]
+    if params[:search]
+      @clients = Client.where(:campaign_id => @campaign_id, :group_id => group_id).where('fullname LIKE ? OR phonenumber LIKE ?', "%%#{params[:search]}%%", "%%#{params[:search]}").paginate(:page => params[:page])
+    else
+      @clients = Client.where(:campaign_id => @campaign_id, :group_id => group_id).paginate(:page => params[:page]).order(created_at: :asc)
+    end
+
  
     respond_to do |format|
       format.html # index.html.erb

@@ -3,7 +3,13 @@
 <%= link_to I18n.t('client.upload_massive.title'), new_upload_massive_operators_clients_path, :class => "button" %>
 
 <h1><%= I18n.t('client.index.title')%> <%= I18n.t('defaults.campaign')%> <%= @campaign.name %></h1>
-
+<%= form_tag(operators_clients_path, :method => 'get') do %>
+<%= label_tag 'search', I18n.t('search')%>
+<%= search_field_tag 'search' %>
+<div class="actions">
+  <%= submit_tag I18n.t('search') %>
+</div>
+<% end %>
 <table>
   <tr>
     <th><%= I18n.t('client.l.name')%></th>

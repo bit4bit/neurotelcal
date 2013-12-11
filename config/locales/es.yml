@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 es:
+  search: 'Consultar'
   stop: 'Detenida'
   start: 'Iniciada'
   end: 'Terminada'
