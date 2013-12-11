@@ -397,7 +397,7 @@ class SurveyIVR extends Action
                 sel_duration = $('<select>',{name:"duration"})
                 sel_duration.change ->
                         self.duration = parseInt($(this).val())
-                durations = [5..15]
+                durations = [5..60]
                 self.duration = durations[0]
                 for duration in durations
                         if parseInt(self.duration) == parseInt(duration)
