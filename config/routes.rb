@@ -64,21 +64,22 @@ Neurotelcal::Application.routes.draw do
 
   resources :users
 
+
   get 'plivos/report'
-  resources(:plivos, constraints: WhitelistPlivoConstraint.new) do
-
+  resources :plivos do
+    
     member do
-      post 'answer_client', :defaults => { :format => 'xml' }
-      post 'hangup_client', :defaults => { :format => 'xml' }
-      post 'ringing_client', :defaults => { :format => 'xml' }
-      post 'get_digits_client', :defaults => { :format => 'xml' }
-      post 'continue_sequence_client', :defaults => { :format =>  'xml' }
-      post 'contact_client', :defaults => { :format => 'xml' }
+      post 'answer_client', :defaults => { :format => 'xml' }, :constraints => WhitelistPlivoConstraint.new
+      post 'hangup_client', :defaults => { :format => 'xml' }, :constraints => WhitelistPlivoConstraint.new
+      post 'ringing_client', :defaults => { :format => 'xml' }, :constraints => WhitelistPlivoConstraint.new
+      post 'get_digits_client', :defaults => { :format => 'xml' }, :constraints => WhitelistPlivoConstraint.new
+      post 'continue_sequence_client', :defaults => { :format =>  'xml' }, :constraints => WhitelistPlivoConstraint.new
+      post 'contact_client', :defaults => { :format => 'xml' }, :constraints => WhitelistPlivoConstraint.new
     end
-
+    
     #post 'get_digits_client/:id' => 'plivos#get_digits_client', :defaults => { :format => 'xml' }, :on => :collection
-    post 'hangup_client', :defaults => { :format => 'xml' }, :on => :collection
-    post 'answer_client', :defaults => { :format => 'xml' }, :on => :collection
+    post 'hangup_client', :defaults => { :format => 'xml' }, :on => :collection, :constraints => WhitelistPlivoConstraint.new
+    post 'answer_client', :defaults => { :format => 'xml' }, :on => :collection, :constraints => WhitelistPlivoConstraint.new
   end
 
   resources :groups do
