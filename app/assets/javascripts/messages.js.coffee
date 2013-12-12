@@ -384,7 +384,7 @@ class SurveyIVR extends Action
                 dialog.append(sel_option)
                 sel_option.click ->
                         self.option = $(this).val()
-                        self.digits = [self.option] #??
+
 
                 for digit in digits
                         if parseInt(@option) == parseInt(digit)
@@ -399,7 +399,9 @@ class SurveyIVR extends Action
                 dialog.append(label)
                 sel_digit = $('<select>',{name:"digit", multiple:'multiple'})
                 sel_digit.change ->
-                        self.digits = $(this).val().unique_string()
+                        for digit in $(this).val()
+                                if not self.digits.inArray(digit)
+                                        self.digits.push(digit)
 
                 digits = ['', '0','1', '2', '3', '4', '5', '6', '7', '8', '9', '#']
 
