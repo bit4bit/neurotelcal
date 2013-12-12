@@ -16,6 +16,22 @@
 #  * Heredar de *Action*
 #  * implementar *guiConfig* *gui*
 #  * agregar a IVR::actions
+#
+
+Array::unique_string = ->
+  output = {}
+  output[@[key]] = @[key] for key in [0...@length]
+  value for key, value of output
+
+Array::inArray = (v)->
+        output = {}
+        output[@[key]] = @[key] for key in [0...@length]
+        rt = value for key, value of output when v + '' == value + ''
+        if rt
+                true
+        else
+                false
+        
 translation =
         "configure_advance": "Cambia interfaz del IVR"
         "configure": "configurar"
@@ -44,6 +60,7 @@ translation =
         "surveyivr_only_conditional_help": "Active si desea continuar el IVR superior, tomara el la respuesta del cliente del IVR superior"
         "surveyivr_digit_help":"Seleccion los digitos permitidos por el cliente, esto es usado para crear un IVR mas complejo. Usar creando mas Encuestas de solo bifurcacion"
 $.i18n.setDictionary(translation)
+
 
 class Action
         constructor: (@ivr) ->
@@ -382,9 +399,10 @@ class SurveyIVR extends Action
                         self.digits = $(this).val()
 
                 digits = ['', '0','1', '2', '3', '4', '5', '6', '7', '8', '9', '#']
+
                 for digit in digits
-                        if $.inArray(digit+'', self.digits) >= 0
-                                sel_digit.append($('<option selected="selected">').text(digit))
+                        if self.digits.inArray(digit)
+                                sel_digit.append($('<option selected="selected">').text(digit+''))
                         else
                                 sel_digit.append($('<option>').text(digit))
                 dialog.append(sel_digit)
@@ -515,10 +533,11 @@ class SurveyIVR extends Action
 
         toNeurotelcal: ->
                 digitosValidos = ""
-                if @digits
-                        digitosValidos = @digits.join('')
+                if @digits.length > 0
+                        digitosValidos = @digits.unique_string().join('')
+                        @digits = @digits.unique_string()
                 else
-                        digitosValidos = '' + @option
+                        digitosValidos = @option
                 cantidad = 0
                 if @digits.length > 0
                         cantidad = 1
@@ -527,7 +546,12 @@ class SurveyIVR extends Action
                 out += 'Registrar digitos cantidad=' + cantidad + ' audio="' + @resource + '"' + ' duracion=' + @duration + ' intentos=' + @tries + ' digitosValidos="' + digitosValidos + '" \n' if !@only_conditional
                 out = out.trim()
                 out += '\n'
-                out += 'Si =' + @option + '\n' + @ivr_yes.toNeurotelcal() + '\n' + 'No' +' \n' + @ivr_no.toNeurotelcal() + '\n' + 'Fin\n'
+
+                ivr_yes_desc = @ivr_yes.toNeurotelcal()
+                ivr_no_desc = @ivr_no.toNeurotelcal()
+                if ivr_yes_desc.length > 0 or ivr_no_desc.length > 0
+                        out += 'Si =' + @option + '\n' + @ivr_yes.toNeurotelcal() + '\n' + 'No' +' \n' + @ivr_no.toNeurotelcal() + '\n' + 'Fin\n'
+
                 out = out.trim()
                 out += '\n'
                 out
@@ -620,6 +644,10 @@ class IVR
                 gui.appendTo(@root)
                 @update()
                 @createLastAction().appendTo(@root)
+                #fix height
+                ht =$.ivr.ivr.height()
+                ht += gui.height()/2
+                $.ivr.ivr.height(ht)
 
         update: ->
                 description_field = $('#message_description')
