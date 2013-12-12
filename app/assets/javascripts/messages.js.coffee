@@ -33,6 +33,7 @@ Array::inArray = (v)->
                 false
         
 translation =
+        "id_survey": "Identificar Pregunta"
         "configure_advance": "Cambia interfaz del IVR"
         "configure": "configurar"
         "add": "agregar"
@@ -334,7 +335,7 @@ class SurveyIVR extends Action
         resource: ""
         option: undefined
         only_conditional: false
-        
+        id_survey: ""
         validate: ->
                 self = @
 
@@ -357,6 +358,14 @@ class SurveyIVR extends Action
         configure: ->
                 self = @
                 dialog = $('<div>')
+                label = $('<label>', {for: 'id_survey'})
+                label.html('<b>' + $.i18n._('id_survey') + '</b>')
+                dialog.append(label)
+                input_id = $('<input>', {name: 'id_survey', id: 'id', type: 'text', value: self.id_survey})
+                dialog.append(input_id)
+                input_id.change ->
+                        self.id_survey = $(this).val()
+                dialog.append(input_id)
                 #SELECCION RECURSO
                 label = $('<label>', {for:'resource'})
                 label.html('<b>' + $.i18n._('resource') + '</b>')
@@ -547,8 +556,11 @@ class SurveyIVR extends Action
                 if @digits.length > 0
                         cantidad = 1
 
+                id_survey = ''
+                if @id_survey
+                        id_survey += ' id="' + @id_survey + '" '
                 out = ''
-                out += 'Registrar digitos cantidad=' + cantidad + ' audio="' + @resource + '"' + ' duracion=' + @duration + ' intentos=' + @tries + ' digitosValidos="' + digitosValidos + '" \n' if !@only_conditional
+                out += 'Registrar digitos cantidad=' + cantidad + ' audio="' + @resource + '"' + ' duracion=' + @duration + ' intentos=' + @tries + ' digitosValidos="' + digitosValidos + '"' + id_survey + '\n' if !@only_conditional
                 out = out.trim()
                 out += '\n'
 
@@ -726,7 +738,7 @@ class IVRBuilder
                 tivr.guiConfig = config
 
                 tivr.digits = (''+vars["digitosValidos"]).split("")
-
+                tivr.id_survey = vars["id"]
                 tivr.tries = parseInt(vars["intentos"])
                 tivr.duration = parseInt(vars["duracion"])
                 tivr.resource = vars["audio"]
