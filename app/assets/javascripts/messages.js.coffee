@@ -399,7 +399,7 @@ class SurveyIVR extends Action
                 dialog.append(label)
                 sel_digit = $('<select>',{name:"digit", multiple:'multiple'})
                 sel_digit.change ->
-                        self.digits = $(this).val()
+                        self.digits = $(this).val().unique_string()
 
                 digits = ['', '0','1', '2', '3', '4', '5', '6', '7', '8', '9', '#']
 
