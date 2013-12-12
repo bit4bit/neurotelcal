@@ -226,8 +226,11 @@ class HangupAction extends Action
                 
         toNeurotelcal: ->
                 #@todo estado??
-                'Colgar segundos=' + @timeElapsed + ' razon="normal"\n'
-                
+                if parseInt(@timeElapsed) > 0
+                        return 'Colgar segundos=' + @timeElapsed + ' razon="normal"\n'
+                else
+                        return 'Colgar' + "\n"
+                        
 class PlaybackAction extends Action
         commandName: $.i18n._("playback_action")
         
