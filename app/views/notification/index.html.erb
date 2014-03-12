@@ -3,10 +3,12 @@
 <table>
   <tr>
     <th><%= I18n.t('notification.l.msg')%></th>
+    <th><%= I18n.t('created_at')%></td>
   </tr>
   <% @notifications.each do |n| %>
   <tr>
     <td><span class="cdr-<%= n.type_msg%>"><%= n.msg%></span></td>
+    <td><%= n.created_at%></td>
   </tr>
   <% end %>
 </table>

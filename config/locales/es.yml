@@ -15,6 +15,7 @@ es:
   disable: 'Desactivar'
   appname: 'NeuroTelCal'
   appdescription: 'Automarcador'
+  created_at: 'Fecha/Hora Creacion'
   activerecord:
     models:
       entity: 'Entidad'
