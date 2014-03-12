@@ -1,0 +1,51 @@
+<%
+# Copyright (C) 2012 Bit4Bit <bit4bit@riseup.net>
+#
+#
+# This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%>
+
+<%= javascript_tag(<<SCRIPT
+function updateCampaigns(){
+$.get("campaigns_status", function(data){
+ $("#campaigns").html(data);
+});
+}
+
+
+function updateCalls(){
+ $.get("channels_status", function(data){
+  $("#calls").html(data); 
+ });
+}
+
+function updates(){
+ updateCampaigns();
+ updateCalls();
+ window.setTimeout(updates, 1500);
+}
+updates();
+
+SCRIPT
+)
+%>
+<h1><%= I18n.t('monitor.index.title')%></h1>
+<h2><%= I18n.t('defaults.campaigns')%></h2>
+<div id="campaigns">
+</div>
+
+
+<h2><%= I18n.t('defaults.call')%></h2>
+<div id="calls">
+</div>
