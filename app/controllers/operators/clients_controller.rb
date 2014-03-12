@@ -135,51 +135,23 @@ class Operators::ClientsController < Operators::ApplicationController
   def create_upload_massive
     @group = Group.where(:campaign_id => session[:campaign_id], :id => session[:group_id]).first
 
-    print params
-    total_uploaded = 0
-    total_readed = 0
-    total_wrong = 0
-    errors = []
-    count = 0
-    override = params[:override] || false
+    if params[:list_clients]
+      flash[:notice] = I18n.t('sended_job_upload_clients')
+      require 'fileutils'
+      require 'tempfile'
+      newfile = Tempfile.new('client_massive')
+      FileUtils.cp params[:list_clients].tempfile.path.to_s, newfile.path
 
-    begin
-      Notification.new(:msg => "uploading clients %s" % params[:list_clients].original_filename, :type_msg => 'clients', :user_id => session[:user_id]).save
-      tinit = Time.now
-      ::CSV.parse(params[:list_clients].tempfile) do |row|
-        total_readed += 1
-        phonenumber = row[1].to_s.gsub(/[^0-9]+/,'')
-        data = {:fullname => row[0], :phonenumber => phonenumber, :campaign_id => session[:campaign_id], :group_id => session[:group_id]}
-        if override
-          next if Client.where(data).exists? #si existe se omite
-        end
-        
-        client = Client.new(data)
-        if client.save
-          total_uploaded += 1
-        else
-          errors << client.errors.full_message
-          total_wrong += 1
-        end
-      end
-      tend = Time.now
-      msg = 'Uploaded %d and wrongs %d clients with total %d readed in %d seconds ' % [total_uploaded, total_wrong,  total_readed, (tend - tinit)]
-      Notification.new(:msg => msg, :type_msg => 'clients', :user_id => session[:user_id]).save
-      flash[:notice] = msg
-    rescue Exception => e
-      if params[:list_clients].nil?
-        flash[:error] = I18n.t('not_uploaded_file')
-      else
-        flash[:error] = e.message
-      end
+      file = {
+        :ext => File.extname(params[:list_clients].original_filename),
+        :path => newfile.path
+      }
+
+      Delayed::Job.enqueue(::CDRJob.new(file, session[:user_id], session[:campaign_id], session[:group_id]), :queue => 'clients_import')
       
 
     end
-
-    unless errors.empty?
-      flash[:error] = errors.join('<br />')
-    end
-
+    
     respond_to do |format|
       format.html { render :action => 'new_upload_massive'}
     end

@@ -16,6 +16,7 @@ es:
   appname: 'NeuroTelCal'
   appdescription: 'Automarcador'
   created_at: 'Fecha/Hora Creacion'
+  sended_job_upload_clients: 'Subiendo clientes'
   activerecord:
     models:
       entity: 'Entidad'

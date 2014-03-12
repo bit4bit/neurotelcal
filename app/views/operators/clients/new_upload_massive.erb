@@ -29,9 +29,6 @@ Se omitiran los que estan en blanco.<br />
 <%= @group.name %>
 </h3>
 <%= form_tag({:controller => 'operators/clients', :action => :create_upload_massive}, :multipart =>true) do %>
-
-    <%= label_tag(I18n.t('clients.not_override'))%>
-<%= check_box_tag('override')%><br />
     <%= file_field_tag('list_clients')%>
 <%= submit_tag()%>
 <% end %>
