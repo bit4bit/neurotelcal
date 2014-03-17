@@ -5,7 +5,7 @@ class Operators::MonitorController < Operators::ApplicationController
   end
 
   def cdr
-    messages = Message.where(:group_id => Group.where(:campaign_id => session[:campaign_id])).all
+    messages = Message.where(:group_id => Group.where(:campaign_id => session[:monitor_campaign_id])).all
     
     @calls = Call.paginate :page => params[:page], :conditions => ["message_id IN (?) ", messages]
     respond_to do |format|
@@ -14,7 +14,7 @@ class Operators::MonitorController < Operators::ApplicationController
   end
   
   def campaigns_status
-    @campaigns = Campaign.where(:id => session[:campaign_id])
+    @campaigns = Campaign.where(:id => session[:monitor_campaign_id])
     
     
     respond_to do |format|
