@@ -63,6 +63,7 @@ es:
         max_clients: 'Maximo clientes'
         notes: 'Anotaciones'
         prefix: 'Prefijo Adicional'
+        caller_id: 'CallerID'
       client:
         fullname: 'Nombre Completo'
         phonenumbre: 'Número télefonico/sip'
@@ -192,6 +193,7 @@ es:
       calls_done: 'Constestadas'
       notes: 'Anotaciones'
       prefix: 'Prefijo Adicional'
+      caller_id: 'CallerID'
     index:
       title: 'Listando Mensajes'
     edit:

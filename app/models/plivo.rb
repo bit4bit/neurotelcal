@@ -160,9 +160,14 @@ class Plivo < ActiveRecord::Base
     #se agrega prefijo
     phonenumber_client = message.prefix + phonenumber_client.to_s if message.prefix
     return false if phonenumber_client.nil?
-
+    
+    caller_id = self.phonenumber
+    if message.caller_id.size
+      caller_id = message.caller_id
+    end
+    
     call_params = {
-      'From' => self.phonenumber,
+      'From' => caller_id,
       'CallerName' => self.caller_name,
       'To' => phonenumber_client,
       #'Gateways' => self.gateways,

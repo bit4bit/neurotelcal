@@ -3,7 +3,7 @@
 
 class Message < ActiveRecord::Base
   default_scope order('created_at DESC')
-  attr_accessible :group_id, :description, :name, :processed, :call, :entered, :listened, :anonymous, :call_end, :retries, :hangup_on_ring, :time_limit, :priority
+  attr_accessible :group_id, :description, :name, :processed, :call, :entered, :listened, :anonymous, :call_end, :retries, :hangup_on_ring, :time_limit, :priority, :caller_id
   attr_accessible :created_at, :updated_at
   attr_accessible :max_clients
   attr_accessible :notes

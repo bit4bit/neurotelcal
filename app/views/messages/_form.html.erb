@@ -51,6 +51,9 @@
   </div>
 
   <div class="field">
+    <%= f.input :caller_id, :input_html => {:maxlength => 10, :size => 10}%>
+  </div>
+  <div class="field">
     <%= f.input :retries, :input_html => {:maxlength => 2, :size => 2}%>
   </div>
   <div class="field">
