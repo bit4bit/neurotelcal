@@ -162,7 +162,7 @@ class Plivo < ActiveRecord::Base
     return false if phonenumber_client.nil?
     
     caller_id = self.phonenumber
-    if message.caller_id.size
+    if !message.caller_id.nil? && message.caller_id.size
       caller_id = message.caller_id
     end
     
