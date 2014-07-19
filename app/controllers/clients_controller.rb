@@ -136,17 +136,26 @@ class ClientsController < ApplicationController
     errors = []
     count = 0
     override = params[:override] || false
-
+    flash.delete(:error)
     begin
       Notification.new(:msg => "uploading clients %s" % params[:list_clients].original_filename, :type_msg => 'clients', :user_id => session[:user_id]).save
       tinit = Time.now
       ::CSV.parse(params[:list_clients].tempfile) do |row|
+        if row[1].nil?
+          raise I18n.t('need_phonenumber',true)
+        end
         total_readed += 1
-        data = {:fullname => row[0], :phonenumber => row[1], :campaign_id => session[:campaign_id], :group_id => params[:group_id]}
+        data = {:fullname => row[0].to_s.strip, :phonenumber => row[1].to_s.gsub(/[^0-9]+/, ''), :campaign_id => session[:campaign_id], :group_id => params[:group_id]}
         if override
           next if Client.where(data).exists? #si existe se omite
         end
         
+        #7 y 10 digitos
+        if data[:phonenumber].size > 10 || data[:phonenumber].size < 6
+          total_wrong += 1
+          next
+        end
+
         client = Client.new(data)
         if client.save
           total_uploaded += 1

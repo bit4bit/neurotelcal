@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 es:
+  need_phonenumber: 'Falta columna telefono'
   test: 'Probar'
   docall: 'Llamar'
   phonenumber: 'Telefono'

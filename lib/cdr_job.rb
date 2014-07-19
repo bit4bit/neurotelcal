@@ -49,40 +49,7 @@ class CDRJob < Struct.new(:file, :user_id, :campaign_id, :group_id)
 
   private
   def import_from_plain(file, user_id, campaign_id, group_id)
-    Notification.new(:msg => "uploading clients %s" % file, :type_msg => 'clients', :user_id => user_id).save
-
-    @groups = ::Group.where(:campaign_id => campaign_id)
-    total_uploaded = 0
-    total_readed = 0
-    total_wrong = 0
-    errors = []
-    count = 0
-    override = true
-    
-    begin
-      tinit = Time.now
-      ::CSV.foreach(file) do |row|
-        total_readed += 1
-        data = {:fullname => row[0], :phonenumber => row[1], :campaign_id => campaign_id, :group_id => group_id}
-        if override
-          next if ::Client.where(data).exists? #si existe se omite
-        end
-        
-        client = ::Client.new(data)
-        if client.save
-          total_uploaded += 1
-        else
-          errors << client.errors.full_message
-          total_wrong += 1
-        end
-      end
-      tend = Time.now
-      msg = 'Uploaded %d and wrongs %d clients with total %d readed in %d seconds ' % [total_uploaded, total_wrong,  total_readed, (tend - tinit)]
-      ::Notification.new(:msg => msg, :type_msg => 'clients', :user_id => user_id).save
-    rescue Exception => e
-      ::Notification.new(:msg => e.message, :type_msg => 'clients', :user_id => user_id).save
-    end
-    
+    raise 'import_from_plain not implement csv cdr upload'
   end
   
   def import_from_sqlite(file, user_id)

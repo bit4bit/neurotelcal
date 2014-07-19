@@ -23,9 +23,6 @@
     <td><%= link_to I18n.t('show'), client %></td>
     <td><%= link_to I18n.t('edit'), edit_client_path(client) %></td>
     <td><%= link_to I18n.t('destroy'), client, :confirm => I18n.t('are_you_sure'), :method => :delete %></td>
-    <td>
-      <%= link_to I18n.t('defaults.call'), call_client_plivo_path(client) %></td>
-    </td>
   </tr>
 <% end %>
 </table>
