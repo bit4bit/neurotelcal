@@ -81,10 +81,6 @@ class CampaignsController < ApplicationController
     respond_to do |format|
       if @campaign.update_attributes(params[:campaign])
 
-        if @campaign.start?
-          Delayed::Job.enqueue ::CampaignJob.new(@campaign.id), :queue => @campaign.id
-        end
-
         format.html { redirect_to @campaign, :notice => 'Campaign was successfully updated.' }
         format.json { head :no_content }
       else
@@ -119,9 +115,6 @@ class CampaignsController < ApplicationController
     @campaign = Campaign.find(params[:campaign_id])
     respond_to do |format|
       if @campaign.update_column(:status, Campaign::STATUS['START'])
-
-        Delayed::Job.enqueue ::CampaignJob.new(@campaign.id), :queue => @campaign.id
-
         format.html { redirect_to :action => 'index', :notice => 'Campaign was successfully updated.' }
       else
         format.html { redirect_to :action => 'campaigns#index'}        

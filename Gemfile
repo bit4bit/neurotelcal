@@ -33,7 +33,7 @@ gem 'unicorn'
 # Deploy with Capistrano
 gem 'capistrano-rails', group: :development
 gem 'capistrano-rvm', group: :development
-
+gem 'daemons-rails'
 
 # To use debugger
 # gem 'ruby-debug'
