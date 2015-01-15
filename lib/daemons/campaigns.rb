@@ -19,7 +19,11 @@ end
 while($running) do
   Rails.logger.info "Procesing campaigns"
 
-  Campaign.all.delete_if{|c| $running_campaigns.has_key?(c.id)}.each do |campaign|
+  Campaign.all.each do |campaign|
+    if $running_campaigns.has_key?(campaign.id)
+      $running_campaigns.delete(campaign.id) if campaign.end?
+      next
+    end
     Rails.logger.info "Testing campaign #{campaign.name}"
     
     Rails.logger.info "Forking process for campaign #{campaign.name}"
