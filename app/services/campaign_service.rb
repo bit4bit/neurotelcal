@@ -208,7 +208,7 @@ class CampaignService
           Rails.logger.debug('process: can not call the client %d finished de calendar or all clients for message calendar all called' % client.id)
           return false
         else
-          if @campaign.can_call_client?(client, message, message_calendar)
+          if client.can_call?(message, message_calendar)
             r = call_client(client, message, message_calendar)
             if r.is_a?(String)
               return true
