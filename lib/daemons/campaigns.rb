@@ -42,7 +42,7 @@ while($running) do
 
       while fork_campaign.start?
         Rails.logger.debug("Processing campaign #{campaign.name}")
-        fork_campaign.process(true)
+        CampaignService.new(fork_campaign).process(true)
         sleep 5
       end
       Rails.logger.debug("Stopped campaign #{campaign.name}")
