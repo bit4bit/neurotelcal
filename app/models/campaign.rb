@@ -117,43 +117,6 @@ class Campaign < ActiveRecord::Base
 
   
   
-  #Se verifica si se puede llamara a un cliente
-  #con un determinado mensaje y un calendario de mensaje.
-  #El objetivo primordial es llamar las veces que sea necesario
-  #el cliente hasta que se obtenga una respuesta de que contesto, por cada
-  #'falla' en la llamada al cliente ha este se le baja la prioridad mirar Client#update_priority_by_hangup_cause
-  #o bien se le aumente si contesto satisfactoriamente esta prioridad es acumulativa al cliente mirar atributo Client#prority
-  #Teniendo como logica de funcionamiento:
-  # * si es mensaje anonimo llamar de una
-  # * si es un cliente con un numero invalido no se llama
-  # * si ya se marco para el menasje no se llama
-  # * si ya se esta marcando no se llama
-  # * si ha fallado se reintenta las veces indicadas por mensaje
-  #
-  #::client:: cliente a llamar
-  #::message:: mensaje a ser comunicado
-  #::message_calendar:: calendario de mensaje usado en caso de haber
-  #::return:: boolean indicando si se pudo o no realizar la llamada
-  def can_call_client?(client, message, message_calendar = nil)
-    client.reload
-    logger.debug('process: can_call_client? %d' % client.id)
-    #logger.debug('process: client %d calls_faileds %d' % [client.id, client.calls_faileds])
-    return false if  client.calling 
-    #el cliente ya fue llamadao y no nay necesida de volverle a llamar
-    return false unless client.callable
-    #no hay que botar escape ni modo de ubicar el numero
-    return false if client.error
-    return true if message.anonymous?
-
-    #se vuelve a marcar desde la ultima marcacion
-    if client.calls_faileds > message.retries
-      if not (Time.now >= client.last_call_at + client.priority_to_seconds_wait)
-        return false
-      end
-    end
-
-    return true
-  end
   
   def plivos_from_distributor(client)
     plivos_to_call = []

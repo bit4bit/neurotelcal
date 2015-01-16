@@ -6,25 +6,18 @@ class CampaignService
 
   #Campaign llama cliente, buscando un espacio disponible entre sus servidores plivos
   def call_client(client, message, message_calendar = nil)
-    raise PlivoNotFound, "There is not plivo server, first add one" unless self.plivo.exists?
-    called = false
+    raise PlivoNotFound, "There is not plivo server, first add one" unless @campaign.plivo.exists?
     plivos_to_call = []
     if @campaign.distributor.count > 0
       plivos_to_call = @campaign.plivos_from_distributor(client)
-      if plivos_to_call.nil?
-        return false
-      end
+      return false if plivos_to_call.nil?
     else
       plivos_to_call = @campaign.plivo.all
     end
-    
 
     plivos_to_call.each { |plivo|
       begin
-        called = PlivoService.new(plivo).call_client(client, message, message_calendar)
-
-        
-        break
+        return PlivoService.new(plivo).call_client(client, message, message_calendar)
       rescue PlivoChannelFull => e
         Rails.logger.debug("Plivo id %d full trying next plivo" % plivo.id)
         next
@@ -32,13 +25,12 @@ class CampaignService
     }
     
     #raise PlivoCannotCall, "cant find plivo to call" unless called
-    return called
+    return false
   end
 
   def call_client!(client, message, message_calendar = nil)
-    called = call_client(client, message, message_calendar)
-    raise PlivoCannotCall, "cant find plivo to call" unless called
-    return called
+    raise PlivoCannotCall, "cant find plivo to call" unless call_client(client, message, message_calendar)
+    return true
   end
 
   #@todo separa esto del modelo
@@ -92,8 +84,6 @@ class CampaignService
     else
       clients = Client.where(:group_id => id_groups_to_process, :callable => true, :calling => false, :error => false).order('priority DESC, callable DESC, created_at ASC')      
     end
-    
-
 
     #end if not have client
     unless clients.any?
@@ -108,7 +98,9 @@ class CampaignService
       #next if client_processing.calling?
       #next if client_processing.error?
 
+
       while @campaign.using_channels >= @campaign.active_channels
+        return false if daemonize
         sleep 1
         Rails.logger.debug('process: all channels using waiting for.')
       end
@@ -116,8 +108,7 @@ class CampaignService
       #lo ideal es mantener cargada la cola de clientes procesados
       return false if not @campaign.need_process_groups?
       
-
-      sleep 5 while @campaign.pause?
+      wait_while_pause
 
       @campaign.group.all.each do |group_processing|
 
@@ -130,7 +121,8 @@ class CampaignService
         next unless client_processing.group_id == group_processing.id
 
         #si esta pausado no se realiza las llamadas
-        sleep 1 while @campaign.pause? 
+        wait_while_pause
+        
         Rails.logger.debug('process: find group for process')
         group_processing.message.all.each do |message|
           
@@ -147,8 +139,8 @@ class CampaignService
           
           #se termina en caso de forzado, y espera la ultima llamada
           break if @campaign.end?
-          sleep 1 while @campaign.pause? #si se pausa la campana se espera hasta que se despause
-
+          
+          wait_while_pause
           
           #se espera que la ultima llamada se ade este mensaje
           #sino se omite cliente y se deja para que lo preceso el mensaje
@@ -216,7 +208,7 @@ class CampaignService
           Rails.logger.debug('process: can not call the client %d finished de calendar or all clients for message calendar all called' % client.id)
           return false
         else
-          if can_call_client?(client, message, message_calendar)
+          if @campaign.can_call_client?(client, message, message_calendar)
             r = call_client(client, message, message_calendar)
             if r.is_a?(String)
               return true
@@ -230,6 +222,11 @@ class CampaignService
   end
    
 
+  def wait_while_pause(daemonize)
+    return false if @campaign.pause? and daemonize
+    sleep 1 while @campaign.pause?
+  end
+  
   #Esto selecciona automaticamente los canales ha usar en el mensaje
   #en base a la cantidad de llamadas esperadas, logradas y faltantes
   #Osea en caso de faltar poco tiempo para terminar y hay canales disponibles
