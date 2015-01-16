@@ -264,6 +264,7 @@ es:
       username: 'Usuario/a'
       password: 'Contraseña'
       btlogin: 'Ingresar'
+      email: 'E-Mail'
     index:
       title: 'Listando Usuarios/as'
     edit:
