@@ -152,7 +152,6 @@ class Campaign < ActiveRecord::Base
       end
     end
 
-    
     return true
   end
   
@@ -188,7 +187,7 @@ class Campaign < ActiveRecord::Base
 
     plivos_to_call.each { |plivo|
       begin
-        called = plivo.call_client(client, message, message_calendar)
+        called = PlivoService.new(plivo).call_client(client, message, message_calendar)
 
         
         break
