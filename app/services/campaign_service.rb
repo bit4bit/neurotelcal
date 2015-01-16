@@ -102,7 +102,7 @@ class CampaignService
     end
     
     wait_messages = []
-    clients.all.each do |client_processing|
+    clients.find_each do |client_processing|
       #@deprecated se paso a consulta sql anterior
       #next unless client_processing.callable?
       #next if client_processing.calling?
