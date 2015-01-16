@@ -18,7 +18,7 @@ class PlivoService
     phonenumber_client = client.phonenumber
     #el cliente tiene multiples numeros para ubicarle
     if client.phonenumber.include?(',')
-      logger.debug('plivo: client have multiple phonenumbers')
+      Rails.logger.debug('plivo: client have multiple phonenumbers')
       phonenumbers = client.phonenumber.split(',')
       
       all_phonenumbers_calleds = true
@@ -30,11 +30,11 @@ class PlivoService
           break
         end
       }
-      logger.debug('plivo: phonenumber client %s' % phonenumber_client)
+      Rails.logger.debug('plivo: phonenumber client %s' % phonenumber_client)
       #se escoge uno aleatorio
       if all_phonenumbers_calleds
         phonenumber_client = phonenumbers[SecureRandom.random_number(phonenumbers.size)]
-        logger.debug('plivo: random picked %s' % phonenumber_client)
+        Rails.logger.debug('plivo: random picked %s' % phonenumber_client)
       end
     end
 
@@ -111,14 +111,14 @@ class PlivoService
     plivocall.save
     call_params['AccountSID'] = plivocall.id
 
-    logger.debug(call_params)      
+    Rails.logger.debug(call_params)      
     
     #@todo ERROR OCURRE ERROR..SE ENVIA LA LLAMA Y PLIVO RESPONDE DEMASIADO RAPIDO
     #INCLUSIVE ANTES DE GUARDAR LOS REGISTROS
     #PARA MANTENER NUESTRO PROPIO ID utilizamaos el parametro AccountSID de plivo
     plivor = PlivoHelper::Rest.new(@plivo.api_url, @plivo.sid, @plivo.auth_token)
     result = ActiveSupport::JSON.decode(plivor.call(call_params).body)
-    logger.debug('process:' + result.to_s)
+    Rails.logger.debug('process:' + result.to_s)
 
 
     if result["Success"]
@@ -126,7 +126,7 @@ class PlivoService
       plivocall.save
       return result['RequestUUID']
     else
-      logger.error(result)
+      Rails.logger.error(result)
       plivocall.destroy
       call.destroy
       client.update_column(:calling, false) 

@@ -34,7 +34,7 @@ class CampaignJob
     Rails.logger.debug("Processing campaign")
     #while campaign.need_process_groups?
     while true
-      campaign.process(true)
+      CampaignService.new(campaign).process(true)
       break if campaign.end?
       sleep 5
     end
