@@ -175,7 +175,7 @@ class MessagesController < ApplicationController
       @test_message.id = nil
       @test_message.anonymous = true
       @test_message.save(:validate => false)
-      @campaign.call_client!(@client, @test_message)
+      CampaignService.new(@campaign).call_client!(@client, @test_message)
     rescue ::PlivoChannelFull => e
       flash[:error] = 'No hay canales disponibles'
     rescue ::PlivoCannotCall => e

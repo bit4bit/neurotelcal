@@ -89,11 +89,11 @@ class Client < ActiveRecord::Base
     self.reload
     logger.debug('process: can_call_client? %d' % self.id)
     #logger.debug('process: client %d calls_faileds %d' % [client.id, client.calls_faileds])
-    return false if  client.calling?
+    return false if  self.calling?
     #el cliente ya fue llamadao y no nay necesida de volverle a llamar
-    return false unless client.callable?
+    return false unless self.callable?
     #no hay que botar escape ni modo de ubicar el numero
-    return false if client.error
+    return false if self.error
     return true if message.anonymous?
 
     #se vuelve a marcar desde la ultima marcacion

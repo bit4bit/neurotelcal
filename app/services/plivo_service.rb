@@ -7,7 +7,7 @@ class PlivoService
   #LLamar con el mensaje al cliente
   #@throw PlivoCannotCall
   def call_client(client, message, message_calendar = nil)
-    raise PlivoChannelFull, "No hay canales disponibles" unless can_call?
+    raise PlivoChannelFull, "No hay canales disponibles" unless @plivo.can_call?
     
     return false if client.nil?
     return false if message.nil?
@@ -49,11 +49,11 @@ class PlivoService
     
     call_params = {
       'From' => caller_id,
-      'CallerName' => @privo.caller_name,
+      'CallerName' => @plivo.caller_name,
       'To' => phonenumber_client,
       'Gateways' => @plivo.gateway_by_client(client),
       'GatewayCodecs' => @plivo.gateway_codecs_quote,
-      'GatewayTimeouts' => timeout_by_client(client),
+      'GatewayTimeouts' => @plivo.timeout_by_client(client),
       'GatewayRetries' => @plivo.gateway_retries,
       'ExtraDialString' => extra_dial_string,
       'AnswerUrl' => "%s/plivos/0/answer_client" % @plivo.app_url,

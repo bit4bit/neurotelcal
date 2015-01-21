@@ -54,10 +54,9 @@ class Plivo < ActiveRecord::Base
         'HangupUrl' => "%s/selfs/0/hangup_client" % self.app_url,
         'RingUrl' => "%s/selfs/0/ringing_client" % self.app_url
       }
-      Timeout::timeout(1){
+      Timeout::timeout(3){
         result = ActiveSupport::JSON.decode(plivor.call(call_params).body)
-        errors.add(:api_url, "Fallo conexion")
-        return false
+        return true
       }
     rescue Errno::ECONNREFUSED => e
       errors.add(:api_url, "Conexion rechazada")

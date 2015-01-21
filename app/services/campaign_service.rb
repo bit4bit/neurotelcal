@@ -79,8 +79,8 @@ class CampaignService
     
     Rails.logger.debug('process: total messages today %d' % total_messages_today)
 
-    if distributor.count > 0
-      clients = Client.where(:group_id => id_groups_to_process, :callable => true, :calling => false, :error => false).where(["phonenumber REGEXP ?", Regexp.new(distributor.map{|d| d.filter}.join("|")).source]).order('priority DESC, callable DESC, created_at ASC')
+    if @campaign.distributor.count > 0
+      clients = Client.where(:group_id => id_groups_to_process, :callable => true, :calling => false, :error => false).where(["phonenumber REGEXP ?", Regexp.new(@campaign.distributor.map{|d| d.filter}.join("|")).source]).order('priority DESC, callable DESC, created_at ASC')
     else
       clients = Client.where(:group_id => id_groups_to_process, :callable => true, :calling => false, :error => false).order('priority DESC, callable DESC, created_at ASC')      
     end
@@ -108,7 +108,7 @@ class CampaignService
       #lo ideal es mantener cargada la cola de clientes procesados
       return false if not @campaign.need_process_groups?
       
-      wait_while_pause
+      wait_while_pause daemonize
 
       @campaign.group.all.each do |group_processing|
 
@@ -121,7 +121,7 @@ class CampaignService
         next unless client_processing.group_id == group_processing.id
 
         #si esta pausado no se realiza las llamadas
-        wait_while_pause
+        wait_while_pause daemonize
         
         Rails.logger.debug('process: find group for process')
         group_processing.message.all.each do |message|
@@ -140,7 +140,7 @@ class CampaignService
           #se termina en caso de forzado, y espera la ultima llamada
           break if @campaign.end?
           
-          wait_while_pause
+          wait_while_pause daemonize
           
           #se espera que la ultima llamada se ade este mensaje
           #sino se omite cliente y se deja para que lo preceso el mensaje
